@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-base: #f8f8fa;
+  --color-ink: #1a1a2e;
+  --color-periwinkle: #7aa0ff;
+  --color-lavender: #b48cff;
+  --color-teal: #64d2c8;
+}
+
+@layer base {
+  body {
+    @apply bg-base text-ink font-sans selection:bg-periwinkle/30;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/60 backdrop-blur-[20px] border border-[rgba(180,180,220,0.25)];
+  }
+  
+  .glass-hover {
+    @apply hover:-translate-y-1 hover:shadow-lg hover:shadow-periwinkle/10 hover:border-periwinkle/40 transition-all duration-300;
+  }
+
+  .text-spaced {
+    @apply tracking-[0.2em] uppercase text-xs font-light;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-periwinkle/20 rounded-full hover:bg-periwinkle/40 transition-colors;
+}
