@@ -4,13 +4,13 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, animate } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useAnimationFrame, animate } from 'motion/react';
 import { ParticleBackground } from './components/ParticleBackground';
 import { Navigation } from './components/Navigation';
 import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { PROJECTS, POSTS, TESTIMONIALS, Project } from './mockData';
-import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2 } from 'lucide-react';
+import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 // --- Components ---
 
@@ -111,254 +111,167 @@ const ServiceRow: React.FC<{
   );
 };
 
-interface ConstellationNodeProps {
-  node: any;
-  nodeX: any;
-  nodeY: any;
-  isHovered: boolean;
-  isDimmed: boolean;
-  onMouseEnter: (id: string) => void;
-  onMouseLeave: () => void;
-}
-
-const ConstellationNode: React.FC<ConstellationNodeProps> = ({ 
-  node, nodeX, nodeY, isHovered, isDimmed, onMouseEnter, onMouseLeave 
-}) => {
-  const left = useTransform(nodeX, (v: number) => (v / 10) + '%');
-  const top = useTransform(nodeY, (v: number) => (v / 10) + '%');
-
-  return (
-    <motion.div
-      className="absolute -translate-x-1/2 -translate-y-1/2"
-      style={{ left, top }}
-    >
-      <motion.div
-        className="relative cursor-pointer group/node"
-        onMouseEnter={() => onMouseEnter(node.id)}
-        onMouseLeave={onMouseLeave}
-        animate={{
-          opacity: isDimmed ? 0.4 : 1,
-          scale: isHovered ? 1.1 : 1,
-        }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="absolute top-1/2 -translate-y-1/2 left-0 w-40 h-12 bg-transparent z-0" />
-        
-        <motion.div 
-          className="w-3 h-3 bg-periwinkle rounded-full relative z-10"
-          animate={{
-            boxShadow: isHovered 
-              ? '0 0 25px 8px rgba(122, 160, 255, 0.6)' 
-              : ['0 0 8px 2px rgba(122, 160, 255, 0.2)', '0 0 16px 4px rgba(122, 160, 255, 0.4)', '0 0 8px 2px rgba(122, 160, 255, 0.2)']
-          }}
-          transition={isHovered ? { duration: 0.2 } : { repeat: Infinity, duration: node.pulseDur, ease: "easeInOut" }}
-        />
-
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-3 w-max">
-          <div className="w-8 h-8 rounded-full bg-periwinkle/10 border border-periwinkle/20 flex items-center justify-center text-[10px] font-medium text-periwinkle backdrop-blur-sm">
-            {node.initials}
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-medium text-ink uppercase tracking-wider leading-none">{node.name}</span>
-            <span className="text-[9px] text-ink/40 tracking-widest uppercase mt-1 leading-none">{node.role}</span>
-          </div>
-        </div>
-      </motion.div>
-
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            className={`absolute z-[100] w-[350px] pointer-events-none ${node.x > 700 ? '-left-[360px]' : 'left-8'} ${node.y > 700 ? '-top-64' : 'top-8'}`}
-          >
-            <GlassCard className="p-10 border-periwinkle/20 shadow-2xl shadow-periwinkle/10 relative overflow-hidden">
-              <span className="absolute -top-4 -left-2 text-[120px] font-serif text-periwinkle/5 leading-none select-none">“</span>
-              
-              <div className="space-y-6 relative z-10">
-                <p className="text-xl font-light text-ink/80 leading-relaxed italic">
-                  {node.text}
-                </p>
-                <div className="pt-6 border-t border-ink/5">
-                  <div className="text-lg font-medium text-ink">{node.name}</div>
-                  <div className="text-xs text-spaced opacity-40 uppercase">{node.role}</div>
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-};
-
-const ConstellationTestimonials: React.FC = () => {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  
+const FeaturedQuoteTestimonials: React.FC = () => {
   const testimonials = [
-    ...TESTIMONIALS,
-    { id: '4', name: 'Michael K.', role: 'Executive Producer', text: 'Isaac has a rare ability to capture the energy of a room without ever being intrusive.' },
-    { id: '5', name: 'Marcus T.', role: 'Hospitality Group', text: 'The attention to detail in his property tours has set a new standard for our portfolio.' },
-    { id: '6', name: 'Jessica W.', role: 'Event Planner', text: 'Clean, energetic, and professional. The turnaround time is just as impressive as the work.' },
+    ...TESTIMONIALS.map((t, i) => ({ 
+      ...t, 
+      company: t.role === 'Founder' ? 'Creative Studio' : 'Corporate Solutions',
+      initials: t.name.split(' ').map(n => n[0]).join('')
+    })),
+    { 
+      id: '4', 
+      name: 'Michael K.', 
+      text: 'Isaac has a rare ability to capture the energy of a room without ever being intrusive.', 
+      company: 'MK Productions',
+      initials: 'MK'
+    },
+    { 
+      id: '5', 
+      name: 'Marcus T.', 
+      text: 'The attention to detail in his property tours has set a new standard for our portfolio.', 
+      company: 'The Ritz',
+      initials: 'MT'
+    },
+    { 
+      id: '6', 
+      name: 'Jessica W.', 
+      text: 'Clean, energetic, and professional. The turnaround time is just as impressive.', 
+      company: 'Events by JW',
+      initials: 'JW'
+    },
   ];
 
-  const basePositions = [
-    { x: 200, y: 300, driftX: [0, 8, -4, 0], driftY: [0, -6, 8, 0], dDur: 8 },
-    { x: 450, y: 200, driftX: [0, -6, 5, 0], driftY: [0, 8, -6, 0], dDur: 10 },
-    { x: 750, y: 350, driftX: [0, 5, -8, 0], driftY: [0, -8, 5, 0], dDur: 9 },
-    { x: 300, y: 650, driftX: [0, -8, 6, 0], driftY: [0, 6, -8, 0], dDur: 11 },
-    { x: 600, y: 750, driftX: [0, 6, -5, 0], driftY: [0, -7, 6, 0], dDur: 12 },
-    { x: 800, y: 600, driftX: [0, -5, 7, 0], driftY: [0, 8, -5, 0], dDur: 13 },
-  ];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // We use 6 static motion values to avoid hook violations in loops
-  const x1 = useMotionValue(200); const y1 = useMotionValue(300);
-  const x2 = useMotionValue(450); const y2 = useMotionValue(200);
-  const x3 = useMotionValue(750); const y3 = useMotionValue(350);
-  const x4 = useMotionValue(300); const y4 = useMotionValue(650);
-  const x5 = useMotionValue(600); const y5 = useMotionValue(750);
-  const x6 = useMotionValue(800); const y6 = useMotionValue(600);
-
-  const nodeXValues = [x1, x2, x3, x4, x5, x6];
-  const nodeYValues = [y1, y2, y3, y4, y5, y6];
-
-  useEffect(() => {
-    const controls: any[] = [];
-    
-    basePositions.forEach((pos, i) => {
-      const cx = animate(nodeXValues[i], pos.driftX.map(d => d + pos.x), {
-        duration: pos.dDur,
-        repeat: Infinity,
-        ease: "easeInOut"
-      });
-      const cy = animate(nodeYValues[i], pos.driftY.map(d => d + pos.y), {
-        duration: pos.dDur,
-        repeat: Infinity,
-        ease: "easeInOut"
-      });
-      controls.push(cx, cy);
-    });
-
-    return () => controls.forEach(c => c.stop());
-  }, []);
-
-  useEffect(() => {
-    if (hoveredId) {
-      const idx = testimonials.findIndex(t => t.id === hoveredId);
-      if (idx !== -1) {
-        animate(nodeXValues[idx], basePositions[idx].x, { duration: 0.4 });
-        animate(nodeYValues[idx], basePositions[idx].y, { duration: 0.4 });
-      }
-    } else {
-      basePositions.forEach((pos, i) => {
-        animate(nodeXValues[i], pos.driftX.map(d => d + pos.x), {
-          duration: pos.dDur,
-          repeat: Infinity,
-          ease: "easeInOut"
-        });
-        animate(nodeYValues[i], pos.driftY.map(d => d + pos.y), {
-          duration: pos.dDur,
-          repeat: Infinity,
-          ease: "easeInOut"
-        });
-      });
-    }
-  }, [hoveredId]);
-
-  const initials = testimonials.map(t => t.name.split(' ').map(n => n[0]).join(''));
-  const pulseDurs = testimonials.map((_, i) => 2.5 + (i * 0.3));
-
-  const connections = [[0, 1], [1, 2], [0, 3], [3, 4], [4, 5], [2, 5], [1, 4]];
-
-  const handleNodeMouseEnter = (id: string) => {
-    setHoveredId(id);
-    if (!hasInteracted) setHasInteracted(true);
+  const startTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
   };
 
+  const resetTimer = () => {
+    startTimer();
+  };
+
+  useEffect(() => {
+    if (!isPaused) {
+      startTimer();
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPaused, activeIndex]);
+
+  const activeTestimonial = testimonials[activeIndex];
+
   return (
-    <section className="container mx-auto px-4 py-24 min-h-[900px] relative overflow-hidden">
-      <div className="mb-20 flex justify-between items-end">
-        <div>
-          <span className="text-spaced opacity-40 uppercase">Kind Words</span>
-          <h2 className="text-2xl font-light text-ink/60 mt-2">Client Testimonials</h2>
-        </div>
-        
-        <AnimatePresence>
-          {!hasInteracted && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 1, duration: 1 }}
-              className="hidden md:flex items-center gap-3 text-ink/30 mr-12 mb-2"
-            >
-              <MousePointer2 className="w-3 h-3" />
-              <span className="text-[10px] uppercase tracking-[0.2em] font-medium">hover a client</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <section 
+      className="container mx-auto px-4 py-32"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="mb-20">
+        <span className="text-[10px] uppercase tracking-[0.3em] text-ink/40 font-medium">Kind words</span>
       </div>
 
-      <div className="hidden md:block absolute inset-0 top-32 left-0 w-full h-[700px] z-0">
-        <svg viewBox="0 0 1000 1000" className="w-full h-full pointer-events-none overflow-visible">
-          {connections.map(([startIdx, endIdx], i) => {
-            const isRelated = hoveredId === testimonials[startIdx].id || hoveredId === testimonials[endIdx].id;
+      <div className="flex flex-col items-center">
+        {/* Top Zone: Featured Quote */}
+        <div className="relative w-full max-w-[700px] h-[400px] flex flex-col items-center justify-center text-center overflow-y-auto">
+          <Quote className="w-16 h-16 text-periwinkle/15 font-light mb-8 flex-shrink-0" strokeWidth={1} />
+          
+          <div className="relative w-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTestimonial.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="space-y-8"
+              >
+                <blockquote className="text-2xl md:text-[32px] font-light text-ink/80 leading-relaxed italic">
+                  "{activeTestimonial.text}"
+                </blockquote>
+                
+                <div className="flex flex-col items-center gap-6">
+                  <div className="w-10 h-[1px] bg-ink/10" />
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium text-ink">{activeTestimonial.name}</div>
+                    <div className="text-xs text-ink/40 uppercase tracking-widest">{activeTestimonial.company}</div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Bottom Zone: Avatar Strip */}
+        <div className="mt-12 flex flex-wrap justify-center items-start gap-4 md:gap-8 min-h-[100px]">
+          {testimonials.map((t, i) => {
+            const isActive = activeIndex === i;
+            const isHovered = hoveredId === t.id;
             
             return (
-              <motion.line
-                key={`line-${i}`}
-                x1={nodeXValues[startIdx]}
-                y1={nodeYValues[startIdx]}
-                x2={nodeXValues[endIdx]}
-                y2={nodeYValues[endIdx]}
-                stroke="currentColor"
-                className="text-periwinkle"
-                initial={{ opacity: 0.15 }}
-                animate={{ 
-                  opacity: hoveredId ? (isRelated ? 0.4 : 0.05) : 0.15,
-                  strokeWidth: isRelated ? 1.5 : 1
+              <div 
+                key={t.id} 
+                className="flex flex-col items-center group/avatar cursor-pointer"
+                onMouseEnter={() => setHoveredId(t.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                onClick={() => {
+                  setActiveIndex(i);
+                  resetTimer();
                 }}
-                transition={{ duration: 0.4 }}
-              />
+              >
+                <motion.div
+                  animate={{
+                    scale: isActive ? 1 : (isHovered ? 1.08 : 1),
+                    opacity: isActive ? 1 : (isHovered ? 0.75 : 0.45),
+                    boxShadow: isActive ? '0 0 20px rgba(122, 160, 255, 0.4)' : '0 0 0px rgba(122, 160, 255, 0)',
+                  }}
+                  transition={{
+                    duration: isHovered ? 0.4 : 0.5,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
+                  className={`
+                    relative rounded-full flex items-center justify-center overflow-hidden
+                    ${isActive 
+                      ? 'w-14 h-14 md:w-[56px] md:h-[56px] border-2 border-periwinkle/80' 
+                      : 'w-12 h-12 md:w-[48px] md:h-[48px] glass border-ink/5'}
+                  `}
+                >
+                  <div className="text-xs font-semibold text-periwinkle">
+                    {t.initials}
+                  </div>
+                </motion.div>
+                
+                {/* Reserved space for name label */}
+                <div className="h-8 flex items-center justify-center mt-3">
+                  <motion.span
+                    animate={{ 
+                      opacity: (isActive || isHovered) ? (isActive ? 1 : 0.6) : 0,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className={`text-[9px] uppercase tracking-widest text-center transition-colors pointer-events-none ${isActive ? 'text-periwinkle font-medium' : 'text-ink/40'}`}
+                  >
+                    {t.name}
+                  </motion.span>
+                </div>
+              </div>
             );
           })}
-        </svg>
-
-        {testimonials.map((t, i) => (
-          <ConstellationNode
-            key={t.id}
-            node={{ ...t, ...basePositions[i], initials: initials[i], pulseDur: pulseDurs[i] }}
-            nodeX={nodeXValues[i]}
-            nodeY={nodeYValues[i]}
-            isHovered={hoveredId === t.id}
-            isDimmed={hoveredId !== null && hoveredId !== t.id}
-            onMouseEnter={handleNodeMouseEnter}
-            onMouseLeave={() => setHoveredId(null)}
-          />
-        ))}
-      </div>
-
-      <div className="md:hidden space-y-6">
-        {testimonials.map((t, i) => (
-          <GlassCard key={t.id} className="p-8 space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-periwinkle/10 border border-periwinkle/20 flex items-center justify-center text-xs font-medium text-periwinkle">
-                {initials[i]}
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-ink uppercase tracking-wider">{t.name}</dt>
-                <dd className="text-[10px] text-ink/40 tracking-widest uppercase">{t.role}</dd>
-              </div>
-            </div>
-            <p className="text-lg font-light text-ink/70 leading-relaxed italic">"{t.text}"</p>
-          </GlassCard>
-        ))}
+        </div>
       </div>
     </section>
   );
 };
+
+
 
 const BentoGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[250px]">
@@ -388,6 +301,210 @@ const SectionTitle: React.FC<{ title: string; subtitle?: string }> = ({ title, s
 );
 
 // --- Sections / Pages ---
+
+const SKILLS = [
+  'FAA Certified Drone Pilot',
+  'DaVinci Resolve',
+  'Cinematography',
+  'Pro Grade Audio',
+  'Motion Graphics',
+  'Adaptive Lighting',
+  'Google Ads Certified'
+];
+
+const WaveformBorder = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  
+  const offset1 = useMotionValue(0);
+  const offset2 = useMotionValue(0);
+  const breatheOpacity = useMotionValue(0.15);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setDimensions({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height
+        });
+      }
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const { width, height } = dimensions;
+  const rx = 24; 
+  // Approximate perimeter for a rounded rectangle
+  const perimeter = (width + height) * 2 - rx * 8 + (2 * Math.PI * rx);
+
+  useAnimationFrame((time, delta) => {
+    if (perimeter <= 0) return;
+    
+    // time is in milliseconds
+    const t = time / 1000;
+
+    // Fix 2: Randomized Variable Speed
+    // Modulate speeds using sine waves to create organic, non-mechanical motion
+    
+    // Layer 1: Slow clockwise pulse (~6s base cycle)
+    // Speed modulates over ~5 seconds cycle
+    const baseSpeed1 = 0.16; // fraction of perimeter per second
+    const modSpeed1 = 0.05 * Math.sin(t * (2 * Math.PI / 5));
+    const speed1 = (baseSpeed1 + modSpeed1) * perimeter;
+    offset1.set((offset1.get() - speed1 * (delta / 1000)) % perimeter);
+
+    // Layer 2: Fast counter-clockwise pulse (~3.5s base cycle)
+    // Speed modulates over ~2 seconds cycle
+    const baseSpeed2 = 0.28;
+    const modSpeed2 = 0.1 * Math.sin(t * (2 * Math.PI / 2));
+    const speed2 = (baseSpeed2 + modSpeed2) * perimeter;
+    offset2.set((offset2.get() + speed2 * (delta / 1000)) % perimeter);
+
+    // Layer 3: Breathe opacity
+    // Slowly varies over 4 seconds
+    const opacity = 0.15 + 0.1 * Math.sin(t * (2 * Math.PI / 4));
+    breatheOpacity.set(opacity);
+  });
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden rounded-[inherit]">
+      <svg
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        className="absolute inset-0 w-full h-full"
+      >
+        <defs>
+          <linearGradient id="wave-gradient-1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(122, 160, 255, 0.8)" />
+            <stop offset="50%" stopColor="rgba(180, 140, 255, 0.9)" />
+            <stop offset="100%" stopColor="rgba(122, 160, 255, 0.8)" />
+          </linearGradient>
+          <linearGradient id="wave-gradient-2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(100, 210, 220, 0.8)" />
+            <stop offset="50%" stopColor="rgba(255, 255, 255, 0.9)" />
+            <stop offset="100%" stopColor="rgba(100, 210, 220, 0.8)" />
+          </linearGradient>
+          
+          {/* Fix 1: Soft fading pulse ends using blurred masks */}
+          <filter id="soft-blur" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+          </filter>
+          
+          <mask id="pulse-mask-1">
+            <motion.rect
+              x="2" y="2" width={Math.max(0, width - 4)} height={Math.max(0, height - 4)} rx={rx}
+              fill="none" stroke="white" strokeWidth="6"
+              strokeDasharray={`${width * 0.6} ${perimeter}`}
+              style={{ strokeDashoffset: offset1 }}
+              filter="url(#soft-blur)"
+            />
+          </mask>
+          
+          <mask id="pulse-mask-2">
+            <motion.rect
+              x="2" y="2" width={Math.max(0, width - 4)} height={Math.max(0, height - 4)} rx={rx}
+              fill="none" stroke="white" strokeWidth="6"
+              strokeDasharray={`${width * 0.3} ${perimeter}`}
+              style={{ strokeDashoffset: offset2 }}
+              filter="url(#soft-blur)"
+            />
+          </mask>
+        </defs>
+
+        {/* Layer 3: Diffuse Global Glow Breathe Layer */}
+        <motion.rect
+          x="1" y="1" width={Math.max(0, width - 2)} height={Math.max(0, height - 2)} rx={rx}
+          fill="none" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="3.5"
+          style={{ opacity: breatheOpacity }}
+        />
+
+        {/* Layer 1: Slow wide clockwise pulse (masked for soft ends) */}
+        <rect
+          x="1.5" y="1.5" width={Math.max(0, width - 3)} height={Math.max(0, height - 3)} rx={rx}
+          fill="none" stroke="url(#wave-gradient-1)" strokeWidth="2.5"
+          mask="url(#pulse-mask-1)"
+        />
+
+        {/* Layer 2: Faster narrow counter-clockwise pulse (masked for soft ends) */}
+        <rect
+          x="1.5" y="1.5" width={Math.max(0, width - 3)} height={Math.max(0, height - 3)} rx={rx}
+          fill="none" stroke="url(#wave-gradient-2)" strokeWidth="2.5"
+          mask="url(#pulse-mask-2)"
+        />
+      </svg>
+    </div>
+  );
+};
+
+const TypewriterSkills = () => {
+  const [index, setIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPausing, setIsPausing] = useState(false);
+  
+  const currentSkill = SKILLS[index];
+  
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    
+    if (isPausing) {
+      timeout = setTimeout(() => {
+        setIsPausing(false);
+        setIsDeleting(true);
+      }, 1800);
+    } else if (isDeleting && displayText === '') {
+      setIndex((prev) => (prev + 1) % SKILLS.length);
+      setIsDeleting(false);
+    } else if (isDeleting) {
+      timeout = setTimeout(() => {
+        setDisplayText(prev => prev.slice(0, -1));
+      }, 45);
+    } else if (displayText === currentSkill) {
+      setIsPausing(true);
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayText(currentSkill.slice(0, displayText.length + 1));
+      }, 90);
+    }
+    
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, isPausing, index, currentSkill]);
+
+  return (
+    <GlassCard className="w-full h-full py-12 md:py-16 px-6 md:px-8 flex flex-col items-center justify-center min-h-[180px] md:min-h-[240px] border-ink/5 relative overflow-hidden group">
+      <WaveformBorder />
+      <span className="text-[10px] uppercase tracking-[0.3em] text-ink/40 font-medium mb-6 relative z-10">
+        What I bring to the table...
+      </span>
+      <div className="relative z-10 flex items-center justify-center text-center w-full min-h-[42px] md:min-h-[60px]">
+        <div className="flex flex-wrap justify-center items-center text-ink px-2 text-2xl md:text-[42px]">
+          {displayText.split('').map((char, i) => (
+            <span
+              key={`${index}-${i}`}
+              className="font-light tracking-tight leading-none"
+            >
+              {char === ' ' ? '\u00A0' : char}
+            </span>
+          ))}
+          {/* Cursor */}
+          <motion.span 
+            animate={{ opacity: [1, 0, 1] }}
+            transition={{ duration: 0.5, repeat: Infinity, ease: "linear" }}
+            className="w-[2px] md:w-[3px] ml-1 bg-ink inline-block align-middle"
+            style={{ 
+              height: '1em',
+            }}
+          />
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
 
 import { MorphingParticleIcon, IconShape } from './components/MorphingParticleIcon';
 
@@ -533,91 +650,67 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
 
       {/* Selected Works */}
 
-      {/* About Section: Split Editorial Layout */}
+      <FeaturedQuoteTestimonials />
       <section className="container mx-auto px-4 py-32">
-        <div className="flex flex-col lg:flex-row min-h-[800px] border border-ink/5 overflow-hidden rounded-3xl bg-base/20">
-          {/* Left Half: The Image */}
-          <div className="w-full lg:w-1/2 relative h-[500px] lg:h-auto overflow-hidden">
-            <motion.img 
-              initial={{ scale: 1.03, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=1200"
-              className="w-full h-full object-cover grayscale"
-              alt="Isaac Maas"
-            />
-            {/* Identity Badge */}
-            <div className="absolute bottom-8 left-8">
-              <GlassCard className="px-6 py-3 rounded-full border-white/20 bg-white/10 backdrop-blur-md">
-                <span className="text-xl font-medium text-white tracking-tight">Isaac Maas</span>
-              </GlassCard>
-            </div>
+        <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+          
+          {/* Left Column (35-40%) */}
+          <div className="w-full lg:w-[38%] flex flex-col gap-6">
+            {/* Top Tile: Headshot */}
+            <GlassCard className="p-0 overflow-hidden aspect-[3/4] border-ink/5 flex-shrink-0">
+              <motion.img 
+                initial={{ scale: 1.05, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=1200"
+                className="w-full h-full object-cover grayscale"
+                alt="Isaac Maas"
+              />
+            </GlassCard>
+
+            {/* Bottom Tile: Info Strip (Vertical List) - Stretched to fill gap */}
+            <GlassCard className="p-10 space-y-10 border-ink/5 flex-grow">
+              {[
+                { label: 'Location', val: 'Atlanta, GA', icon: MapPin },
+                { label: 'Experience', val: '6+ Years', icon: Clock },
+                { label: 'Education', val: 'SCAD', icon: GraduationCap },
+                { label: 'Fun Fact', val: 'Shot on a Point-and-Shoot', icon: Sparkles }
+              ].map((stat, i) => (
+                <motion.div 
+                  key={stat.label}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 + i * 0.1, duration: 0.5 }}
+                  className="flex flex-col gap-2"
+                >
+                  <span className="text-[9px] uppercase tracking-[0.25em] text-ink/40 font-medium">{stat.label}</span>
+                  <span className="text-base font-medium text-ink/80">{stat.val}</span>
+                </motion.div>
+              ))}
+            </GlassCard>
           </div>
 
-          {/* Right Half: Content Zones */}
-          <div className="w-full lg:w-1/2 flex flex-col">
-            {/* Zone 1: Identity Strip */}
-            <div className="p-8 md:p-12 border-b border-ink/5">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  { label: 'Location', val: 'Atlanta, GA', icon: MapPin },
-                  { label: 'Experience', val: '6+ Years', icon: Clock },
-                  { label: 'Education', val: 'SCAD', icon: GraduationCap },
-                  { label: 'Fun Fact', val: 'Shot on a Point-and-Shoot', icon: Sparkles }
-                ].map((stat, i) => (
-                  <motion.div 
-                    key={stat.label}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 + i * 0.08, duration: 0.5 }}
-                    className="flex flex-col gap-3 group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <stat.icon className="w-3.5 h-3.5 text-periwinkle/50 group-hover:text-periwinkle transition-colors" strokeWidth={1.5} />
-                      <span className="text-[10px] uppercase tracking-widest opacity-40">{stat.label}</span>
-                    </div>
-                    <span className="text-sm font-light text-ink/80">{stat.val}</span>
-                  </motion.div>
-                ))}
+          {/* Right Column (60-65%) */}
+          <div className="w-full lg:w-[62%] flex flex-col gap-6">
+            {/* Top Tile: Bio */}
+            <GlassCard className="p-12 space-y-8 border-ink/5 text-center lg:text-left flex-grow flex flex-col justify-center">
+              <div className="space-y-6">
+                <p className="text-2xl font-light text-ink/80 leading-relaxed italic">
+                  "I believe every story has a unique frequency. My job is to find the light and shadow that lets it vibrate."
+                </p>
+                <p className="text-lg font-light text-ink/60 leading-relaxed max-w-2xl">
+                  I'm a cinematographer who obsessed with the details. From high-end commercial sets to solo property tours, I treat every frame with the same level of architectural precision and emotional grit.
+                </p>
               </div>
-            </div>
+            </GlassCard>
 
-            {/* Zone 2: Bio and Video */}
-            <div className="flex-grow p-8 md:p-12 flex flex-col md:flex-row gap-12">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="flex-1 space-y-6"
-              >
-                <div className="space-y-4">
-                  <p className="text-xl font-light text-ink/70 leading-relaxed italic">
-                    "I believe every story has a unique frequency. My job is to find the light and shadow that lets it vibrate."
-                  </p>
-                  <p className="text-lg font-light text-ink/60 leading-relaxed">
-                    I'm a cinematographer who obsessed with the details. From high-end commercial sets to solo property tours, I treat every frame with the same level of architectural precision and emotional grit.
-                  </p>
-                </div>
-                <button 
-                  onClick={() => onNavigate('Contact')}
-                  className="inline-flex items-center gap-2 text-periwinkle font-medium hover:gap-4 transition-all group pt-4"
-                >
-                  Let's build something together <ArrowRight className="w-4 h-4 transition-transform" />
-                </button>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="md:w-56 space-y-3"
-              >
-                <span className="text-spaced text-[10px] opacity-40">My Story</span>
-                <GlassCard className="aspect-[3/4] p-0 overflow-hidden relative group/vplay cursor-pointer border-periwinkle/10">
+            {/* Middle Tile: My Story Video */}
+            <GlassCard className="p-12 space-y-6 border-ink/5 overflow-hidden flex-shrink-0">
+              <div className="flex flex-col gap-6">
+                <span className="text-[10px] uppercase tracking-widest text-ink/40 font-medium text-center lg:text-left">My Story</span>
+                <div className="aspect-video w-full rounded-2xl overflow-hidden relative group/vplay cursor-pointer border border-periwinkle/10 bg-[#0f0f19]">
                   <video 
                     autoPlay 
                     loop 
@@ -626,42 +719,85 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
                     preload="auto"
                     className="w-full h-full object-cover grayscale brightness-50"
                     src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-mountain-landscape-with-a-river-in-the-valley-4415-large.mp4"
-                    onLoadedData={() => console.log("Story video loaded")}
-                    onError={() => console.error("Story video error")}
                   >
                     <source src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-mountain-landscape-with-a-river-in-the-valley-4415-large.mp4" type="video/mp4" />
                   </video>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 group-hover/vplay:scale-110 group-hover/vplay:bg-periwinkle/30 transition-all">
-                      <Play className="w-5 h-5 text-white fill-white" />
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 group-hover/vplay:scale-110 group-hover/vplay:bg-periwinkle/30 transition-all">
+                      <Play className="w-6 h-6 text-white fill-white ml-1" />
                     </div>
                   </div>
-                </GlassCard>
-              </motion.div>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Bottom Tile: Typewriter Skills */}
+            <div className="flex-grow flex flex-col">
+              <TypewriterSkills />
             </div>
           </div>
         </div>
-      </section>
 
-      <ConstellationTestimonials />
+        {/* Full-width CTA Tile */}
+        <motion.div 
+          whileHover="hover"
+          initial="rest"
+          animate="rest"
+          className="relative p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left mt-6 rounded-3xl overflow-hidden cursor-default"
+        >
+          {/* Glass State Background (Resting) */}
+          <motion.div 
+            variants={{
+              rest: { opacity: 1, backdropFilter: 'blur(20px)' },
+              hover: { opacity: 0, backdropFilter: 'blur(0px)' }
+            }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="absolute inset-0 z-0 bg-white/60 border border-ink/5 rounded-3xl"
+          />
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4">
-        <GlassCard className="bg-[#1a1a2e] p-16 md:p-24 overflow-hidden relative group">
-          {/* Animated gradient border simulation */}
-          <div className="absolute inset-0 bg-gradient-to-r from-periwinkle via-lavender to-teal opacity-20 group-hover:opacity-100 transition-opacity duration-1000 blur-xl" />
-          
-          <div className="relative z-10 flex flex-col items-center text-center space-y-8">
-            <h2 className="text-4xl md:text-6xl text-white font-light lowercase">Visuals built <span className="italic">for you.</span></h2>
-            <p className="text-white/40 max-w-lg font-light">Elevate your brand with cinematic precision. Based in Atlanta, available worldwide.</p>
-            <button 
-              onClick={() => onNavigate('Contact')}
-              className="px-10 py-4 bg-white text-ink rounded-full font-medium hover:bg-periwinkle hover:text-white transition-all transform hover:scale-105 shadow-2xl shadow-white/10"
+          {/* Gradient State Background (Hover) */}
+          <motion.div 
+            variants={{
+              rest: { opacity: 0 },
+              hover: { opacity: 0.9 }
+            }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="absolute inset-0 z-0 bg-gradient-to-r from-periwinkle via-lavender to-teal blur-2xl"
+          />
+
+          <div className="relative z-10 space-y-2">
+            <motion.h4 
+              variants={{
+                rest: { color: '#1a1a2e' },
+                hover: { color: '#ffffff' }
+              }}
+              transition={{ duration: 0.5 }}
+              className="text-2xl font-medium"
             >
-              Start Your Project
-            </button>
+              Ready to tell your story?
+            </motion.h4>
+            <motion.p 
+              variants={{
+                rest: { color: 'rgba(26, 26, 46, 0.6)' },
+                hover: { color: 'rgba(255, 255, 255, 0.6)' }
+              }}
+              transition={{ duration: 0.5 }}
+              className="font-light"
+            >
+              Let's build a cinematic experience together.
+            </motion.p>
           </div>
-        </GlassCard>
+          <button 
+            onClick={() => onNavigate('Contact')}
+            className="group/btn relative px-10 py-4 rounded-full transition-all overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-periwinkle via-lavender to-teal opacity-80 group-hover/btn:opacity-100 transition-opacity rounded-full" />
+            <div className="absolute inset-[1px] bg-ink rounded-full group-hover/btn:inset-[2px] transition-all" />
+            <span className="relative z-10 text-white font-medium flex items-center gap-2">
+              Get in Touch <ArrowRight className="w-4 h-4" />
+            </span>
+          </button>
+        </motion.div>
       </section>
 
     </div>
