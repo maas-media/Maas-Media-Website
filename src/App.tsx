@@ -21,14 +21,10 @@ const ServiceRow: React.FC<{
   setActive: (active: boolean) => void;
   onNavigate: (tab: string) => void 
 }> = ({ service, index, active, setActive, onNavigate }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (active) {
-      videoRef.current?.play();
-    } else {
-      videoRef.current?.pause();
-    }
+    if (!active) setIsLoaded(false);
   }, [active]);
 
   return (
@@ -62,13 +58,13 @@ const ServiceRow: React.FC<{
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="overflow-hidden"
       >
-        <div className="pb-16 flex flex-col md:flex-row items-center gap-12">
+        <div className="pb-16 flex flex-col md:flex-row items-center gap-16 justify-between">
           <div className="flex-1 space-y-8">
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: active ? 1 : 0, y: active ? 0 : 10 }}
               transition={{ delay: 0.2 }}
-              className="text-xl md:text-2xl font-light text-ink/60 leading-relaxed max-w-xl"
+              className="text-lg md:text-xl font-light text-ink/60 leading-relaxed max-w-lg"
             >
               {service.desc}
             </motion.p>
@@ -89,22 +85,25 @@ const ServiceRow: React.FC<{
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.95 }}
             transition={{ delay: 0.1 }}
-            className="flex-1 w-full aspect-video rounded-2xl overflow-hidden glass border-periwinkle/10"
+            className="w-full md:w-[45%] lg:w-[40%] max-w-md aspect-square rounded-2xl overflow-hidden glass border-periwinkle/10 relative bg-[#0f0f19]/80"
           >
-            <video 
-              key={service.video}
-              ref={videoRef}
-              muted 
-              loop 
-              playsInline
-              preload="auto"
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              src={service.video}
-              onLoadedData={() => console.log(`Video loaded: ${service.title}`)}
-              onError={() => console.error(`Video error: ${service.title}`)}
-            >
-              <source src={service.video} type="video/mp4" />
-            </video>
+            {active && (
+              <>
+                <motion.div 
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: isLoaded ? 0 : 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 z-0 animate-shimmer"
+                />
+                <iframe 
+                  src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
+                  className={`absolute inset-0 w-full h-full pointer-events-none border-none transition-opacity duration-400 ease-in-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  allow="autoplay; fullscreen"
+                  title={service.title}
+                  onLoad={() => setIsLoaded(true)}
+                />
+              </>
+            )}
           </motion.div>
         </div>
       </motion.div>
@@ -397,7 +396,6 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
   const videoOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const videoScale = useTransform(scrollYProgress, [0, 0.2], [1, 1.2]);
   
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
   const services = [
@@ -431,78 +429,73 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
     }
   ];
 
-  // Sync scroll to video time
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const unsubscribe = scrollYProgress.on('change', (latest) => {
-      if (video.duration) {
-        // Scrub through 5 seconds of footage based on scroll
-        const scrollFactor = Math.min(latest * 5, 1); // Only scrub in first 20% of page
-        video.currentTime = scrollFactor * video.duration;
-      }
-    });
-
-    return () => unsubscribe();
-  }, [scrollYProgress]);
-
   return (
     <div className="space-y-32 pb-40">
       {/* Hero */}
       <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden">
         <motion.div 
           style={{ opacity: videoOpacity, scale: videoScale }}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 overflow-hidden"
         >
-          <video 
-            ref={videoRef}
-            muted 
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover grayscale opacity-20"
-            src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-view-of-a-misty-forest-4416-large.mp4"
-            onLoadedData={() => console.log("Hero video loaded")}
-            onError={() => console.error("Hero video error")}
-          >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-view-of-a-misty-forest-4416-large.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-base/40 backdrop-blur-sm" />
+          <iframe 
+            src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
+            className="absolute top-1/2 left-1/2 w-[177.77vh] min-w-full h-screen min-h-[56.25vw] -translate-x-1/2 -translate-y-1/2 pointer-events-none border-none"
+            allow="autoplay; fullscreen"
+            title="Hero Background Video"
+          />
         </motion.div>
 
-        <div className="z-10 text-center space-y-6 max-w-4xl px-4">
-          <Logo />
-          <motion.h1 
-            className="text-6xl md:text-9xl font-light tracking-tighter leading-[0.9]"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 1 }}
-          >
-            Visuals built <br /> <span className="text-periwinkle italic">for you.</span>
-          </motion.h1>
-          <motion.p 
-            className="text-ink/60 text-lg md:text-xl font-light max-w-xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-          >
-            Elevating narratives through premium cinematography. Based in Atlanta, serving brands worldwide.
-          </motion.p>
+        <ParticleBackground 
+          className="absolute inset-0 z-5 pointer-events-none"
+          particleColor="rgba(255, 255, 255, 0.6)"
+          lineColor="rgba(255, 255, 255, 0.2)"
+        />
+
+        <div className="z-10 px-4 w-full flex justify-center items-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full max-w-[480px] p-8 md:px-10 md:py-8 rounded-[1.5rem] bg-white/10 backdrop-blur-[32px] border border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)] text-center"
           >
-            <button 
-              onClick={() => onNavigate('Portfolio')}
-              className="group relative px-10 py-4 rounded-full transition-all"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-periwinkle via-lavender to-teal opacity-80 group-hover:opacity-100 transition-opacity rounded-full" />
-              <div className="absolute inset-[1px] bg-ink rounded-full group-hover:inset-[2px] transition-all" />
-              <span className="relative z-10 text-white font-medium flex items-center gap-2">
-                Launch Portfolio <ArrowRight className="w-4 h-4" />
-              </span>
-            </button>
+            <div className="flex flex-col items-center gap-6">
+              <Logo />
+              <div className="space-y-4">
+                <motion.h1 
+                  className="text-4xl md:text-6xl font-light tracking-tighter leading-[0.9] text-ink"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 1 }}
+                >
+                  Visuals built <br /> <span className="text-periwinkle italic">for you.</span>
+                </motion.h1>
+                <motion.p 
+                  className="text-ink/60 text-sm md:text-base font-light max-w-sm mx-auto"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1, duration: 1 }}
+                >
+                  Elevating narratives through premium cinematography. Based in Atlanta, serving brands worldwide.
+                </motion.p>
+              </div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+              >
+                <button 
+                  onClick={() => onNavigate('Portfolio')}
+                  className="group relative px-10 py-4 rounded-full transition-all"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-periwinkle via-lavender to-teal opacity-80 group-hover:opacity-100 transition-opacity rounded-full" />
+                  <div className="absolute inset-[1px] bg-ink rounded-full group-hover:inset-[2px] transition-all" />
+                  <span className="relative z-10 text-white font-medium flex items-center gap-2">
+                    Launch Portfolio <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
 

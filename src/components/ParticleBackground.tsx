@@ -8,7 +8,17 @@ interface Particle {
   size: number;
 }
 
-export const ParticleBackground: React.FC = () => {
+interface ParticleBackgroundProps {
+  particleColor?: string;
+  lineColor?: string;
+  className?: string;
+}
+
+export const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ 
+  particleColor = '#7aa0ff', 
+  lineColor = 'rgba(122, 160, 255, 0.15)',
+  className = "fixed inset-0 z-0 pointer-events-none opacity-40"
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
 
@@ -45,8 +55,8 @@ export const ParticleBackground: React.FC = () => {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#7aa0ff';
-      ctx.strokeStyle = 'rgba(122, 160, 255, 0.15)';
+      ctx.fillStyle = particleColor;
+      ctx.strokeStyle = lineColor;
       ctx.lineWidth = 0.5;
 
       particles.forEach((p, i) => {
@@ -115,7 +125,7 @@ export const ParticleBackground: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 z-0 pointer-events-none opacity-40"
+      className={className}
     />
   );
 };

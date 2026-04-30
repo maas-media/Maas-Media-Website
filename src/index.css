@@ -29,6 +29,22 @@
   .text-spaced {
     @apply tracking-[0.2em] uppercase text-xs font-light;
   }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg, 
+      rgba(30, 30, 45, 0.8) 25%, 
+      rgba(50, 50, 70, 0.8) 50%, 
+      rgba(30, 30, 45, 0.8) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Custom Scrollbar */
