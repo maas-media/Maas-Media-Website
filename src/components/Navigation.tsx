@@ -6,7 +6,7 @@ interface NavProps {
   setActiveTab: (tab: string) => void;
 }
 
-const tabs = ['Home', 'Portfolio', 'Blog', 'Contact'];
+const tabs = ['Home', 'Work', 'Blog', 'Contact'];
 
 export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   return (

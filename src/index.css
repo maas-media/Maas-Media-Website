@@ -57,3 +57,17 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-periwinkle/20 rounded-full hover:bg-periwinkle/40 transition-colors;
 }
+
+/* Formspree Error Styling */
+.fs-error-message {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(220, 80, 80, 0.9);
+  margin-top: 0.2rem;
+  min-height: 1em;
+}
+
+.fs-error-message:empty {
+  display: none;
+}
+

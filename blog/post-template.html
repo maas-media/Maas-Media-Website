@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post Template | Maas Media</title>
+    <!-- TO PUBLISH A NEW BLOG POST:
+    1. Duplicate this file and rename it to match your post slug e.g. post-slug.html
+    2. Replace all placeholder text with your post content
+    3. Replace the hero image or add your YouTube embed URL in the hero section
+    4. Add your post thumbnail to /assets/images/blog/
+    5. Add a new entry to the blogPosts array in blog.html with the matching slug
+    6. Set featured: true in the array if this should be the featured post
+    7. Upload the new HTML file and thumbnail to GitHub
+    8. Done — your post is live -->
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CDN (matching the site's theme) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        base: '#f8f8fa',
+                        ink: '#1a1a2e',
+                        periwinkle: '#7aa0ff',
+                        lavender: '#b48cff',
+                        teal: '#64d2c8',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(180, 180, 220, 0.25);
+        }
+        .text-spaced {
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 300;
+        }
+        body {
+            background-color: #f8f8fa;
+            color: #1a1a2e;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <!-- Navigation Placeholder (In real use, copy the Nav from index.html) -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass h-20 flex items-center px-8 border-b border-ink/5">
+        <a href="../index.html" class="text-xl font-light tracking-widest text-ink uppercase">Maas Media</a>
+    </nav>
+
+    <main class="pt-20">
+        <div class="container mx-auto px-4 pt-12">
+            <!-- Navigation / Breadcrumbs -->
+            <div class="mb-8 flex items-center gap-2 text-sm text-ink/40">
+                <a href="../index.html" class="hover:text-periwinkle transition-colors">Blog</a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
+                <span class="text-ink/60 truncate">[Post Title Placeholder]</span>
+            </div>
+
+            <!-- Post Hero -->
+            <!-- REPLACE: If video, use iframe. If image, use img. -->
+            <div class="w-full h-[320px] md:h-[520px] rounded-[2.5rem] overflow-hidden relative mb-12 shadow-2xl bg-black">
+                <!-- Example YouTube Hero -->
+                <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" class="w-full h-full border-none" allow="autoplay; fullscreen"></iframe> -->
+                
+                <!-- Example Image Hero -->
+                <img src="https://images.unsplash.com/photo-1473963456455-ac89710cc879?auto=format&fit=crop&q=80&w=1200" alt="Post Title" class="w-full h-full object-cover">
+                
+                <!-- Hero Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-8 md:p-12">
+                    <div class="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-[10px] uppercase tracking-widest text-white w-fit mb-4">
+                        [Category]
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-light text-white leading-tight max-w-4xl tracking-tight">
+                        [Post Title Placeholder]
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Post Metadata Strip -->
+            <div class="border-y border-ink/5 py-6 mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="flex items-center gap-6 text-sm text-ink/50">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>5 min read</span>
+                    </div>
+                    <div class="w-1 h-1 rounded-full bg-ink/10"></div>
+                    <span>January 15, 2025</span>
+                </div>
+                <div class="flex items-center gap-4 text-ink/40">
+                    <a href="#" class="hover:text-periwinkle transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></a>
+                    <a href="#" class="hover:text-periwinkle transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></a>
+                </div>
+            </div>
+
+            <!-- Post Body -->
+            <div class="max-w-[720px] mx-auto space-y-10">
+                <!-- Intro Paragraph -->
+                <p class="text-lg leading-relaxed text-ink/80">
+                    This is your post intro. Start with a compelling hook that sets the stage for your story or tips. Keep it around 17px with a generous 1.75 line height for maximum readability.
+                </p>
+
+                <h2 class="text-2xl md:text-3xl font-medium text-ink pt-4">Subheading (H2)</h2>
+                <p class="text-ink/70 leading-relaxed">
+                    Break your content into digestible sections. Use subheadings to guide the reader through your thoughts. White space is your friend—generous margins between paragraphs prevent the post from feeling cramped.
+                </p>
+
+                <!-- Pull Quote -->
+                <div class="relative group">
+                    <div class="pl-6 border-l-2 border-periwinkle">
+                        <p class="text-xl md:text-2xl font-light text-periwinkle italic leading-relaxed">
+                            "This is a pull-quote block. Use it to highlight the most impactful sentences in your post. It draws the eye and breaks up long columns of text."
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-ink/70 leading-relaxed">
+                    Continue your narrative here. Aim for 2-3 paragraphs between each major subheading to maintain rhythm.
+                </p>
+
+                <!-- Inline Image -->
+                <div class="rounded-2xl overflow-hidden shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=1200" alt="Captioned visual" class="w-full h-auto">
+                    <p class="text-sm text-ink/40 mt-3 italic text-center">Optional caption for the image—keep it brief and descriptive.</p>
+                </div>
+
+                <h2 class="text-2xl md:text-3xl font-medium text-ink pt-4">Another Subheading</h2>
+                <p class="text-ink/70 leading-relaxed">
+                    More body paragraphs to dive deeper into your subject matter.
+                </p>
+
+                <!-- Optional Video Embed Block -->
+                <div class="pt-8 space-y-4">
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/40">Watch the video.</span>
+                    <div class="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-xl">
+                        <iframe src="https://www.youtube.com/embed/VIDEO_ID" class="w-full h-full border-none" allow="autoplay; fullscreen"></iframe>
+                    </div>
+                </div>
+
+                <p class="text-ink/70 leading-relaxed">
+                    A final paragraph to wrap things up and lead into your closing call to action.
+                </p>
+            </div>
+
+            <!-- Footer CTA -->
+            <div class="mt-24">
+                <div class="glass p-12 md:p-16 text-center space-y-8 rounded-[2.5rem] bg-periwinkle/[0.03]">
+                    <h2 class="text-3xl md:text-4xl font-light tracking-tight text-ink">
+                        Enjoyed this? Let's create something together.
+                    </h2>
+                    <!-- FIX 1: Correct Contact Link -->
+                    <a href="../contact.html" class="inline-block px-10 py-4 bg-periwinkle text-white rounded-full font-medium hover:bg-periwinkle/90 transition-all shadow-xl shadow-periwinkle/20">
+                        Get in Touch
+                    </a>
+                </div>
+            </div>
+
+            <!-- Related Posts -->
+            <div class="mt-24 pb-40 space-y-12">
+                <span class="text-xs uppercase tracking-[0.2em] font-medium text-ink/40 text-center block">More from the blog.</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- FIX 2: Wrapped in anchor tag + Fix 3: Rounded corners on images -->
+                    <a href="../blog/related-post.html" class="group block h-full">
+                        <div class="glass rounded-[2rem] overflow-hidden flex flex-col h-full border-ink/5 hover:shadow-[0_0_40px_rgba(122,160,255,0.15)] transition-shadow">
+                            <div class="h-48 w-full overflow-hidden rounded-[1.5rem] m-2">
+                                <img src="https://images.unsplash.com/photo-1575917649705-5b59aec1ad6a?auto=format&fit=crop&q=80&w=800" alt="Related post" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 rounded-[1.5rem]">
+                            </div>
+                            <div class="p-6 pt-2 space-y-3 flex-1 flex flex-col">
+                                <span class="text-[9px] uppercase tracking-widest text-periwinkle font-medium">Atlanta</span>
+                                <h3 class="text-lg leading-snug font-medium text-ink group-hover:text-periwinkle transition-colors">Atlanta Neighborhoods: A Visual Guide</h3>
+                                <span class="text-[10px] text-ink/30 mt-auto">February 02, 2025</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Add more placeholders as needed -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-20 border-t border-ink/5 bg-white/30 backdrop-blur-md">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+            <div class="flex flex-col gap-1">
+                <span class="text-xl font-light tracking-widest text-ink uppercase">Maas Media</span>
+                <span class="text-xs text-ink/40 tracking-[0.3em] uppercase">Atlanta | Worldwide</span>
+            </div>
+            <div class="text-xs text-ink/30 tracking-widest">
+                © 2026 Maas Media. Visuals built for you.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

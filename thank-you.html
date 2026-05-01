@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You | Maas Media</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        base: '#f8f8fa',
+                        ink: '#1a1a2e',
+                        periwinkle: '#7aa0ff',
+                        lavender: '#b48cff',
+                        teal: '#64d2c8',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(180, 180, 220, 0.25);
+        }
+        body {
+            background-color: #f8f8fa;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(122, 160, 255, 0.2);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex items-center justify-center p-4">
+    <!-- Tiny background particles -->
+    <div id="particles-container" class="absolute inset-0 z-0"></div>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 glass h-20 flex items-center px-8">
+        <a href="index.html" class="text-xl font-light tracking-widest text-ink uppercase">Maas Media</a>
+    </nav>
+
+    <div class="relative z-10 w-full max-w-lg">
+        <div class="glass p-12 md:p-16 rounded-[2.5rem] text-center space-y-6 shadow-2xl animate-in fade-in zoom-in duration-700">
+            <div class="flex justify-center">
+                <div class="w-20 h-20 rounded-full bg-periwinkle/10 flex items-center justify-center text-periwinkle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <h1 class="text-3xl font-light text-ink tracking-tight">Message received.</h1>
+                <p class="text-ink/50 font-light">I'll be in touch within 24–48 hours.</p>
+            </div>
+
+            <div class="pt-4">
+                <a href="index.html" class="inline-flex items-center gap-2 text-periwinkle hover:gap-3 transition-all font-medium">
+                    Back to home 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple particle generator for aesthetic consistency
+        const container = document.getElementById('particles-container');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 4 + 2;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.opacity = Math.random() * 0.5 + 0.1;
+            container.appendChild(p);
+        }
+    </script>
+</body>
+</html>
