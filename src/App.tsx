@@ -11,7 +11,7 @@ import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { PROJECTS, BLOG_POSTS, TESTIMONIALS, Project } from './mockData';
 import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Link as LinkIcon } from 'lucide-react';
-import headshotImg from './assets/maas-headshot.JPG';
+import headshotImg from './assets/maas-headshot.jpg';
 
 // --- Components ---
 
