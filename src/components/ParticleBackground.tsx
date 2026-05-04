@@ -17,7 +17,7 @@ interface ParticleBackgroundProps {
 export const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ 
   particleColor = '#7aa0ff', 
   lineColor = 'rgba(122, 160, 255, 0.15)',
-  className = "fixed inset-0 z-0 pointer-events-none opacity-40"
+  className = "absolute inset-0 z-0 pointer-events-none opacity-40"
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
@@ -37,7 +37,7 @@ export const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
 
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height = document.documentElement.scrollHeight;
     };
 
     const createParticles = () => {
@@ -106,7 +106,7 @@ export const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
+      mouse.current = { x: e.clientX, y: e.clientY + window.scrollY };
     };
 
     window.addEventListener('resize', resize);

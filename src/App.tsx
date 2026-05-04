@@ -873,7 +873,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                src="https://raw.githubusercontent.com/maas-media/Maas-Media-Website/main/src/headshots-4.JPG"
+                src="/headshots-4.JPG"
                 className="w-full h-full object-cover rounded-3xl"
                 alt="Isaac Maas"
               />
