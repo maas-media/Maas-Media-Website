@@ -9,7 +9,8 @@ import { ParticleBackground } from './components/ParticleBackground';
 import { Navigation } from './components/Navigation';
 import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
-import { PROJECTS, BLOG_POSTS, TESTIMONIALS, Project } from './mockData';
+import { Project, Post } from './mockData';
+import { getProjects, getPosts, getTestimonials } from './sanityClient';
 import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Link as LinkIcon } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 
@@ -112,12 +113,12 @@ const ServiceRow: React.FC<{
   );
 };
 
-const FeaturedQuoteTestimonials: React.FC = () => {
+const FeaturedQuoteTestimonials: React.FC<{ testimonials: any[] }> = ({ testimonials: fetchedTestimonials }) => {
   const testimonials = [
-    ...TESTIMONIALS.map((t, i) => ({ 
+    ...fetchedTestimonials.map((t, i) => ({ 
       ...t, 
       company: t.role === 'Founder' ? 'Creative Studio' : 'Corporate Solutions',
-      initials: t.name.split(' ').map(n => n[0]).join('')
+      initials: t.name.split(' ').map((n: string) => n[0]).join('')
     })),
     { 
       id: '4', 
@@ -685,7 +686,7 @@ const PulsingRim: React.FC<{ borderRadius?: number }> = ({ borderRadius = 40 }) 
 };
 
 
-const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) => {
+const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[] }> = ({ onNavigate, testimonials }) => {
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -860,8 +861,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
 
 
       {/* Selected Works */}
-
-      <FeaturedQuoteTestimonials />
+      <FeaturedQuoteTestimonials testimonials={testimonials} />
       <section className="container mx-auto px-4 py-32">
         <div className="flex flex-col lg:flex-row gap-6 items-stretch">
           
@@ -1091,12 +1091,12 @@ const ProjectLightbox: React.FC<{
   );
 };
 
-const Portfolio: React.FC = () => {
+const Portfolio: React.FC<{ projects: Project[] }> = ({ projects }) => {
   const [filter, setFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
   const categories = ['All', 'Brand & Commercial', 'Real Estate', 'Events', 'Social Content'];
-  const filtered = filter === 'All' ? PROJECTS : PROJECTS.filter(p => p.category === filter);
+  const filtered = filter === 'All' ? projects : projects.filter(p => p.category === filter);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -1421,9 +1421,15 @@ const Contact: React.FC = () => {
   );
 };
 
-const BlogPostDetail: React.FC<{ slug: string; onBack: () => void; onNavigate: (tab: string) => void; onPostClick: (slug: string) => void }> = ({ slug, onBack, onNavigate, onPostClick }) => {
-  const post = BLOG_POSTS.find(p => p.slug === slug);
-  const relatedPosts = BLOG_POSTS.filter(p => p.slug !== slug).sort(() => 0.5 - Math.random()).slice(0, 3);
+const BlogPostDetail: React.FC<{ 
+  slug: string; 
+  onBack: () => void; 
+  onNavigate: (tab: string) => void; 
+  onPostClick: (slug: string) => void;
+  posts: Post[];
+}> = ({ slug, onBack, onNavigate, onPostClick, posts }) => {
+  const post = posts.find(p => p.slug === slug);
+  const relatedPosts = posts.filter(p => p.slug !== slug).sort(() => 0.5 - Math.random()).slice(0, 3);
 
   if (!post) return null;
 
@@ -1596,13 +1602,16 @@ const BlogPostDetail: React.FC<{ slug: string; onBack: () => void; onNavigate: (
   );
 };
 
-const Blog: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) => {
+const Blog: React.FC<{ 
+  onNavigate: (tab: string) => void;
+  posts: Post[];
+}> = ({ onNavigate, posts }) => {
   const [filter, setFilter] = useState('All');
   const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
   const categories = ['All', 'Tips', 'Atlanta', 'Behind the Lens', 'Industry'];
 
-  const filtered = BLOG_POSTS.filter(post => 
+  const filtered = posts.filter(post => 
     filter === 'All' ? true : post.category === filter
   );
 
@@ -1616,6 +1625,7 @@ const Blog: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
         onBack={() => setSelectedPostSlug(null)} 
         onNavigate={onNavigate}
         onPostClick={setSelectedPostSlug}
+        posts={posts}
       />
     );
   }
@@ -1793,13 +1803,49 @@ const Blog: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Stagger effect for initial load
   const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [projectsData, postsData, testimonialsData] = await Promise.all([
+          getProjects(),
+          getPosts(),
+          getTestimonials(),
+        ]);
+        setProjects(projectsData);
+        setPosts(postsData);
+        setTestimonials(testimonialsData);
+      } catch (error) {
+        console.error('Error fetching data from Sanity:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   useEffect(() => {
     setIsLoaded(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-base z-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-periwinkle/30 border-t-periwinkle rounded-full animate-spin" />
+          <span className="text-spaced opacity-40 text-xs">Loading experiences...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen">
@@ -1807,9 +1853,9 @@ export default function App() {
       
       <main className="relative z-10">
         <AnimatePresence mode="wait">
-          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} />}
-          {activeTab === 'Work' && <Portfolio key="portfolio" />}
-          {activeTab === 'Blog' && <Blog key="blog" onNavigate={setActiveTab} />}
+          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} testimonials={testimonials} />}
+          {activeTab === 'Work' && <Portfolio key="portfolio" projects={projects} />}
+          {activeTab === 'Blog' && <Blog key="blog" onNavigate={setActiveTab} posts={posts} />}
           {activeTab === 'Contact' && <Contact key="contact" />}
 
         </AnimatePresence>
