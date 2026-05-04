@@ -11,6 +11,7 @@ import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { PROJECTS, BLOG_POSTS, TESTIMONIALS, Project } from './mockData';
 import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Link as LinkIcon } from 'lucide-react';
+import headshotImg from './assets/maas-headshot.JPG';
 
 // --- Components ---
 
@@ -873,7 +874,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) =
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                src="/headshots-4.JPG"
+                src={headshotImg}
                 className="w-full h-full object-cover rounded-3xl"
                 alt="Isaac Maas"
               />
