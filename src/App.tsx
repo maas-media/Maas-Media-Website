@@ -1208,7 +1208,7 @@ const Portfolio: React.FC = () => {
       </header>
 
       {/* Filter Strip */}
-      <div className="flex flex-wrap gap-3 mb-24 overflow-x-auto pb-4 scrollbar-hide">
+      <div className="flex flex-wrap items-center justify-center gap-3 mb-24 p-4 scrollbar-hide overflow-visible">
         {categories.map((cat, idx) => (
           <motion.button
             key={cat}
