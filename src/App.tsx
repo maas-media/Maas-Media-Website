@@ -519,48 +519,32 @@ const FloatingVideoFrame: React.FC<{
   const sizeClasses = {
     small: 'w-32 md:w-48 aspect-video',
     medium: 'w-48 md:w-80 aspect-video',
-    large: 'w-64 md:w-[520px] aspect-video',
+    large: 'w-64 md:w-[400px] aspect-video',
   };
 
   return (
     <motion.div
-      style={{ 
-        left: `${initialPos.x}%`,
-        top: `${initialPos.y}%`,
-        perspective: 1000
-      }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1,
-        y: [0, -20, 0], // Continuous floating drift
-        x: [0, 10, 0], // Subtle side to side drift
-      }}
-      transition={{
-        opacity: { duration: 1, delay },
-        scale: { duration: 1, delay },
-        y: { 
-          duration: 6 + Math.random() * 4, 
-          repeat: Infinity, 
-          ease: "easeInOut",
-          delay: Math.random() * 5
-        },
-        x: { 
-          duration: 8 + Math.random() * 4, 
-          repeat: Infinity, 
-          ease: "easeInOut",
-          delay: Math.random() * 5
-        }
-      }}
-      className={`absolute z-0 ${sizeClasses[size]} rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-none hidden md:block`}
+      style={{ position: 'absolute', x: '-50%', y: '-50%' }}
+      initial={{ opacity: 0, scale: 0, left: '50%', top: '50%' }}
+      animate={{ opacity: 1, scale: 1, left: `${initialPos.x}%`, top: `${initialPos.y}%` }}
+      transition={{ duration: 1.4, delay, ease: [0.16, 1, 0.3, 1], scale: { type: 'spring', damping: 12, stiffness: 90, delay } }}
+      className={`${sizeClasses[size]} rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-none hidden md:block`}
     >
-      <iframe 
-        src={`${vimeoUrl}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
-        className="absolute inset-0 w-full h-full border-none pointer-events-none scale-[1.3]"
-        allow="autoplay; fullscreen"
-        title="Floating Video Content"
-      />
-      <div className="absolute inset-0 bg-periwinkle/5 pointer-events-none" />
+      <div
+        className="w-full h-full relative"
+        style={{
+          animation: `floatY ${3.5 + delay}s ease-in-out infinite`,
+          animationDelay: `${delay + 2}s`,
+        }}
+      >
+        <iframe
+          src={`${vimeoUrl}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
+          className="absolute inset-0 w-full h-full border-none pointer-events-none scale-[1.3]"
+          allow="autoplay; fullscreen"
+          title="Floating Video Content"
+        />
+        <div className="absolute inset-0 bg-periwinkle/5 pointer-events-none" />
+      </div>
     </motion.div>
   );
 };
@@ -743,37 +727,37 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
         {/* Desktop Floating Frames */}
         <motion.div 
           style={{ opacity: heroOpacity, scale: heroScale }}
-          className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none"
         >
           <FloatingVideoFrame 
             size="large" 
-            initialPos={{ x: 10, y: 15 }} 
+            initialPos={{ x: 22, y: 18 }} 
             vimeoUrl="https://player.vimeo.com/video/1189169837"
-            delay={0.2}
+            delay={0.1}
           />
           <FloatingVideoFrame 
             size="medium" 
-            initialPos={{ x: 70, y: 10 }} 
+            initialPos={{ x: 78, y: 15 }} 
             vimeoUrl="https://player.vimeo.com/video/1189169854"
+            delay={0.25}
+          />
+          <FloatingVideoFrame 
+            size="medium" 
+            initialPos={{ x: 18, y: 72 }} 
+            vimeoUrl="https://player.vimeo.com/video/1189169866"
             delay={0.4}
           />
           <FloatingVideoFrame 
-            size="medium" 
-            initialPos={{ x: 5, y: 65 }} 
-            vimeoUrl="https://player.vimeo.com/video/1189169866"
-            delay={0.6}
-          />
-          <FloatingVideoFrame 
             size="small" 
-            initialPos={{ x: 65, y: 75 }} 
+            initialPos={{ x: 82, y: 78 }} 
             vimeoUrl="https://player.vimeo.com/video/1189169885"
-            delay={0.8}
+            delay={0.55}
           />
           <FloatingVideoFrame 
             size="small" 
-            initialPos={{ x: 80, y: 45 }} 
+            initialPos={{ x: 85, y: 42 }} 
             vimeoUrl="https://player.vimeo.com/video/1189169904"
-            delay={1.0}
+            delay={0.7}
           />
         </motion.div>
 
@@ -783,54 +767,47 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
           lineColor="rgba(122, 160, 255, 0.1)"
         />
 
-        <div className="z-10 px-4 w-full flex justify-center items-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-[620px] px-8 py-7 md:px-[52px] md:py-7 rounded-[2.5rem] glass border-ink/5 shadow-2xl text-center relative bg-white/40"
+        <div className="z-10 px-4 w-full flex flex-col items-center justify-center text-center">
+          <motion.h1 
+            className="text-5xl md:text-7xl font-light tracking-tighter leading-[1.1] text-ink"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <PulsingRim borderRadius={40} />
-            
-            {/* Liquid Glass Content */}
-            <div className="relative z-10 flex flex-col items-center gap-6">
-              <Logo />
-              <div className="space-y-3">
-                <motion.h1 
-                  className="text-5xl md:text-7xl font-light tracking-tighter leading-[0.85] text-ink"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 1 }}
+            Visuals built <span className="text-periwinkle italic">for you.</span>
+          </motion.h1>
+          
+          <motion.p 
+            className="mt-6 text-sm md:text-lg font-medium max-w-xl mx-auto text-gray-600"
+            style={{ color: '#444444' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+          >
+            Impactful media for brands, real estate, and more.
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.7, duration: 1 }}
+            className="mt-8"
+          >
+            <button 
+              onClick={() => onNavigate('Work')}
+              className="group relative px-10 py-4 rounded-full transition-all flex items-center justify-center overflow-hidden"
+            >
+              <span className="relative z-10 text-ink/70 group-hover:text-ink font-medium tracking-tight flex items-center gap-2 transition-colors">
+                Launch Portfolio 
+                <motion.div
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                 >
-                  Visuals built <br /> <span className="text-periwinkle italic">for you.</span>
-                </motion.h1>
-                <motion.p 
-                  className="text-ink/60 text-base md:text-lg font-light max-w-sm mx-auto leading-relaxed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1, duration: 1 }}
-                >
-                  Elevating narratives through premium cinematography. Based in Atlanta, serving brands worldwide.
-                </motion.p>
-              </div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-              >
-                <button 
-                  onClick={() => onNavigate('Portfolio')}
-                  className="group relative px-10 py-4 rounded-full transition-all"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-periwinkle via-lavender to-teal opacity-80 group-hover:opacity-100 transition-opacity rounded-full" />
-                  <div className="absolute inset-[1px] bg-ink rounded-full group-hover:inset-[2px] transition-all" />
-                  <span className="relative z-10 text-white font-medium flex items-center gap-2">
-                    Launch Portfolio <ArrowRight className="w-4 h-4" />
-                  </span>
-                </button>
-              </motion.div>
-            </div>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.div>
+              </span>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-0 group-hover:w-[124px] h-px bg-periwinkle/40 transition-all duration-300" />
+            </button>
           </motion.div>
         </div>
 

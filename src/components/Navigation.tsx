@@ -9,33 +9,58 @@ interface NavProps {
 const tabs = ['Home', 'Work', 'Blog', 'Contact'];
 
 export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
+  const [isLogoHovered, setIsLogoHovered] = React.useState(false);
+
   return (
     <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-50">
       <motion.div 
-        className="glass rounded-full px-2 py-2 flex items-center gap-1 shadow-2xl border-white/10"
+        className="glass rounded-full px-2 py-2 flex items-center shadow-2xl border-white/10"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`
-              relative px-5 py-2 rounded-full text-xs font-medium transition-all duration-300
-              ${activeTab === tab ? 'text-ink' : 'text-ink/40 hover:text-ink/60'}
-            `}
+        {/* Logo Section */}
+        <div className="flex items-center pl-4 pr-2 gap-4">
+          <button 
+            onClick={() => setActiveTab('Home')}
+            onMouseEnter={() => setIsLogoHovered(true)}
+            onMouseLeave={() => setIsLogoHovered(false)}
+            className="font-montserrat font-black text-base tracking-tighter transition-colors duration-200 lowercase cursor-pointer"
+            style={{ 
+              color: isLogoHovered ? '#7aa0ff' : '#333333',
+              background: 'none',
+              backgroundClip: 'unset',
+              WebkitBackgroundClip: 'unset',
+              WebkitTextFillColor: 'initial'
+            }}
           >
-            {activeTab === tab && (
-              <motion.div
-                layoutId="active-pill"
-                className="absolute inset-0 bg-periwinkle/10 rounded-full border border-periwinkle/20"
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-              />
-            )}
-            <span className="relative z-10">{tab}</span>
+            maas
           </button>
-        ))}
+          <div className="w-px h-4 bg-ink/10" />
+        </div>
+
+        {/* Nav Links */}
+        <div className="flex items-center gap-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`
+                relative px-5 py-2 rounded-full text-xs font-medium transition-all duration-300
+                ${activeTab === tab ? 'text-ink' : 'text-ink/40 hover:text-ink/60'}
+              `}
+            >
+              {activeTab === tab && (
+                <motion.div
+                  layoutId="active-pill"
+                  className="absolute inset-0 bg-periwinkle/10 rounded-full border border-periwinkle/20"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10">{tab}</span>
+            </button>
+          ))}
+        </div>
       </motion.div>
     </nav>
   );
