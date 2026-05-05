@@ -14,13 +14,29 @@ export function urlFor(source: any) {
   return builder.image(source)
 }
 
+// Fetch site settings (headshot, bio, social links etc.)
+export async function getSiteSettings() {
+  return client.fetch(`
+    *[_type == "siteSettings"][0] {
+      "headshot": headshot.asset->url,
+      tagline,
+      bio,
+      location,
+      experience,
+      instagramUrl,
+      vimeoUrl,
+      linkedinUrl
+    }
+  `)
+}
+
 // Fetch all projects
 export async function getProjects() {
   return client.fetch(`
     *[_type == "project"] | order(order asc) {
       "id": _id,
       title,
-      category,
+      categories,
       orientation,
       vimeoUrl,
       "thumbnail": thumbnail.asset->url,

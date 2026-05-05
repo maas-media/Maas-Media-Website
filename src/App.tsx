@@ -10,7 +10,7 @@ import { Navigation } from './components/Navigation';
 import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
-import { getProjects, getPosts, getTestimonials } from './sanityClient';
+import { getProjects, getPosts, getTestimonials, getSiteSettings } from './sanityClient';
 import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Link as LinkIcon } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 
@@ -513,8 +513,9 @@ import { MorphingParticleIcon, IconShape } from './components/MorphingParticleIc
 const FloatingVideoFrame: React.FC<{ 
   size: 'small' | 'medium' | 'large'; 
   initialPos: { x: number; y: number };
+  vimeoUrl: string;
   delay?: number;
-}> = ({ size, initialPos, delay = 0 }) => {
+}> = ({ size, initialPos, vimeoUrl, delay = 0 }) => {
   const sizeClasses = {
     small: 'w-32 md:w-48 aspect-video',
     medium: 'w-48 md:w-80 aspect-video',
@@ -554,7 +555,7 @@ const FloatingVideoFrame: React.FC<{
       className={`absolute z-0 ${sizeClasses[size]} rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-none hidden md:block`}
     >
       <iframe 
-        src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
+        src={`${vimeoUrl}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
         className="absolute inset-0 w-full h-full border-none pointer-events-none scale-[1.3]"
         allow="autoplay; fullscreen"
         title="Floating Video Content"
@@ -686,7 +687,7 @@ const PulsingRim: React.FC<{ borderRadius?: number }> = ({ borderRadius = 40 }) 
 };
 
 
-const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[] }> = ({ onNavigate, testimonials }) => {
+const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; siteSettings: any }> = ({ onNavigate, testimonials, siteSettings }) => {
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -747,26 +748,31 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[] }>
           <FloatingVideoFrame 
             size="large" 
             initialPos={{ x: 10, y: 15 }} 
+            vimeoUrl="https://player.vimeo.com/video/1189169837"
             delay={0.2}
           />
           <FloatingVideoFrame 
             size="medium" 
             initialPos={{ x: 70, y: 10 }} 
+            vimeoUrl="https://player.vimeo.com/video/1189169854"
             delay={0.4}
           />
           <FloatingVideoFrame 
             size="medium" 
             initialPos={{ x: 5, y: 65 }} 
+            vimeoUrl="https://player.vimeo.com/video/1189169866"
             delay={0.6}
           />
           <FloatingVideoFrame 
             size="small" 
             initialPos={{ x: 65, y: 75 }} 
+            vimeoUrl="https://player.vimeo.com/video/1189169885"
             delay={0.8}
           />
           <FloatingVideoFrame 
             size="small" 
             initialPos={{ x: 80, y: 45 }} 
+            vimeoUrl="https://player.vimeo.com/video/1189169904"
             delay={1.0}
           />
         </motion.div>
@@ -874,7 +880,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[] }>
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                src={headshotImg}
+                src={siteSettings?.headshot || headshotImg}
                 className="w-full h-full object-cover rounded-3xl"
                 alt="Isaac Maas"
               />
@@ -883,8 +889,8 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[] }>
             {/* Bottom Tile: Info Strip (Vertical List) - Stretched to fill gap */}
             <GlassCard className="p-10 space-y-10 border-ink/5 flex-grow">
               {[
-                { label: 'Location', val: 'Atlanta, GA', icon: MapPin },
-                { label: 'Experience', val: '6+ Years', icon: Clock },
+                { label: 'Location', val: siteSettings?.location || 'Atlanta, GA', icon: MapPin },
+                { label: 'Experience', val: siteSettings?.experience || '6+ Years', icon: Clock },
                 { label: 'Education', val: 'SCAD', icon: GraduationCap },
                 { label: 'Fun Fact', val: 'Shot on a Point-and-Shoot', icon: Sparkles }
               ].map((stat, i) => (
@@ -1077,7 +1083,7 @@ const ProjectLightbox: React.FC<{
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <h2 className="text-2xl md:text-3xl font-medium text-white">{project.title}</h2>
                 <span className="inline-block px-3 py-1 rounded-full glass border-white/20 text-[10px] uppercase tracking-widest text-white/60 w-fit mx-auto md:mx-0">
-                  {project.category}
+                  {project.categories?.join(' / ')}
                 </span>
               </div>
               <p className="text-sm md:text-base text-white/50 font-light max-w-2xl leading-relaxed mx-auto md:mx-0">
@@ -1096,7 +1102,7 @@ const Portfolio: React.FC<{ projects: Project[] }> = ({ projects }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
   const categories = ['All', 'Brand & Commercial', 'Real Estate', 'Events', 'Social Content'];
-  const filtered = filter === 'All' ? projects : projects.filter(p => p.category === filter);
+  const filtered = filter === 'All' ? projects : projects.filter(p => p.categories?.includes(filter));
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -1249,7 +1255,7 @@ const Portfolio: React.FC<{ projects: Project[] }> = ({ projects }) => {
                   transition-all duration-300 hover:z-10
                 `}
                 onClick={() => setSelectedProject(project)}
-                data-category={project.category}
+                data-category={project.categories?.join(', ')}
                 data-index={idx}
               >
                 {/* Thumbnail Image */}
@@ -1272,8 +1278,8 @@ const Portfolio: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
                 {/* Info Overlay */}
                 <div className={`absolute bottom-0 left-0 right-0 ${template === 'E' ? 'p-12 md:p-14' : 'p-8 md:p-10'} z-20 flex flex-col items-start gap-4`}>
-                  <div className="px-3 py-1 rounded-full glass border-white/20 text-[9px] font-medium uppercase tracking-[0.2em] text-white/90 backdrop-blur-md">
-                    {project.category}
+                  <div className="px-10 py-1.5 rounded-full glass border-white/20 text-[9px] font-medium uppercase tracking-[0.2em] text-white/90 backdrop-blur-md">
+                    {project.categories?.join(' / ')}
                   </div>
                   <h3 className={`font-medium text-white tracking-tight leading-tight transition-transform duration-300 group-hover:translate-x-1 ${template === 'E' ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
                     {project.title}
@@ -1806,6 +1812,7 @@ export default function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [siteSettings, setSiteSettings] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Stagger effect for initial load
@@ -1814,14 +1821,16 @@ export default function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [projectsData, postsData, testimonialsData] = await Promise.all([
+        const [projectsData, postsData, testimonialsData, siteSettingsData] = await Promise.all([
           getProjects(),
           getPosts(),
           getTestimonials(),
+          getSiteSettings(),
         ]);
         setProjects(projectsData);
         setPosts(postsData);
         setTestimonials(testimonialsData);
+        setSiteSettings(siteSettingsData);
       } catch (error) {
         console.error('Error fetching data from Sanity:', error);
       } finally {
@@ -1853,7 +1862,7 @@ export default function App() {
       
       <main className="relative z-10">
         <AnimatePresence mode="wait">
-          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} testimonials={testimonials} />}
+          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} testimonials={testimonials} siteSettings={siteSettings} />}
           {activeTab === 'Work' && <Portfolio key="portfolio" projects={projects} />}
           {activeTab === 'Blog' && <Blog key="blog" onNavigate={setActiveTab} posts={posts} />}
           {activeTab === 'Contact' && <Contact key="contact" />}

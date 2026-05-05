@@ -1,7 +1,7 @@
 export interface Project {
   id: string;
   title: string;
-  category: string;
+  categories: string[];
   orientation: 'landscape' | 'vertical';
   vimeoUrl: string;
   thumbnail: string;
@@ -36,7 +36,7 @@ export const portfolioProjects: Project[] = [
   { 
     id: '1', 
     title: 'Featured Experience', 
-    category: 'Brand & Commercial', 
+    categories: ['Brand & Commercial'], 
     orientation: 'landscape',
     vimeoUrl: 'https://player.vimeo.com/video/1188089564', 
     thumbnail: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&q=80&w=1200',
@@ -46,7 +46,7 @@ export const portfolioProjects: Project[] = [
   { 
     id: '2', 
     title: 'Urban Portrait', 
-    category: 'Social Content', 
+    categories: ['Social Content'], 
     orientation: 'vertical',
     vimeoUrl: 'https://player.vimeo.com/video/1188089564', 
     thumbnail: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800',
@@ -56,7 +56,7 @@ export const portfolioProjects: Project[] = [
   { 
     id: '3', 
     title: 'Estate Showcase', 
-    category: 'Real Estate', 
+    categories: ['Real Estate'], 
     orientation: 'landscape',
     vimeoUrl: 'https://player.vimeo.com/video/1188089564', 
     thumbnail: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200',
@@ -66,7 +66,7 @@ export const portfolioProjects: Project[] = [
   { 
     id: '4', 
     title: 'Event Highlights', 
-    category: 'Events', 
+    categories: ['Events'], 
     orientation: 'landscape',
     vimeoUrl: 'https://player.vimeo.com/video/1188089564', 
     thumbnail: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=1200',
@@ -76,7 +76,7 @@ export const portfolioProjects: Project[] = [
   { 
     id: '5', 
     title: 'Model Study', 
-    category: 'Social Content', 
+    categories: ['Social Content'], 
     orientation: 'vertical',
     vimeoUrl: 'https://player.vimeo.com/video/1188089564', 
     thumbnail: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800',
@@ -86,7 +86,7 @@ export const portfolioProjects: Project[] = [
   { 
     id: '6', 
     title: 'Vertical Brand Story', 
-    category: 'Brand & Commercial', 
+    categories: ['Brand & Commercial'], 
     orientation: 'vertical',
     vimeoUrl: 'https://player.vimeo.com/video/1188089564', 
     thumbnail: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800',
