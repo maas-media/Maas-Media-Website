@@ -37,11 +37,12 @@ const ServiceRow: React.FC<{
 
   useEffect(() => {
     if (active && isTouchRef.current && containerRef.current) {
+      console.log('scroll triggered');
       containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Small delay to account for fixed navbar height after initial scrollIntoView
+      // Delay to account for fixed navbar height after initial scrollIntoView and expansion animation
       const timer = setTimeout(() => {
         window.scrollBy(0, -80);
-      }, 50);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [active]);
