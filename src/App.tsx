@@ -1193,13 +1193,14 @@ const ProjectLightbox: React.FC<{
                 className={`
                   relative w-full overflow-hidden rounded-2xl shadow-2xl glass border-white/10 bg-black
                   ${project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''}
-                  ${project.orientation === 'vertical' ? 'max-w-[340px] md:max-w-[420px]' : ''}
+                  ${project.orientation === 'vertical' ? '' : ''}
                 `}
-                style={project.orientation === 'vertical' ? {
-                  aspectRatio: '9/16',
-                  maxHeight: 'calc(100vh - 200px)',
-                  width: 'auto',
-                } : {}}
+              style={project.orientation === 'vertical' ? {
+  aspectRatio: '9/16',
+  height: 'calc(100vh - 200px)',
+  width: 'calc((100vh - 200px) * 9 / 16)',
+  maxWidth: '420px',
+} : {}}
               >
                 <iframe
                   src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
