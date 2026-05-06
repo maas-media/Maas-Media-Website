@@ -1164,7 +1164,7 @@ const ProjectLightbox: React.FC<{
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black backdrop-blur-sm overflow-y-auto"
           onClick={onClose}
         >
           {/* Close Button */}
@@ -1190,8 +1190,7 @@ const ProjectLightbox: React.FC<{
             >
               {/* Video Player Container */}
               <div
-                className={`
-                  relative w-full overflow-hidden rounded-2xl shadow-2xl glass border-white/10 bg-black
+                className="relative overflow-hidden rounded-2xl shadow-2xl border-white/10 bg-black"
                   ${project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''}
                   ${project.orientation === 'vertical' ? '' : ''}
                 `}
