@@ -1190,16 +1190,15 @@ const ProjectLightbox: React.FC<{
             >
               {/* Video Player Container */}
               <div
-                className="relative overflow-hidden rounded-2xl shadow-2xl border-white/10 bg-black"
-                  ${project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''}
-                  ${project.orientation === 'vertical' ? '' : ''}
-                `}
-              style={project.orientation === 'vertical' ? {
-  aspectRatio: '9/16',
-  height: 'calc(100vh - 200px)',
-  width: 'calc((100vh - 200px) * 9 / 16)',
-  maxWidth: '420px',
-} : {}}
+                className={`relative overflow-hidden rounded-2xl shadow-2xl border-white/10 bg-black ${
+                  project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''
+                } ${project.orientation === 'vertical' ? '' : ''}`}
+                style={project.orientation === 'vertical' ? {
+                  aspectRatio: '9/16',
+                  height: 'calc(100vh - 200px)',
+                  width: 'calc((100vh - 200px) * 9 / 16)',
+                  maxWidth: '420px',
+                } : {}}
               >
                 <iframe
                   src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
@@ -1229,9 +1228,12 @@ const ProjectLightbox: React.FC<{
   );
 };
 
-const Portfolio: React.FC<{ projects: Project[] }> = ({ projects }) => {
+const Portfolio: React.FC<{ 
+  projects: Project[];
+  selectedProject: Project | null;
+  setSelectedProject: (p: Project | null) => void;
+}> = ({ projects, selectedProject, setSelectedProject }) => {
   const [filter, setFilter] = useState('All');
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
   const categories = ['All', 'Brand & Commercial', 'Real Estate', 'Events', 'Social Content'];
   const filtered = filter === 'All' ? projects : projects.filter(p => p.categories?.includes(filter));
@@ -1941,6 +1943,7 @@ const Blog: React.FC<{
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
@@ -1974,6 +1977,7 @@ export default function App() {
 
   useEffect(() => {
     setIsLoaded(true);
+    setSelectedProject(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
 
@@ -1995,14 +1999,21 @@ export default function App() {
       <main className="relative z-10">
         <AnimatePresence mode="wait">
           {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} testimonials={testimonials} siteSettings={siteSettings} />}
-          {activeTab === 'Work' && <Portfolio key="portfolio" projects={projects} />}
+          {activeTab === 'Work' && (
+            <Portfolio 
+              key="portfolio" 
+              projects={projects} 
+              selectedProject={selectedProject}
+              setSelectedProject={setSelectedProject}
+            />
+          )}
           {activeTab === 'Blog' && <Blog key="blog" onNavigate={setActiveTab} posts={posts} />}
           {activeTab === 'Contact' && <Contact key="contact" />}
 
         </AnimatePresence>
       </main>
 
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} hidden={!!selectedProject} />
       
       <footer className="relative z-10 py-20 border-t border-ink/5 bg-white/30 backdrop-blur-md">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">

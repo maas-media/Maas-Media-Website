@@ -4,11 +4,12 @@ import { motion } from 'motion/react';
 interface NavProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  hidden?: boolean;
 }
 
 const tabs = ['Home', 'Work', 'Blog', 'Contact'];
 
-export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
+export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab, hidden = false }) => {
   const [isLogoHovered, setIsLogoHovered] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const isFirstRender = React.useRef(true);
@@ -23,7 +24,14 @@ export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   }, []);
 
   return (
-    <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-50">
+    <nav 
+      className="fixed top-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out"
+      style={{ 
+        opacity: hidden ? 0 : 1, 
+        pointerEvents: hidden ? 'none' : 'auto',
+        visibility: hidden ? 'hidden' : 'visible'
+      }}
+    >
       <motion.div 
         className="glass rounded-full px-2 py-2 flex items-center shadow-2xl border-white/10"
         initial={{ y: -50, opacity: 0 }}
