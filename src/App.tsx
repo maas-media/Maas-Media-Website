@@ -1157,61 +1157,72 @@ const ProjectLightbox: React.FC<{
     };
   }, [project]);
 
-  return (
+    return (
     <AnimatePresence>
       {project && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/92 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-sm overflow-y-auto"
           onClick={onClose}
         >
           {/* Close Button */}
-          <button 
+          <button
             onClick={onClose}
-            className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors z-[110]"
+            className="fixed top-6 right-6 text-white/40 hover:text-white transition-colors z-[110]"
           >
             <X className="w-8 h-8" />
           </button>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-5xl flex flex-col items-center gap-6"
+          {/* Scrollable content — padded away from navbar and bottom */}
+          <div
+            className="min-h-full flex flex-col items-center justify-center px-4 md:px-8"
+            style={{ paddingTop: '80px', paddingBottom: '48px' }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Video Player Container */}
-            <div 
-              className={`
-                relative w-full overflow-hidden rounded-2xl shadow-2xl glass border-white/10 bg-black
-                ${project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''}
-                ${project.orientation === 'vertical' ? 'max-w-[450px] aspect-[9/16] h-[80vh]' : ''}
-              `}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full flex flex-col items-center gap-6"
             >
-              <iframe
-                src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
-                className="absolute inset-0 w-full h-full border-none"
-                allow="autoplay; fullscreen"
-                title={project.title}
-              />
-            </div>
-
-            {/* Info */}
-            <div className="w-full max-w-[900px] text-center md:text-left space-y-4 px-4">
-              <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <h2 className="text-2xl md:text-3xl font-medium text-white">{project.title}</h2>
-                <span className="inline-block px-3 py-1 rounded-full glass border-white/20 text-[10px] uppercase tracking-widest text-white/60 w-fit mx-auto md:mx-0">
-                  {project.categories?.join(' / ')}
-                </span>
+              {/* Video Player Container */}
+              <div
+                className={`
+                  relative w-full overflow-hidden rounded-2xl shadow-2xl glass border-white/10 bg-black
+                  ${project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''}
+                  ${project.orientation === 'vertical' ? 'max-w-[340px] md:max-w-[420px]' : ''}
+                `}
+                style={project.orientation === 'vertical' ? {
+                  aspectRatio: '9/16',
+                  maxHeight: 'calc(100vh - 200px)',
+                  width: 'auto',
+                } : {}}
+              >
+                <iframe
+                  src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
+                  className="absolute inset-0 w-full h-full border-none"
+                  allow="autoplay; fullscreen"
+                  title={project.title}
+                />
               </div>
-              <p className="text-sm md:text-base text-white/50 font-light max-w-2xl leading-relaxed mx-auto md:mx-0">
-                {project.description}
-              </p>
-            </div>
-          </motion.div>
+
+              {/* Info */}
+              <div className="w-full max-w-[900px] text-center md:text-left space-y-4 px-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <h2 className="text-2xl md:text-3xl font-medium text-white">{project.title}</h2>
+                  <span className="inline-block px-3 py-1 rounded-full glass border-white/20 text-[10px] uppercase tracking-widest text-white/60 w-fit mx-auto md:mx-0">
+                    {project.categories?.join(' / ')}
+                  </span>
+                </div>
+                <p className="text-sm md:text-base text-white/50 font-light max-w-2xl leading-relaxed mx-auto md:mx-0">
+                  {project.description}
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
