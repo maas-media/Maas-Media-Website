@@ -25,6 +25,7 @@ const ServiceRow: React.FC<{
 }> = ({ service, index, active, setActive, onNavigate }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isTouchRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleTouch = () => {
@@ -35,11 +36,23 @@ const ServiceRow: React.FC<{
   }, []);
 
   useEffect(() => {
+    if (active && isTouchRef.current && containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Small delay to account for fixed navbar height after initial scrollIntoView
+      const timer = setTimeout(() => {
+        window.scrollBy(0, -80);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [active]);
+
+  useEffect(() => {
     if (!active) setIsLoaded(false);
   }, [active]);
 
   return (
     <motion.div 
+      ref={containerRef}
       className={`border-b border-ink/10 relative cursor-pointer px-4 transition-colors duration-500 ${active ? 'bg-ink/[0.02]' : 'bg-transparent'}`}
       onMouseEnter={() => !isTouchRef.current && setActive(true)}
       onMouseLeave={() => !isTouchRef.current && setActive(false)}
