@@ -41,7 +41,7 @@ const ServiceRow: React.FC<{
       const top = containerRef.current.getBoundingClientRect().top + window.scrollY - navbar;
       setTimeout(() => {
         window.scrollTo({ top, behavior: 'smooth' });
-      }, 350);
+      }, 175);
     }
   }, [active]);
 
