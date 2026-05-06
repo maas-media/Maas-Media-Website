@@ -48,10 +48,16 @@
   100% { background-position: 200% 0; }
 }
 
-@keyframes floatY {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-16px) rotate(1deg); }
+@keyframes crawlLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
 }
+
+@keyframes crawlRight {
+  0% { transform: translateX(-33.333%); }
+  100% { transform: translateX(0); }
+}
+
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {

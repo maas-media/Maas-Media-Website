@@ -20,7 +20,7 @@ export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
         transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Logo Section */}
-        <div className="flex items-center pl-4 pr-2 gap-4">
+        <div className="flex items-center pl-3 md:pl-4 pr-1 md:pr-2 gap-2 md:gap-4">
           <button 
             onClick={() => setActiveTab('Home')}
             onMouseEnter={() => setIsLogoHovered(true)}
@@ -46,7 +46,7 @@ export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`
-                relative px-5 py-2 rounded-full text-xs font-medium transition-all duration-300
+                relative px-3 md:px-5 py-2 rounded-full text-xs font-medium transition-all duration-300
                 ${activeTab === tab ? 'text-ink' : 'text-ink/40 hover:text-ink/60'}
               `}
             >

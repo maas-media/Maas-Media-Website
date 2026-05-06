@@ -24,6 +24,15 @@ const ServiceRow: React.FC<{
   onNavigate: (tab: string) => void 
 }> = ({ service, index, active, setActive, onNavigate }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const isTouchRef = useRef(false);
+
+  useEffect(() => {
+    const handleTouch = () => {
+      isTouchRef.current = true;
+    };
+    window.addEventListener('touchstart', handleTouch, { once: true });
+    return () => window.removeEventListener('touchstart', handleTouch);
+  }, []);
 
   useEffect(() => {
     if (!active) setIsLoaded(false);
@@ -32,8 +41,8 @@ const ServiceRow: React.FC<{
   return (
     <motion.div 
       className={`border-b border-ink/10 relative cursor-pointer px-4 transition-colors duration-500 ${active ? 'bg-ink/[0.02]' : 'bg-transparent'}`}
-      onMouseEnter={() => setActive(true)}
-      onMouseLeave={() => setActive(false)}
+      onMouseEnter={() => !isTouchRef.current && setActive(true)}
+      onMouseLeave={() => !isTouchRef.current && setActive(false)}
       onClick={() => setActive(!active)}
     >
       <div className="py-12 flex items-center justify-between group">
@@ -510,33 +519,64 @@ const TypewriterSkills = () => {
 
 import { MorphingParticleIcon, IconShape } from './components/MorphingParticleIcon';
 
-const FloatingVideoFrame: React.FC<{ 
-  size: 'small' | 'medium' | 'large'; 
+const FloatingVideoFrame: React.FC<{
+  size: 'medium' | 'large';
   initialPos: { x: number; y: number };
   vimeoUrl: string;
   delay?: number;
-}> = ({ size, initialPos, vimeoUrl, delay = 0 }) => {
-  const sizeClasses = {
-    small: 'w-32 md:w-48 aspect-video',
-    medium: 'w-48 md:w-80 aspect-video',
-    large: 'w-64 md:w-[400px] aspect-video',
-  };
+  floatConfig?: { xAmp: number; yAmp: number; xSpeed: number; ySpeed: number; xPhase: number; yPhase: number };
+}> = ({ size, initialPos, vimeoUrl, delay = 0, floatConfig }) => {
+  const fcRef = useRef(floatConfig ?? {
+    xAmp: 8,
+    yAmp: 10,
+    xSpeed: 0.2,
+    ySpeed: 0.15,
+    xPhase: Math.random() * Math.PI * 2,
+    yPhase: Math.random() * Math.PI * 2,
+  });
+
+  const floatX = useMotionValue(0);
+  const floatY = useMotionValue(0);
+
+  useAnimationFrame((time) => {
+    const t = time / 1000;
+    const fc = fcRef.current;
+    floatX.set(Math.sin(t * fc.xSpeed * Math.PI * 2 + fc.xPhase) * fc.xAmp);
+    floatY.set(Math.sin(t * fc.ySpeed * Math.PI * 2 + fc.yPhase) * fc.yAmp);
+  });
+
+  // Width is a % of viewport width — scales with screen size
+  // large = 22vw (min 200px, max 380px), medium = 16vw (min 160px, max 288px)
+  const vwSize = size === 'large'
+    ? 'clamp(200px, 22vw, 380px)'
+    : 'clamp(160px, 16vw, 288px)';
+
+  // Aspect ratio 16:9 so height = width * 9/16
+  // We derive height from the same clamp logic
+  const vhSize = size === 'large'
+    ? 'clamp(112px, 12.375vw, 213px)'
+    : 'clamp(90px, 9vw, 162px)';
 
   return (
     <motion.div
-      style={{ position: 'absolute', x: '-50%', y: '-50%' }}
-      initial={{ opacity: 0, scale: 0, left: '50%', top: '50%' }}
-      animate={{ opacity: 1, scale: 1, left: `${initialPos.x}%`, top: `${initialPos.y}%` }}
-      transition={{ duration: 1.4, delay, ease: [0.16, 1, 0.3, 1], scale: { type: 'spring', damping: 12, stiffness: 90, delay } }}
-      className={`${sizeClasses[size]} rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-none hidden md:block`}
+      style={{
+        position: 'absolute',
+        left: `${initialPos.x}%`,
+        top: `${initialPos.y}%`,
+        width: vwSize,
+        height: vhSize,
+        translateX: '-50%',
+        translateY: '-50%',
+        x: floatX,
+        y: floatY,
+      }}
+      initial={{ opacity: 0, scale: 0.4 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.4, delay, ease: [0.16, 1, 0.3, 1] }}
+      className="rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-none hidden md:block"
     >
-      <div
-        className="w-full h-full relative"
-        style={{
-          animation: `floatY ${3.5 + delay}s ease-in-out infinite`,
-          animationDelay: `${delay + 2}s`,
-        }}
-      >
+      <div className="w-full h-full relative">
+        <PulsingRim />
         <iframe
           src={`${vimeoUrl}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
           className="absolute inset-0 w-full h-full border-none pointer-events-none scale-[1.3]"
@@ -546,6 +586,59 @@ const FloatingVideoFrame: React.FC<{
         <div className="absolute inset-0 bg-periwinkle/5 pointer-events-none" />
       </div>
     </motion.div>
+  );
+};
+
+const MobileVideoStrip: React.FC<{
+  urls: string[];
+  direction: 'left' | 'right';
+}> = ({ urls, direction }) => {
+  const duplicated = [...urls, ...urls, ...urls];
+
+  return (
+          <div
+        className="md:hidden w-full"
+        
+      >
+        <div
+          className="flex gap-3 w-max"
+          style={{
+            animation: `${direction === 'left' ? 'crawlLeft' : 'crawlRight'} 22s linear infinite`,
+          }}
+        >
+        {duplicated.map((url, i) => (
+          <div
+            key={i}
+            className="flex-shrink-0"
+            style={{
+              width: '40vw',
+              height: '32vw',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(180,180,220,0.2)',
+            }}
+          >
+            <iframe
+              src={`${url}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '178%',
+                height: '100%',
+                transform: 'translate(-50%, -50%)',
+                border: 'none',
+                pointerEvents: 'none',
+              }}
+              allow="autoplay; fullscreen"
+              title="Mobile Strip Video"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
@@ -713,51 +806,77 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
     <div className="space-y-32 pb-40">
       {/* Hero */}
       <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden bg-white">
-        {/* Mobile Fullscreen Video */}
-        <div className="md:hidden absolute inset-0 z-0">
-          <iframe 
-            src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
-            className="absolute top-1/2 left-1/2 w-[177.77vh] min-w-full h-screen min-h-[56.25vw] -translate-x-1/2 -translate-y-1/2 pointer-events-none border-none"
-            allow="autoplay; fullscreen"
-            title="Mobile Hero Background Video"
-          />
-          <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]" />
-        </div>
+    
 
-        {/* Desktop Floating Frames */}
-        <motion.div 
+        {/* Desktop Floating Frames — 8 players */}
+
+                <motion.div
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0 z-0 pointer-events-none"
         >
-          <FloatingVideoFrame 
-            size="large" 
-            initialPos={{ x: 22, y: 18 }} 
+          {/* Top left */}
+          <FloatingVideoFrame
+            size="large"
+            initialPos={{ x: 18, y: 22 }}
             vimeoUrl="https://player.vimeo.com/video/1189169837"
             delay={0.1}
+            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.18, ySpeed: 0.14, xPhase: 0, yPhase: 1.1 }}
           />
-          <FloatingVideoFrame 
-            size="medium" 
-            initialPos={{ x: 78, y: 15 }} 
-            vimeoUrl="https://player.vimeo.com/video/1189169854"
-            delay={0.25}
-          />
-          <FloatingVideoFrame 
-            size="medium" 
-            initialPos={{ x: 18, y: 72 }} 
+          {/* Middle left */}
+          <FloatingVideoFrame
+            size="medium"
+            initialPos={{ x: 13, y: 52 }}
             vimeoUrl="https://player.vimeo.com/video/1189169866"
             delay={0.4}
+            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.16, ySpeed: 0.21, xPhase: 3.8, yPhase: 2.4 }}
           />
-          <FloatingVideoFrame 
-            size="small" 
-            initialPos={{ x: 82, y: 78 }} 
+          {/* Bottom left */}
+          <FloatingVideoFrame
+            size="large"
+            initialPos={{ x: 18, y: 80 }}
+            vimeoUrl="https://player.vimeo.com/video/1189169854"
+            delay={1.0}
+            floatConfig={{ xAmp: 4, yAmp: 4, xSpeed: 0.24, ySpeed: 0.18, xPhase: 4.4, yPhase: 1.7 }}
+          />
+          {/* Top right */}
+          <FloatingVideoFrame
+            size="medium"
+            initialPos={{ x: 82, y: 22 }}
+            vimeoUrl="https://player.vimeo.com/video/1189169854"
+            delay={0.25}
+            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.22, ySpeed: 0.17, xPhase: 2.1, yPhase: 0.5 }}
+          />
+          {/* Middle right */}
+          <FloatingVideoFrame
+            size="medium"
+            initialPos={{ x: 87, y: 52 }}
             vimeoUrl="https://player.vimeo.com/video/1189169885"
             delay={0.55}
+            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.26, ySpeed: 0.19, xPhase: 1.5, yPhase: 4.1 }}
           />
-          <FloatingVideoFrame 
-            size="small" 
-            initialPos={{ x: 85, y: 42 }} 
+          {/* Bottom right */}
+          <FloatingVideoFrame
+            size="large"
+            initialPos={{ x: 82, y: 80 }}
             vimeoUrl="https://player.vimeo.com/video/1189169904"
             delay={0.7}
+            floatConfig={{ xAmp: 4, yAmp: 4, xSpeed: 0.21, ySpeed: 0.16, xPhase: 5.0, yPhase: 0.9 }}
+          />
+          {/* Top center — pushed down clear of nav */}
+          <FloatingVideoFrame
+            size="medium"
+            initialPos={{ x: 50, y: 18 }}
+            vimeoUrl="https://player.vimeo.com/video/1189169866"
+            delay={0.85}
+            floatConfig={{ xAmp: 4, yAmp: 3, xSpeed: 0.19, ySpeed: 0.23, xPhase: 2.7, yPhase: 3.3 }}
+          />
+          {/* Bottom center — pushed up clear of explore text */}
+          <FloatingVideoFrame
+            size="medium"
+            initialPos={{ x: 50, y: 78 }}
+            vimeoUrl="https://player.vimeo.com/video/1189169837"
+            delay={1.15}
+            floatConfig={{ xAmp: 4, yAmp: 3, xSpeed: 0.17, ySpeed: 0.13, xPhase: 0.8, yPhase: 5.2 }}
           />
         </motion.div>
 
@@ -767,48 +886,61 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
           lineColor="rgba(122, 160, 255, 0.1)"
         />
 
-        <div className="z-10 px-4 w-full flex flex-col items-center justify-center text-center">
-          <motion.h1 
-            className="text-5xl md:text-7xl font-light tracking-tighter leading-[1.1] text-ink"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            Visuals built <span className="text-periwinkle italic">for you.</span>
-          </motion.h1>
-          
-          <motion.p 
-            className="mt-6 text-sm md:text-lg font-medium max-w-xl mx-auto text-gray-600"
-            style={{ color: '#444444' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-          >
-            Impactful media for brands, real estate, and more.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.7, duration: 1 }}
-            className="mt-8"
-          >
-            <button 
-              onClick={() => onNavigate('Work')}
-              className="group relative px-10 py-4 rounded-full transition-all flex items-center justify-center overflow-hidden"
+                <div className="z-10 w-full h-full flex flex-col items-center justify-between md:justify-center md:py-0"
+          style={{ paddingTop: '20vh', paddingBottom: '30vh' }}
+        >
+          <div className="flex flex-col items-center text-center px-6 py-6">
+            <motion.h1
+              className="text-4xl font-light tracking-tighter leading-[1.1] text-ink md:text-7xl"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              <span className="relative z-10 text-ink/70 group-hover:text-ink font-medium tracking-tight flex items-center gap-2 transition-colors">
-                Launch Portfolio 
-                <motion.div
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </motion.div>
-              </span>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-0 group-hover:w-[124px] h-px bg-periwinkle/40 transition-all duration-300" />
-            </button>
-          </motion.div>
+              Visuals built <span className="text-periwinkle italic">for you.</span>
+            </motion.h1>
+
+            <motion.p
+              className="mt-4 text-sm font-medium text-gray-500 max-w-xs md:text-lg md:max-w-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 1 }}
+            >
+              Impactful media for brands, real estate, and more.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.7, duration: 1 }}
+              className="mt-6"
+            >
+              <button
+                onClick={() => onNavigate('Work')}
+                className="group relative px-10 py-4 rounded-full transition-all flex items-center justify-center overflow-hidden"
+              >
+                <span className="relative z-10 text-ink/70 group-hover:text-ink font-medium tracking-tight flex items-center gap-2 transition-colors">
+                  Launch Portfolio
+                  <motion.div
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.div>
+                </span>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-0 group-hover:w-[124px] h-px bg-periwinkle/40 transition-all duration-300" />
+              </button>
+            </motion.div>
+          </div>
+
+          {/* Mobile Bottom Strip */}
+          <MobileVideoStrip
+            urls={[
+              "https://player.vimeo.com/video/1189169885",
+              "https://player.vimeo.com/video/1189169904",
+              "https://player.vimeo.com/video/1189169837"
+            ]}
+            direction="left"
+          />
         </div>
 
         <motion.div 
