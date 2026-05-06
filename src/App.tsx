@@ -35,15 +35,13 @@ const ServiceRow: React.FC<{
     return () => window.removeEventListener('touchstart', handleTouch);
   }, []);
 
-  useEffect(() => {
+   useEffect(() => {
     if (active && isTouchRef.current && containerRef.current) {
-      console.log('scroll triggered');
-      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Delay to account for fixed navbar height after initial scrollIntoView and expansion animation
-      const timer = setTimeout(() => {
-        window.scrollBy(0, -80);
-      }, 300);
-      return () => clearTimeout(timer);
+      const navbar = 80;
+      const top = containerRef.current.getBoundingClientRect().top + window.scrollY - navbar;
+      setTimeout(() => {
+        window.scrollTo({ top, behavior: 'smooth' });
+      }, 350);
     }
   }, [active]);
 
@@ -110,7 +108,7 @@ const ServiceRow: React.FC<{
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.95 }}
             transition={{ delay: 0.1 }}
-            className="w-full md:w-[45%] lg:w-[40%] max-w-md aspect-square rounded-2xl overflow-hidden glass border-periwinkle/10 relative bg-[#0f0f19]/80"
+            className="w-full md:w-[45%] lg:w-[40%] max-w-md aspect-video rounded-2xl overflow-hidden glass border-periwinkle/10 relative bg-[#0f0f19]/80"
           >
             {active && (
               <>
