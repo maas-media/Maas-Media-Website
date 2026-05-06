@@ -10,14 +10,37 @@ const tabs = ['Home', 'Work', 'Blog', 'Contact'];
 
 export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   const [isLogoHovered, setIsLogoHovered] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const isFirstRender = React.useRef(true);
+
+  React.useEffect(() => {
+    isFirstRender.current = false;
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-50">
       <motion.div 
         className="glass rounded-full px-2 py-2 flex items-center shadow-2xl border-white/10"
         initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        animate={{ 
+          y: scrolled ? -24 : 0, 
+          opacity: 1 
+        }}
+        transition={{ 
+          y: { 
+            type: 'spring', 
+            stiffness: 100, 
+            damping: 20, 
+            mass: 1,
+            delay: isFirstRender.current ? 1 : 0
+          },
+          opacity: { delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+        }}
       >
         {/* Logo Section */}
         <div className="flex items-center pl-3 md:pl-4 pr-1 md:pr-2 gap-2 md:gap-4">
