@@ -602,22 +602,20 @@ const FloatingVideoFrame: React.FC<{
 };
 
 const MobileVideoStrip: React.FC<{
-  urls: string[];
+  images: string[];
   direction: 'left' | 'right';
-}> = ({ urls, direction }) => {
-  const duplicated = [...urls, ...urls, ...urls];
+}> = ({ images, direction }) => {
+  if (!images || images.length === 0) return null;
+  const duplicated = [...images, ...images, ...images];
 
   return (
-          <div
-        className="md:hidden w-full"
-        
+    <div className="md:hidden w-full">
+      <div
+        className="flex gap-3 w-max"
+        style={{
+          animation: `${direction === 'left' ? 'crawlLeft' : 'crawlRight'} 22s linear infinite`,
+        }}
       >
-        <div
-          className="flex gap-3 w-max"
-          style={{
-            animation: `${direction === 'left' ? 'crawlLeft' : 'crawlRight'} 22s linear infinite`,
-          }}
-        >
         {duplicated.map((url, i) => (
           <div
             key={i}
@@ -632,20 +630,14 @@ const MobileVideoStrip: React.FC<{
               border: '1px solid rgba(180,180,220,0.2)',
             }}
           >
-            <iframe
-              src={`${url}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
+            <img
+              src={url}
+              alt=""
               style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                width: '178%',
+                width: '100%',
                 height: '100%',
-                transform: 'translate(-50%, -50%)',
-                border: 'none',
-                pointerEvents: 'none',
+                objectFit: 'cover',
               }}
-              allow="autoplay; fullscreen"
-              title="Mobile Strip Video"
             />
           </div>
         ))}
@@ -946,13 +938,9 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
 
           {/* Mobile Bottom Strip */}
           <MobileVideoStrip
-            urls={[
-              "https://player.vimeo.com/video/1189169885",
-              "https://player.vimeo.com/video/1189169904",
-              "https://player.vimeo.com/video/1189169837"
-            ]}
-            direction="left"
-          />
+  images={siteSettings?.heroImages || []}
+  direction="left"
+/>
         </div>
 
         <motion.div 

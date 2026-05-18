@@ -25,7 +25,8 @@ export async function getSiteSettings() {
       experience,
       instagramUrl,
       youtubeUrl,
-      linkedinUrl
+      linkedinUrl,
+      "heroImages": heroImages[].asset->url
     }
   `)
 }
