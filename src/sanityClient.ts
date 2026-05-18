@@ -24,7 +24,7 @@ export async function getSiteSettings() {
       location,
       experience,
       instagramUrl,
-      vimeoUrl,
+      youtubeUrl,
       linkedinUrl
     }
   `)

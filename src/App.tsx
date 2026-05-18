@@ -119,7 +119,7 @@ const ServiceRow: React.FC<{
                   className="absolute inset-0 z-0 animate-shimmer"
                 />
                 <iframe 
-                  src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
+                  src={`https://player.vimeo.com/video/${service.vimeoId}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
                   className={`absolute inset-0 w-full h-full pointer-events-none border-none transition-opacity duration-400 ease-in-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                   allow="autoplay; fullscreen"
                   title={service.title}
@@ -784,35 +784,35 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
   const services = [
-    { 
-      id: 'brand', 
-      title: 'Brand & Commercial', 
-      desc: 'Premium brand narratives that drive impact and define your identity through purposeful storytelling.', 
-      icon: Play,
-      video: 'https://assets.mixkit.co/videos/preview/mixkit-top-view-of-a-keyboard-and-a-cup-of-coffee-34442-large.mp4'
-    },
-    { 
-      id: 'real-estate', 
-      title: 'Real Estate', 
-      desc: 'Cinematic property tours highlighting architectural detail and neighborhood energy for high-end listings.', 
-      icon: House,
-      video: 'https://assets.mixkit.co/videos/preview/mixkit-cinematic-view-of-a-misty-forest-4416-large.mp4'
-    },
-    { 
-      id: 'events', 
-      title: 'Events', 
-      desc: 'Energetic recaps captured with cinematic energy and emotional resonance that preserves every moment.', 
-      icon: Calendar,
-      video: 'https://assets.mixkit.co/videos/preview/mixkit-stars-in-the-night-sky-slow-motion-1191-large.mp4'
-    },
-    { 
-      id: 'social', 
-      title: 'Social Content', 
-      desc: 'Short-form visuals optimized for high-engagement, dynamic pacing, and platform-specific impact.', 
-      icon: Smartphone,
-      video: 'https://assets.mixkit.co/videos/preview/mixkit-young-man-using-his-mobile-phone-at-night-42289-large.mp4'
-    }
-  ];
+  { 
+    id: 'brand', 
+    title: 'Brand & Commercial', 
+    desc: 'Premium brand narratives that drive impact and define your identity through purposeful storytelling.', 
+    icon: Play,
+    vimeoId: '1193350137'
+  },
+  { 
+    id: 'real-estate', 
+    title: 'Real Estate', 
+    desc: 'Cinematic property tours highlighting architectural detail and neighborhood energy for high-end listings.', 
+    icon: House,
+    vimeoId: '1193350140'
+  },
+  { 
+    id: 'events', 
+    title: 'Events', 
+    desc: 'Energetic recaps captured with cinematic energy and emotional resonance that preserves every moment.', 
+    icon: Calendar,
+    vimeoId: '1193350138'
+  },
+  { 
+    id: 'social', 
+    title: 'Social Content', 
+    desc: 'Short-form visuals optimized for high-engagement, dynamic pacing, and platform-specific impact.', 
+    icon: Smartphone,
+    vimeoId: '1193350139'
+  }
+];
 
   return (
     <div className="space-y-32 pb-40">
@@ -824,72 +824,72 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
 
                 <motion.div
           style={{ opacity: heroOpacity, scale: heroScale }}
-          className="absolute inset-0 z-0 pointer-events-none"
+          className="absolute inset-0 z-[500] pointer-events-none"
         >
           {/* Top left */}
-          <FloatingVideoFrame
-            size="large"
-            initialPos={{ x: 18, y: 22 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169837"
-            delay={0.1}
-            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.18, ySpeed: 0.14, xPhase: 0, yPhase: 1.1 }}
-          />
-          {/* Middle left */}
-          <FloatingVideoFrame
-            size="medium"
-            initialPos={{ x: 13, y: 52 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169866"
-            delay={0.4}
-            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.16, ySpeed: 0.21, xPhase: 3.8, yPhase: 2.4 }}
-          />
-          {/* Bottom left */}
-          <FloatingVideoFrame
-            size="large"
-            initialPos={{ x: 18, y: 80 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169854"
-            delay={1.0}
-            floatConfig={{ xAmp: 4, yAmp: 4, xSpeed: 0.24, ySpeed: 0.18, xPhase: 4.4, yPhase: 1.7 }}
-          />
-          {/* Top right */}
-          <FloatingVideoFrame
-            size="medium"
-            initialPos={{ x: 82, y: 22 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169854"
-            delay={0.25}
-            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.22, ySpeed: 0.17, xPhase: 2.1, yPhase: 0.5 }}
-          />
-          {/* Middle right */}
-          <FloatingVideoFrame
-            size="medium"
-            initialPos={{ x: 87, y: 52 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169885"
-            delay={0.55}
-            floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.26, ySpeed: 0.19, xPhase: 1.5, yPhase: 4.1 }}
-          />
-          {/* Bottom right */}
-          <FloatingVideoFrame
-            size="large"
-            initialPos={{ x: 82, y: 80 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169904"
-            delay={0.7}
-            floatConfig={{ xAmp: 4, yAmp: 4, xSpeed: 0.21, ySpeed: 0.16, xPhase: 5.0, yPhase: 0.9 }}
-          />
-          {/* Top center — pushed down clear of nav */}
-          <FloatingVideoFrame
-            size="medium"
-            initialPos={{ x: 50, y: 18 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169866"
-            delay={0.85}
-            floatConfig={{ xAmp: 4, yAmp: 3, xSpeed: 0.19, ySpeed: 0.23, xPhase: 2.7, yPhase: 3.3 }}
-          />
-          {/* Bottom center — pushed up clear of explore text */}
-          <FloatingVideoFrame
-            size="medium"
-            initialPos={{ x: 50, y: 78 }}
-            vimeoUrl="https://player.vimeo.com/video/1189169837"
-            delay={1.15}
-            floatConfig={{ xAmp: 4, yAmp: 3, xSpeed: 0.17, ySpeed: 0.13, xPhase: 0.8, yPhase: 5.2 }}
-          />
+<FloatingVideoFrame
+  size="large"
+  initialPos={{ x: 18, y: 22 }}
+  vimeoUrl="https://player.vimeo.com/video/1189169837"
+  delay={0.1}
+  floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.18, ySpeed: 0.14, xPhase: 0, yPhase: 1.1 }}
+/>
+{/* Middle left */}
+<FloatingVideoFrame
+  size="medium"
+  initialPos={{ x: 13, y: 52 }}
+  vimeoUrl="https://player.vimeo.com/video/1189169866"
+  delay={0.4}
+  floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.16, ySpeed: 0.21, xPhase: 3.8, yPhase: 2.4 }}
+/>
+{/* Bottom left */}
+<FloatingVideoFrame
+  size="large"
+  initialPos={{ x: 18, y: 80 }}
+  vimeoUrl="https://player.vimeo.com/video/1189169854"
+  delay={1.0}
+  floatConfig={{ xAmp: 4, yAmp: 4, xSpeed: 0.24, ySpeed: 0.18, xPhase: 4.4, yPhase: 1.7 }}
+/>
+{/* Top right */}
+<FloatingVideoFrame
+  size="medium"
+  initialPos={{ x: 82, y: 22 }}
+  vimeoUrl="https://player.vimeo.com/video/1193350137"
+  delay={0.25}
+  floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.22, ySpeed: 0.17, xPhase: 2.1, yPhase: 0.5 }}
+/>
+{/* Middle right */}
+<FloatingVideoFrame
+  size="medium"
+  initialPos={{ x: 87, y: 52 }}
+  vimeoUrl="https://player.vimeo.com/video/1189169885"
+  delay={0.55}
+  floatConfig={{ xAmp: 4, yAmp: 5, xSpeed: 0.26, ySpeed: 0.19, xPhase: 1.5, yPhase: 4.1 }}
+/>
+{/* Bottom right */}
+<FloatingVideoFrame
+  size="large"
+  initialPos={{ x: 82, y: 80 }}
+  vimeoUrl="https://player.vimeo.com/video/1189169904"
+  delay={0.7}
+  floatConfig={{ xAmp: 4, yAmp: 4, xSpeed: 0.21, ySpeed: 0.16, xPhase: 5.0, yPhase: 0.9 }}
+/>
+{/* Top center */}
+<FloatingVideoFrame
+  size="medium"
+  initialPos={{ x: 50, y: 18 }}
+  vimeoUrl="https://player.vimeo.com/video/1193350138"
+  delay={0.85}
+  floatConfig={{ xAmp: 4, yAmp: 3, xSpeed: 0.19, ySpeed: 0.23, xPhase: 2.7, yPhase: 3.3 }}
+/>
+{/* Bottom center */}
+<FloatingVideoFrame
+  size="medium"
+  initialPos={{ x: 50, y: 78 }}
+  vimeoUrl="https://player.vimeo.com/video/1193350139"
+  delay={1.15}
+  floatConfig={{ xAmp: 4, yAmp: 3, xSpeed: 0.17, ySpeed: 0.13, xPhase: 0.8, yPhase: 5.2 }}
+/>
         </motion.div>
 
         <ParticleBackground 
@@ -1039,7 +1039,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
                   "I believe every story has a unique frequency. My job is to find the light and shadow that lets it vibrate."
                 </p>
                 <p className="text-lg font-light text-ink/60 leading-relaxed max-w-2xl">
-                  I'm a cinematographer who obsessed with the details. From high-end commercial sets to solo property tours, I treat every frame with the same level of architectural precision and emotional grit.
+                  I'm a cinematographer obsessed with the details. From high-end commercial sets to solo property tours, I treat every frame with the same level of architectural precision and emotional grit.
                 </p>
               </div>
             </GlassCard>
@@ -1781,7 +1781,7 @@ const Blog: React.FC<{
       <div className="w-full h-[480px] relative overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <iframe
-            src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
+            src={`https://player.vimeo.com/video/${service.vimeoId}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
             className="w-[100vw] h-[56.25vw] min-h-full min-w-[177.77vh] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-none"
             allow="autoplay; fullscreen"
           />
@@ -2022,10 +2022,22 @@ export default function App() {
             <span className="text-xs text-ink/40 tracking-[0.3em] uppercase">Atlanta | Worldwide</span>
           </div>
           <div className="flex gap-8">
-            {['Instagram', 'Vimeo', 'LinkedIn'].map(link => (
-              <a key={link} href="#" className="text-spaced hover:text-periwinkle transition-colors">{link}</a>
-            ))}
-          </div>
+  {[
+    { label: 'Instagram', href: siteSettings?.instagramUrl || 'https://instagram.com' },
+    { label: 'YouTube', href: siteSettings?.youtubeUrl || 'https://youtube.com' },
+    { label: 'LinkedIn', href: siteSettings?.linkedinUrl || 'https://linkedin.com' },
+  ].map(link => (
+    <a
+      key={link.label}
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-spaced hover:text-periwinkle transition-colors"
+    >
+      {link.label}
+    </a>
+  ))}
+</div>
           <div className="text-xs text-ink/30 tracking-widest">
             © 2026 Maas Media. Visuals built for you.
           </div>

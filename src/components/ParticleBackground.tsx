@@ -37,7 +37,7 @@ export const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
 
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = document.documentElement.scrollHeight;
+      canvas.height = window.innerHeight;
     };
 
     const createParticles = () => {
