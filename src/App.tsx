@@ -1234,81 +1234,6 @@ const Portfolio: React.FC<{
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
 
-  // Template System Logic
-  const getGridItems = (projects: Project[]) => {
-    const items: Array<{ project: Project; layout: any; template: string }> = [];
-    const queue = [...projects];
-    
-    while (queue.length > 0) {
-      const next1 = queue[0];
-      const next2 = queue[1];
-      const next3 = queue[2];
-
-      // Template E logic: Featured
-      if (next1.featured) {
-        items.push({
-          project: queue.shift()!,
-          template: 'E',
-          layout: { d: 'md:col-span-12 h-[380px]', t: 'sm:col-span-2 h-[340px]', m: 'h-[300px]' }
-        });
-        continue;
-      }
-
-      // Need at least 3 for A, B, C, D complexity check
-      if (queue.length >= 3) {
-        // Selection Logic
-        const o1 = next1.orientation;
-        const o2 = next2.orientation;
-        const o3 = next3.orientation;
-
-        // Template D: 2 vertical + 1 landscape
-        if (o1 === 'vertical' && o2 === 'vertical' && o3 === 'landscape') {
-          items.push({ project: queue.shift()!, template: 'D', layout: { d: 'md:col-span-3 md:row-span-2 h-[480px]', t: 'sm:col-span-1 h-[360px]', m: 'h-[340px]' } });
-          items.push({ project: queue.shift()!, template: 'D', layout: { d: 'md:col-span-3 md:row-span-2 h-[480px]', t: 'sm:col-span-1 h-[360px]', m: 'h-[340px]' } });
-          items.push({ project: queue.shift()!, template: 'D', layout: { d: 'md:col-span-6 md:row-span-2 h-[480px]', t: 'sm:col-span-2 h-[240px]', m: 'h-[220px]' } });
-          continue;
-        }
-
-        // Template B: 1 vertical + 2 landscape
-        if (o1 === 'vertical' && o2 === 'landscape' && o3 === 'landscape') {
-          items.push({ project: queue.shift()!, template: 'B', layout: { d: 'md:col-span-5 md:row-span-2 h-[480px]', t: 'sm:col-span-1 h-[360px]', m: 'h-[340px]' } });
-          items.push({ project: queue.shift()!, template: 'B', layout: { d: 'md:col-span-7 md:row-span-1 h-[232px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' } });
-          items.push({ project: queue.shift()!, template: 'B', layout: { d: 'md:col-span-7 md:row-span-1 h-[232px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' } });
-          continue;
-        }
-
-        // Template A: 3 landscape (A or C preference, using A here)
-        if (o1 === 'landscape' && o2 === 'landscape' && o3 === 'landscape') {
-          // Flip between A and C for variety 
-          if (items.length % 6 === 0) {
-            items.push({ project: queue.shift()!, template: 'A', layout: { d: 'md:col-span-7 md:row-span-2 h-[480px]', t: 'sm:col-span-2 h-[340px]', m: 'h-[220px]' } });
-            items.push({ project: queue.shift()!, template: 'A', layout: { d: 'md:col-span-5 md:row-span-1 h-[232px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' } });
-            items.push({ project: queue.shift()!, template: 'A', layout: { d: 'md:col-span-5 md:row-span-1 h-[232px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' } });
-          } else {
-            items.push({ project: queue.shift()!, template: 'C', layout: { d: 'md:col-span-4 h-[260px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' } });
-            items.push({ project: queue.shift()!, template: 'C', layout: { d: 'md:col-span-4 h-[260px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' } });
-            items.push({ project: queue.shift()!, template: 'C', layout: { d: 'md:col-span-4 h-[260px]', t: 'sm:col-span-2 h-[240px]', m: 'h-[220px]' } });
-          }
-          continue;
-        }
-      }
-
-      // Fallback: Template C (Safe fallback if mixed or < 3)
-      const p = queue.shift()!;
-      items.push({
-        project: p,
-        template: 'C',
-        layout: p.orientation === 'vertical' 
-          ? { d: 'md:col-span-4 h-[480px]', t: 'sm:col-span-1 h-[360px]', m: 'h-[340px]' } 
-          : { d: 'md:col-span-4 h-[260px]', t: 'sm:col-span-1 h-[240px]', m: 'h-[220px]' }
-      });
-    }
-    
-    return items;
-  };
-
-  const projectGridItems = getGridItems(filtered);
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -1358,12 +1283,12 @@ const Portfolio: React.FC<{
       </div>
 
       <AnimatePresence mode="popLayout" initial={false}>
-        {projectGridItems.length > 0 ? (
+        {filtered.length > 0 ? (
           <motion.div 
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-[10px] sm:gap-[12px] md:gap-[16px]"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[16px]"
           >
-            {projectGridItems.map(({ project, layout, template }, idx) => (
+            {filtered.map((project, idx) => (
               <motion.div
                 key={project.id}
                 layout
@@ -1373,8 +1298,11 @@ const Portfolio: React.FC<{
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 className={`
                   group relative rounded-[2.5rem] overflow-hidden glass border-ink/5 cursor-pointer
-                  col-span-1 ${layout.t} ${layout.d} ${layout.m}
                   transition-all duration-300 hover:z-10
+                  ${project.featured 
+                    ? 'col-span-1 sm:col-span-2 md:col-span-3 h-[420px]' 
+                    : 'col-span-1 h-[300px]'
+                  }
                 `}
                 onClick={() => setSelectedProject(project)}
                 data-category={project.categories?.join(', ')}
@@ -1399,11 +1327,11 @@ const Portfolio: React.FC<{
                 </div>
 
                 {/* Info Overlay */}
-                <div className={`absolute bottom-0 left-0 right-0 ${template === 'E' ? 'p-12 md:p-14' : 'p-8 md:p-10'} z-20 flex flex-col items-start gap-4`}>
+                <div className={`absolute bottom-0 left-0 right-0 ${project.featured ? 'p-12 md:p-14' : 'p-8 md:p-10'} z-20 flex flex-col items-start gap-4`}>
                   <div className="px-10 py-1.5 rounded-full glass border-white/20 text-[9px] font-medium uppercase tracking-[0.2em] text-white/90 backdrop-blur-md">
                     {project.categories?.join(' / ')}
                   </div>
-                  <h3 className={`font-medium text-white tracking-tight leading-tight transition-transform duration-300 group-hover:translate-x-1 ${template === 'E' ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
+                  <h3 className={`font-medium text-white tracking-tight leading-tight transition-transform duration-300 group-hover:translate-x-1 ${project.featured ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
                     {project.title}
                   </h3>
                 </div>
@@ -1769,7 +1697,7 @@ const Blog: React.FC<{
       <div className="w-full h-[480px] relative overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <iframe
-            src={`https://player.vimeo.com/video/${service.vimeoId}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
+            src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
             className="w-[100vw] h-[56.25vw] min-h-full min-w-[177.77vh] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-none"
             allow="autoplay; fullscreen"
           />
