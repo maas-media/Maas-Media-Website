@@ -37,11 +37,11 @@ const ServiceRow: React.FC<{
 
    useEffect(() => {
     if (active && isTouchRef.current && containerRef.current) {
-      const navbar = 80;
-      const top = containerRef.current.getBoundingClientRect().top + window.scrollY - navbar;
       setTimeout(() => {
+        const navbar = 80;
+        const top = containerRef.current!.getBoundingClientRect().top + window.scrollY - navbar;
         window.scrollTo({ top, behavior: 'smooth' });
-      }, 175);
+      }, 450);
     }
   }, [active]);
 

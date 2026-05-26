@@ -53,7 +53,7 @@ export const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab, hidden
         {/* Logo Section */}
         <div className="flex items-center pl-3 md:pl-4 pr-1 md:pr-2 gap-2 md:gap-4">
           <button 
-            onClick={() => setActiveTab('Home')}
+            onClick={() => { setActiveTab('Home'); setIsLogoHovered(false); }}
             onMouseEnter={() => setIsLogoHovered(true)}
             onMouseLeave={() => setIsLogoHovered(false)}
             className="font-montserrat font-black text-base tracking-tighter transition-colors duration-200 lowercase cursor-pointer"
