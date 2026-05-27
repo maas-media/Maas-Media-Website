@@ -11,7 +11,7 @@ import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
 import { getProjects, getPosts, getTestimonials, getSiteSettings } from './sanityClient';
-import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Link as LinkIcon } from 'lucide-react';
+import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 
 // --- Components ---
@@ -1134,6 +1134,13 @@ const ProjectLightbox: React.FC<{
   project: Project | null; 
   onClose: () => void 
 }> = ({ project, onClose }) => {
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsIframeLoaded(false);
+  }, [project?.id]);
+
   useEffect(() => {
     if (project) {
       document.body.style.overflow = 'hidden';
@@ -1145,69 +1152,87 @@ const ProjectLightbox: React.FC<{
     };
   }, [project]);
 
-    return (
+  return (
     <AnimatePresence>
       {project && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-ink/60 backdrop-blur-xl flex items-center justify-center p-4 md:p-8 overflow-y-auto md:overflow-hidden"
           onClick={onClose}
         >
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="fixed top-6 right-6 text-white/40 hover:text-white transition-colors z-[110]"
-          >
-            <X className="w-8 h-8" />
-          </button>
-
-          {/* Scrollable content — padded away from navbar and bottom */}
-          <div
-            className="min-h-full flex flex-col items-center justify-center px-4 md:px-8"
-            style={{ paddingTop: '80px', paddingBottom: '48px' }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.93, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full max-w-[1200px] h-auto max-h-[90vh] bg-ink/90 backdrop-blur-2xl rounded-[2.5rem] border border-periwinkle/20 shadow-[0_0_80px_rgba(122,160,255,0.12)] overflow-y-auto md:overflow-hidden flex flex-col md:flex-row items-stretch mx-4 md:mx-0"
             onClick={e => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full flex flex-col items-center gap-6"
+            {/* Left Column (Video Player) */}
+            <div
+              ref={videoContainerRef}
+              className={`relative overflow-hidden bg-black flex items-center justify-center shrink-0 rounded-t-[2.5rem] md:rounded-l-[2.5rem] md:rounded-tr-none ${
+                project.orientation === 'vertical' ? 'w-auto mx-auto' : 'w-full md:w-[60%] aspect-video md:aspect-auto'
+              }`}
+              style={project.orientation === 'vertical' ? {
+                aspectRatio: '9/16',
+                height: 'calc(90vh - 48px)',
+                width: 'auto',
+              } : {}}
             >
-              {/* Video Player Container */}
-              <div
-                className="relative overflow-hidden rounded-2xl shadow-2xl border border-white/10 bg-black w-full max-w-[900px] aspect-video"
-                style={project.orientation === 'vertical' ? {
-                  aspectRatio: '9/16',
-                  height: 'calc(100vh - 200px)',
-                  width: 'calc((100vh - 200px) * 9 / 16)',
-                  maxWidth: '420px',
-                } : {}}
-              >
-                <iframe
-                  src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
-                  className="absolute inset-0 w-full h-full border-none"
-                  allow="autoplay; fullscreen"
-                  title={project.title}
+              {!isIframeLoaded && project.thumbnail && (
+                <img 
+                  src={project.thumbnail} 
+                  alt="" 
+                  className="absolute inset-0 w-full h-full object-cover blur-sm scale-105 opacity-60 z-10 transition-opacity duration-300"
                 />
-              </div>
+              )}
+              <iframe
+                src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
+                className="absolute inset-0 w-full h-full border-none"
+                allow="autoplay; fullscreen"
+                title={project.title}
+                onLoad={() => setIsIframeLoaded(true)}
+              />
+            </div>
 
-              {/* Info */}
-              <div className="w-full max-w-[900px] text-center md:text-left space-y-4 px-4">
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <h2 className="text-2xl md:text-3xl font-medium text-white">{project.title}</h2>
-                  <span className="inline-block px-3 py-1 rounded-full glass border-white/20 text-[10px] uppercase tracking-widest text-white/60 w-fit mx-auto md:mx-0">
+            {/* Right Column (Info Panel) */}
+            <div className="relative w-full md:w-[40%] flex-1 flex flex-col bg-ink/95 p-10 md:p-12 rounded-b-[2.5rem] md:rounded-r-[2.5rem] md:rounded-bl-none overflow-y-auto max-h-[40vh] md:max-h-full">
+              {/* Close Button */}
+              <button
+                onClick={onClose}
+                className="absolute top-6 right-6 text-white/20 hover:text-white/60 transition-colors z-[110]"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="flex flex-col h-full justify-between gap-6">
+                <div>
+                  <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-[10px] uppercase tracking-widest text-white/50 w-fit">
                     {project.categories?.join(' / ')}
                   </span>
+                  <h2 className="text-2xl md:text-3xl font-medium text-white mt-4 leading-tight">
+                    {project.title}
+                  </h2>
+                  <p className="text-sm text-white/50 font-light leading-relaxed mt-4">
+                    {project.description}
+                  </p>
                 </div>
-                <p className="text-sm md:text-base text-white/50 font-light max-w-2xl leading-relaxed mx-auto md:mx-0">
-                  {project.description}
-                </p>
+
+                <div className="border-t border-white/5 pt-8 mt-auto">
+                  <button
+                    onClick={() => videoContainerRef.current?.requestFullscreen()}
+                    className="flex items-center gap-2 px-6 py-3 rounded-full border border-periwinkle/40 text-periwinkle text-sm font-medium hover:bg-periwinkle/10 transition-all cursor-pointer"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                    Watch Full Screen
+                  </button>
+                </div>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
