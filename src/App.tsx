@@ -1167,13 +1167,13 @@ const ProjectLightbox: React.FC<{
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[1200px] h-auto max-h-[90vh] bg-ink/90 backdrop-blur-2xl rounded-[2.5rem] border border-periwinkle/20 shadow-[0_0_80px_rgba(122,160,255,0.12)] overflow-y-auto md:overflow-hidden flex flex-col md:flex-row items-stretch mx-4 md:mx-0"
+            className="relative w-full max-w-[1200px] h-auto md:max-h-[90vh] bg-ink/90 backdrop-blur-2xl rounded-[2.5rem] border border-periwinkle/20 shadow-[0_0_80px_rgba(122,160,255,0.12)] md:overflow-hidden flex flex-col md:flex-row items-stretch mx-4 md:mx-0"
             onClick={e => e.stopPropagation()}
           >
             {/* Left Column (Video Player) */}
             <div
               ref={videoContainerRef}
-              className={`relative overflow-hidden bg-black flex items-center justify-center shrink-0 rounded-t-[2.5rem] md:rounded-l-[2.5rem] md:rounded-tr-none ${
+              className={`relative overflow-hidden bg-black flex items-center justify-center shrink-0 rounded-t-[2.5rem] md:rounded-l-[2.5rem] md:rounded-tr-none max-h-[50vh] md:max-h-none ${
                 project.orientation === 'vertical' ? 'w-auto mx-auto' : 'w-full md:w-[60%] aspect-video md:aspect-auto'
               }`}
               style={project.orientation === 'vertical' ? {
@@ -1221,7 +1221,7 @@ const ProjectLightbox: React.FC<{
                   </p>
                 </div>
 
-                <div className="border-t border-white/5 pt-8 mt-auto">
+                <div className="border-t border-white/5 pt-8 md:mt-auto mt-6">
                   <button
                     onClick={() => videoContainerRef.current?.requestFullscreen()}
                     className="flex items-center gap-2 px-6 py-3 rounded-full border border-periwinkle/40 text-periwinkle text-sm font-medium hover:bg-periwinkle/10 transition-all cursor-pointer"
