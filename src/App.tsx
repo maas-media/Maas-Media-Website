@@ -1178,9 +1178,7 @@ const ProjectLightbox: React.FC<{
             >
               {/* Video Player Container */}
               <div
-                className={`relative overflow-hidden rounded-2xl shadow-2xl border-white/10 bg-black ${
-                  project.orientation === 'landscape' ? 'max-w-[900px] aspect-video' : ''
-                } ${project.orientation === 'vertical' ? '' : ''}`}
+                className="relative overflow-hidden rounded-2xl shadow-2xl border border-white/10 bg-black w-full max-w-[900px] aspect-video"
                 style={project.orientation === 'vertical' ? {
                   aspectRatio: '9/16',
                   height: 'calc(100vh - 200px)',
