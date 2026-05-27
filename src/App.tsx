@@ -1135,11 +1135,22 @@ const ProjectLightbox: React.FC<{
   onClose: () => void 
 }> = ({ project, onClose }) => {
   const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+  const isLoaded = isIframeLoaded;
+  const setIsLoaded = setIsIframeLoaded;
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
-    setIsIframeLoaded(false);
-  }, [project?.id]);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    setIsLoaded(false);
+  }, [project]);
 
   useEffect(() => {
     if (project) {
@@ -1155,33 +1166,35 @@ const ProjectLightbox: React.FC<{
   return (
     <AnimatePresence>
       {project && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-ink/60 backdrop-blur-xl flex items-center justify-center p-4 md:p-8 overflow-y-auto md:overflow-hidden"
-          onClick={onClose}
-        >
+        <>
+          {/* Mobile Layout (md:hidden) */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.93, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[1200px] h-auto md:max-h-[90vh] bg-ink/90 backdrop-blur-2xl rounded-[2.5rem] border border-periwinkle/20 shadow-[0_0_80px_rgba(122,160,255,0.12)] md:overflow-hidden flex flex-col md:flex-row items-stretch mx-4 md:mx-0"
-            onClick={e => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="md:hidden fixed inset-0 z-[100] bg-ink/90 backdrop-blur-xl flex flex-col"
+            onClick={onClose}
           >
-            {/* Left Column (Video Player) */}
-            <div
-              ref={videoContainerRef}
-              className={`relative overflow-hidden bg-black flex items-center justify-center shrink-0 rounded-t-[2.5rem] md:rounded-l-[2.5rem] md:rounded-tr-none max-h-[50vh] md:max-h-none ${
-                project.orientation === 'vertical' ? 'w-auto mx-auto' : 'w-full md:w-[60%] aspect-video md:aspect-auto'
+            {/* Video section (top) */}
+            <motion.div
+              ref={isMobile ? videoContainerRef : null}
+              initial={{ y: '-100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '-100%' }}
+              transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`relative overflow-hidden bg-black shrink-0 w-full ${
+                project.orientation === 'vertical' ? 'aspect-[9/16] max-h-[55vh]' : 'aspect-video'
               }`}
-              style={project.orientation === 'vertical' ? {
-                aspectRatio: '9/16',
-                height: 'calc(90vh - 48px)',
-                width: 'auto',
-              } : {}}
             >
+              {/* Floating close button top-right */}
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 z-50 w-9 h-9 rounded-full bg-ink/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
               {!isIframeLoaded && project.thumbnail && (
                 <img 
                   src={project.thumbnail} 
@@ -1196,44 +1209,125 @@ const ProjectLightbox: React.FC<{
                 title={project.title}
                 onLoad={() => setIsIframeLoaded(true)}
               />
-            </div>
+            </motion.div>
 
-            {/* Right Column (Info Panel) */}
-            <div className="relative w-full md:w-[40%] flex-1 flex flex-col bg-ink/95 p-10 md:p-12 rounded-b-[2.5rem] md:rounded-r-[2.5rem] md:rounded-bl-none overflow-y-auto max-h-[40vh] md:max-h-full">
-              {/* Close Button */}
-              <button
-                onClick={onClose}
-                className="absolute top-6 right-6 text-white/20 hover:text-white/60 transition-colors z-[110]"
+            {/* Bottom sheet */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="flex-1 bg-ink/95 rounded-t-3xl px-6 pt-5 pb-8 flex flex-col gap-4"
+            >
+              {/* Drag handle visual */}
+              <div className="w-10 h-1 rounded-full bg-white/10 mx-auto mb-2 shrink-0" />
+
+              <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-[10px] uppercase tracking-widest text-white/50 w-fit shrink-0">
+                {project.categories?.join(' / ')}
+              </span>
+
+              <h2 className="text-xl font-medium text-white leading-tight shrink-0">
+                {project.title}
+              </h2>
+
+              <p className="text-sm text-white/40 font-light leading-relaxed line-clamp-3">
+                {project.description}
+              </p>
+
+              <div className="mt-auto">
+                <button
+                  onClick={() => videoContainerRef.current?.requestFullscreen()}
+                  className="flex items-center gap-2 px-6 py-3 rounded-full border border-periwinkle/40 text-periwinkle text-sm font-medium hover:bg-periwinkle/10 transition-all cursor-pointer w-full justify-center"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                  Watch Full Screen
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Desktop Layout (hidden md:flex) */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="hidden md:flex fixed inset-0 z-[100] bg-ink/60 backdrop-blur-xl items-center justify-center p-4 md:p-8 overflow-y-auto md:overflow-hidden"
+            onClick={onClose}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.93, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 8 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-[1200px] h-auto md:max-h-[90vh] bg-ink/90 backdrop-blur-2xl rounded-[2.5rem] border border-periwinkle/20 shadow-[0_0_80px_rgba(122,160,255,0.12)] md:overflow-hidden flex flex-col md:flex-row items-stretch mx-4 md:mx-0"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Left Column (Video Player) */}
+              <div
+                ref={!isMobile ? videoContainerRef : null}
+                className={`relative overflow-hidden bg-black flex items-center justify-center shrink-0 rounded-t-[2.5rem] md:rounded-l-[2.5rem] md:rounded-tr-none max-h-[50vh] md:max-h-none ${
+                  project.orientation === 'vertical' ? 'w-auto mx-auto' : 'w-full md:w-[60%] aspect-video md:aspect-auto'
+                }`}
+                style={project.orientation === 'vertical' ? {
+                  aspectRatio: '9/16',
+                  height: 'calc(90vh - 48px)',
+                  width: 'auto',
+                } : {}}
               >
-                <X className="w-6 h-6" />
-              </button>
+                {!isIframeLoaded && project.thumbnail && (
+                  <img 
+                    src={project.thumbnail} 
+                    alt="" 
+                    className="absolute inset-0 w-full h-full object-cover blur-sm scale-105 opacity-60 z-10 transition-opacity duration-300"
+                  />
+                )}
+                <iframe
+                  src={`${project.vimeoUrl}?autoplay=1&muted=0&loop=0&controls=1`}
+                  className="absolute inset-0 w-full h-full border-none"
+                  allow="autoplay; fullscreen"
+                  title={project.title}
+                  onLoad={() => setIsIframeLoaded(true)}
+                />
+              </div>
 
-              <div className="flex flex-col h-full justify-between gap-6">
-                <div>
-                  <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-[10px] uppercase tracking-widest text-white/50 w-fit">
-                    {project.categories?.join(' / ')}
-                  </span>
-                  <h2 className="text-2xl md:text-3xl font-medium text-white mt-4 leading-tight">
-                    {project.title}
-                  </h2>
-                  <p className="text-sm text-white/50 font-light leading-relaxed mt-4">
-                    {project.description}
-                  </p>
-                </div>
+              {/* Right Column (Info Panel) */}
+              <div className="relative w-full md:w-[40%] flex-1 flex flex-col bg-ink/95 p-10 md:p-12 rounded-b-[2.5rem] md:rounded-r-[2.5rem] md:rounded-bl-none overflow-y-auto max-h-[40vh] md:max-h-full">
+                {/* Close Button */}
+                <button
+                  onClick={onClose}
+                  className="absolute top-6 right-6 text-white/20 hover:text-white/60 transition-colors z-[110]"
+                >
+                  <X className="w-6 h-6" />
+                </button>
 
-                <div className="border-t border-white/5 pt-8 md:mt-auto mt-6">
-                  <button
-                    onClick={() => videoContainerRef.current?.requestFullscreen()}
-                    className="flex items-center gap-2 px-6 py-3 rounded-full border border-periwinkle/40 text-periwinkle text-sm font-medium hover:bg-periwinkle/10 transition-all cursor-pointer"
-                  >
-                    <Maximize2 className="w-4 h-4" />
-                    Watch Full Screen
-                  </button>
+                <div className="flex flex-col h-full justify-between gap-6">
+                  <div>
+                    <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-[10px] uppercase tracking-widest text-white/50 w-fit">
+                      {project.categories?.join(' / ')}
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-medium text-white mt-4 leading-tight">
+                      {project.title}
+                    </h2>
+                    <p className="text-sm text-white/50 font-light leading-relaxed mt-4">
+                      {project.description}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-white/5 pt-8 md:mt-auto mt-6">
+                    <button
+                      onClick={() => videoContainerRef.current?.requestFullscreen()}
+                      className="flex items-center gap-2 px-6 py-3 rounded-full border border-periwinkle/40 text-periwinkle text-sm font-medium hover:bg-periwinkle/10 transition-all cursor-pointer"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                      Watch Full Screen
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
