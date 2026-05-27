@@ -13,6 +13,7 @@ import { Project, Post } from './mockData';
 import { getProjects, getPosts, getTestimonials, getSiteSettings } from './sanityClient';
 import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
+import { useForm, ValidationError } from '@formspree/react';
 
 // --- Components ---
 
@@ -1530,6 +1531,8 @@ const Portfolio: React.FC<{
 };
 
 const Contact: React.FC = () => {
+  const [state, handleSubmit] = useForm('mgodvopq');
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -1538,108 +1541,106 @@ const Contact: React.FC = () => {
       className="container mx-auto px-4 pt-40 pb-40 flex justify-center"
     >
       <GlassCard className="max-w-2xl w-full p-12 space-y-12">
-        <SectionTitle title="Let's build." subtitle="Contact" />
-        
-        {/* Success Message */}
-        <div data-fs-success className="hidden glass p-12 rounded-[2rem] text-center space-y-4 animate-in fade-in zoom-in duration-500">
-          <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-periwinkle/10 flex items-center justify-center text-periwinkle">
-              <Sparkles className="w-8 h-8" />
+        {state.succeeded && (
+          <div className="glass p-12 rounded-[2rem] text-center space-y-4 animate-in fade-in zoom-in duration-500">
+            <div className="flex justify-center">
+              <div className="w-16 h-16 rounded-full bg-periwinkle/10 flex items-center justify-center text-periwinkle">
+                <Sparkles className="w-8 h-8" />
+              </div>
             </div>
+            <h3 className="text-2xl font-medium text-ink">Message received.</h3>
+            <p className="text-ink/60 text-sm">I'll be in touch within 24–48 hours.</p>
+            <a href="/" onClick={(e) => { e.preventDefault(); window.location.reload(); }} className="inline-block text-periwinkle text-sm font-medium">
+              Back to home →
+            </a>
           </div>
-          <h3 className="text-2xl font-medium text-ink">Message received.</h3>
-          <p className="text-ink/60 text-sm">I'll be in touch within 24–48 hours.</p>
-          <a href="/" onClick={(e) => { e.preventDefault(); window.location.reload(); }} className="inline-block text-periwinkle text-sm font-medium hover:gap-2 transition-all">
-            Back to home →
-          </a>
-        </div>
+        )}
 
-        {/* Error Message */}
-        <div data-fs-error className="hidden glass p-6 rounded-xl border-red-500/30 text-center mb-6">
-          <p className="text-sm text-red-500/80">
-            Something went wrong. Please try again or email me directly at isaac@maasmedia.org.
-          </p>
-        </div>
+        {!state.succeeded && (
+          <>
+            <SectionTitle title="Let's build." subtitle="Contact" />
+            
+            {state.errors && !state.succeeded && (
+              <div className="glass p-6 rounded-xl border border-red-500/30 text-center mb-6">
+                <p className="text-sm text-red-500/80">
+                  Something went wrong. Please try again or email me directly at isaac@maasmedia.org.
+                </p>
+              </div>
+            )}
 
-        <form id="contact-form" className="space-y-6">
-          <input type="hidden" name="_subject" value="New inquiry — Maas Media" />
-          <input type="hidden" name="_captcha" value="true" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-spaced opacity-60">Name</label>
-              <input 
-                type="text" 
-                name="name"
-                data-fs-field
-                required
-                className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
-                placeholder="John Doe" 
-              />
-              <span data-fs-error="name" className="fs-error-message"></span>
-            </div>
-            <div className="space-y-2">
-              <label className="text-spaced opacity-60">Email</label>
-              <input 
-                type="email" 
-                name="email"
-                data-fs-field
-                required
-                className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
-                placeholder="john@example.com" 
-              />
-              <span data-fs-error="email" className="fs-error-message"></span>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-spaced opacity-60">Phone Number</label>
-            <input 
-              type="tel" 
-              name="phone" 
-              data-fs-field
-              required
-              className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
-              placeholder="(555) 555-5555" 
-            />
-            <span data-fs-error="phone" className="fs-error-message"></span>
-          </div>
-          <div className="space-y-2">
-            <label className="text-spaced opacity-60">Project Type</label>
-            <select 
-              name="project_type"
-              data-fs-field
-              required
-              className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light"
-            >
-              <option value="">Select a project type</option>
-              <option value="Brand & Commercial">Brand & Commercial</option>
-              <option value="Real Estate">Real Estate</option>
-              <option value="Event">Event</option>
-              <option value="Social Media">Social Media</option>
-              <option value="Other">Other</option>
-            </select>
-            <span data-fs-error="project_type" className="fs-error-message"></span>
-          </div>
-          <div className="space-y-2">
-            <label className="text-spaced opacity-60">Message</label>
-            <textarea 
-              name="message"
-              data-fs-field
-              required
-              rows={4} 
-              className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
-              placeholder="Tell me about your vision..." 
-            />
-            <span data-fs-error="message" className="fs-error-message"></span>
-          </div>
-          <button 
-            type="submit"
-            data-fs-submit-btn
-            className="w-full py-4 bg-periwinkle text-white rounded-xl font-medium hover:bg-periwinkle/90 transition-all shadow-xl shadow-periwinkle/20 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            Send it over
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-spaced opacity-60">Name</label>
+                  <input 
+                    type="text" 
+                    name="name"
+                    required
+                    className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
+                    placeholder="John Doe" 
+                  />
+                  <ValidationError field="name" prefix="name" errors={state.errors} className="block text-[0.7rem] text-red-400/90 mt-1" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-spaced opacity-60">Email</label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    required
+                    className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
+                    placeholder="john@example.com" 
+                  />
+                  <ValidationError field="email" prefix="email" errors={state.errors} className="block text-[0.7rem] text-red-400/90 mt-1" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-spaced opacity-60">Phone Number</label>
+                <input 
+                  type="tel" 
+                  name="phone" 
+                  required
+                  className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
+                  placeholder="(555) 555-5555" 
+                />
+                <ValidationError field="phone" prefix="phone" errors={state.errors} className="block text-[0.7rem] text-red-400/90 mt-1" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-spaced opacity-60">Project Type</label>
+                <select 
+                  name="project_type"
+                  required
+                  className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light"
+                >
+                  <option value="">Select a project type</option>
+                  <option value="Brand & Commercial">Brand & Commercial</option>
+                  <option value="Real Estate">Real Estate</option>
+                  <option value="Event">Event</option>
+                  <option value="Social Media">Social Media</option>
+                  <option value="Other">Other</option>
+                </select>
+                <ValidationError field="project_type" prefix="project_type" errors={state.errors} className="block text-[0.7rem] text-red-400/90 mt-1" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-spaced opacity-60">Message</label>
+                <textarea 
+                  name="message"
+                  required
+                  rows={4} 
+                  className="w-full bg-base/50 border border-ink/5 rounded-xl px-4 py-3 outline-none focus:border-periwinkle/30 transition-all font-light" 
+                  placeholder="Tell me about your vision..." 
+                />
+                <ValidationError field="message" prefix="message" errors={state.errors} className="block text-[0.7rem] text-red-400/90 mt-1" />
+              </div>
+              <button 
+                type="submit"
+                disabled={state.submitting}
+                className="w-full py-4 bg-periwinkle text-white rounded-xl font-medium hover:bg-periwinkle/90 transition-all shadow-xl shadow-periwinkle/20 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {state.submitting ? 'Sending...' : 'Send it over'}
+              </button>
+            </form>
+          </>
+        )}
       </GlassCard>
     </motion.div>
   );
