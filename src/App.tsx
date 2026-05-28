@@ -136,6 +136,30 @@ const ServiceRow: React.FC<{
 };
 
 const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: string }[] }> = ({ clients }) => {
+  const trackRef = React.useRef<HTMLDivElement>(null);
+  const rafRef = React.useRef<number>(0);
+  const xRef = React.useRef(0);
+
+  React.useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const speed = 0.5;
+
+    const animate = () => {
+      xRef.current -= speed;
+      const singleWidth = track.scrollWidth / 3;
+      if (Math.abs(xRef.current) >= singleWidth) {
+        xRef.current = 0;
+      }
+      track.style.transform = `translateX(${xRef.current}px)`;
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [clients]);
+
   if (!clients || clients.length === 0) return null;
 
   return (
@@ -160,10 +184,8 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
         }}
       >
         <div 
+          ref={trackRef}
           className="flex items-center gap-16 w-max"
-          style={{ 
-            animation: 'crawlLeft 50s linear infinite'
-          }}
         >
           {[...clients, ...clients, ...clients].map((client, index) => (
             <div 
