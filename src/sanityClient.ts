@@ -65,14 +65,13 @@ export async function getPosts() {
   `)
 }
 
-// Fetch all testimonials
-export async function getTestimonials() {
+// Fetch all clients
+export async function getClients() {
   return client.fetch(`
-    *[_type == "testimonial"] | order(order asc) {
+    *[_type == "client"] | order(order asc) {
       "id": _id,
       name,
-      role,
-      text
+      "logoUrl": logo.asset->url
     }
   `)
 }

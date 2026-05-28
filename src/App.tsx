@@ -10,7 +10,7 @@ import { Navigation } from './components/Navigation';
 import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
-import { getProjects, getPosts, getTestimonials, getSiteSettings } from './sanityClient';
+import { getProjects, getPosts, getClients, getSiteSettings } from './sanityClient';
 import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 import { useForm, ValidationError } from '@formspree/react';
@@ -135,163 +135,56 @@ const ServiceRow: React.FC<{
   );
 };
 
-const FeaturedQuoteTestimonials: React.FC<{ testimonials: any[] }> = ({ testimonials: fetchedTestimonials }) => {
-  const testimonials = [
-    ...fetchedTestimonials.map((t, i) => ({ 
-      ...t, 
-      company: t.role === 'Founder' ? 'Creative Studio' : 'Corporate Solutions',
-      initials: t.name.split(' ').map((n: string) => n[0]).join('')
-    })),
-    { 
-      id: '4', 
-      name: 'Michael K.', 
-      text: 'Isaac has a rare ability to capture the energy of a room without ever being intrusive.', 
-      company: 'MK Productions',
-      initials: 'MK'
-    },
-    { 
-      id: '5', 
-      name: 'Marcus T.', 
-      text: 'The attention to detail in his property tours has set a new standard for our portfolio.', 
-      company: 'The Ritz',
-      initials: 'MT'
-    },
-    { 
-      id: '6', 
-      name: 'Jessica W.', 
-      text: 'Clean, energetic, and professional. The turnaround time is just as impressive.', 
-      company: 'Events by JW',
-      initials: 'JW'
-    },
-  ];
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: string }[] }> = ({ clients }) => {
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-  };
-
-  const resetTimer = () => {
-    startTimer();
-  };
-
-  useEffect(() => {
-    if (!isPaused) {
-      startTimer();
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isPaused, activeIndex]);
-
-  const activeTestimonial = testimonials[activeIndex];
+  if (!clients || clients.length === 0) return null;
 
   return (
-    <section 
-      className="container mx-auto px-4 py-32"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+    <motion.div 
+      initial={{ opacity: 0, y: 24 }} 
+      whileInView={{ opacity: 1, y: 0 }} 
+      viewport={{ once: true }} 
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="py-24 px-4 overflow-hidden relative"
     >
-      <div className="mb-20">
-        <span className="text-[10px] uppercase tracking-[0.3em] text-ink/40 font-medium">Kind words</span>
+      <div className="text-spaced text-ink/30 text-center mb-4">
+        trusted by
       </div>
-
-      <div className="flex flex-col items-center">
-        {/* Top Zone: Featured Quote */}
-        <div className="relative w-full max-w-[700px] h-[400px] flex flex-col items-center justify-center text-center overflow-y-auto">
-          <Quote className="w-16 h-16 text-periwinkle/15 font-light mb-8 flex-shrink-0" strokeWidth={1} />
-          
-          <div className="relative w-full">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTestimonial.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
-                className="space-y-8"
-              >
-                <blockquote className="text-2xl md:text-[32px] font-light text-ink/80 leading-relaxed italic">
-                  "{activeTestimonial.text}"
-                </blockquote>
-                
-                <div className="flex flex-col items-center gap-6">
-                  <div className="w-10 h-[1px] bg-ink/10" />
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium text-ink">{activeTestimonial.name}</div>
-                    <div className="text-xs text-ink/40 uppercase tracking-widest">{activeTestimonial.company}</div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Bottom Zone: Avatar Strip */}
-        <div className="mt-12 flex flex-wrap justify-center items-start gap-4 md:gap-8 min-h-[100px]">
-          {testimonials.map((t, i) => {
-            const isActive = activeIndex === i;
-            const isHovered = hoveredId === t.id;
-            
-            return (
-              <div 
-                key={t.id} 
-                className="flex flex-col items-center group/avatar cursor-pointer"
-                onMouseEnter={() => setHoveredId(t.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                onClick={() => {
-                  setActiveIndex(i);
-                  resetTimer();
-                }}
-              >
-                <motion.div
-                  animate={{
-                    scale: isActive ? 1 : (isHovered ? 1.08 : 1),
-                    opacity: isActive ? 1 : (isHovered ? 0.75 : 0.45),
-                    boxShadow: isActive ? '0 0 20px rgba(122, 160, 255, 0.4)' : '0 0 0px rgba(122, 160, 255, 0)',
-                  }}
-                  transition={{
-                    duration: isHovered ? 0.4 : 0.5,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                  }}
-                  className={`
-                    relative rounded-full flex items-center justify-center overflow-hidden
-                    ${isActive 
-                      ? 'w-14 h-14 md:w-[56px] md:h-[56px] border-2 border-periwinkle/80' 
-                      : 'w-12 h-12 md:w-[48px] md:h-[48px] glass border-ink/5'}
-                  `}
-                >
-                  <div className="text-xs font-semibold text-periwinkle">
-                    {t.initials}
-                  </div>
-                </motion.div>
-                
-                {/* Reserved space for name label */}
-                <div className="h-8 flex items-center justify-center mt-3">
-                  <motion.span
-                    animate={{ 
-                      opacity: (isActive || isHovered) ? (isActive ? 1 : 0.6) : 0,
-                    }}
-                    transition={{ duration: 0.3 }}
-                    className={`text-[9px] uppercase tracking-widest text-center transition-colors pointer-events-none ${isActive ? 'text-periwinkle font-medium' : 'text-ink/40'}`}
-                  >
-                    {t.name}
-                  </motion.span>
-                </div>
-              </div>
-            );
-          })}
+      <h2 className="text-3xl md:text-4xl font-medium text-ink text-center mb-16">
+        Companies I've worked with
+      </h2>
+      <div 
+        className="relative w-full overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)'
+        }}
+      >
+        <div 
+          className="flex items-center gap-16 w-max"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          style={{ 
+            animation: 'crawlLeft 30s linear infinite',
+            animationPlayState: isPaused ? 'paused' : 'running'
+          }}
+        >
+          {[...clients, ...clients, ...clients].map((client, index) => (
+            <div 
+              key={`${client.id}-${index}`}
+              className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5 hover:shadow-[0_0_30px_rgba(122,160,255,0.15)]"
+            >
+              <img 
+                src={client.logoUrl} 
+                alt={client.name}
+                className="h-10 w-auto object-contain opacity-40 grayscale group-hover:opacity-70 group-hover:grayscale-0 transition-all duration-500"
+              />
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+    </motion.div>
   );
 };
 
@@ -769,7 +662,7 @@ const PulsingRim: React.FC<{ borderRadius?: number }> = ({ borderRadius = 40 }) 
 };
 
 
-const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; siteSettings: any }> = ({ onNavigate, testimonials, siteSettings }) => {
+const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSettings: any }> = ({ onNavigate, clients, siteSettings }) => {
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -977,7 +870,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; testimonials: any[]; s
 
 
       {/* Selected Works */}
-      <FeaturedQuoteTestimonials testimonials={testimonials} />
+      <ClientLogos clients={clients} />
       <section className="container mx-auto px-4 py-32">
         <div className="flex flex-col lg:flex-row gap-6 items-stretch">
           
@@ -2031,7 +1924,7 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
   const [siteSettings, setSiteSettings] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -2041,15 +1934,15 @@ export default function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [projectsData, postsData, testimonialsData, siteSettingsData] = await Promise.all([
+        const [projectsData, postsData, clientsData, siteSettingsData] = await Promise.all([
           getProjects(),
           getPosts(),
-          getTestimonials(),
+          getClients(),
           getSiteSettings(),
         ]);
         setProjects(projectsData);
         setPosts(postsData);
-        setTestimonials(testimonialsData);
+        setClients(clientsData);
         setSiteSettings(siteSettingsData);
       } catch (error) {
         console.error('Error fetching data from Sanity:', error);
@@ -2083,7 +1976,7 @@ export default function App() {
       
       <main className="relative z-10">
         <AnimatePresence mode="wait">
-          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} testimonials={testimonials} siteSettings={siteSettings} />}
+          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} clients={clients} siteSettings={siteSettings} />}
           {activeTab === 'Work' && (
             <Portfolio 
               key="portfolio" 
