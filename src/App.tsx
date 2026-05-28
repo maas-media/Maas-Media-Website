@@ -511,7 +511,8 @@ const FloatingVideoFrame: React.FC<{
         <PulsingRim />
         <iframe
           src={`${vimeoUrl}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
-          className="absolute inset-0 w-full h-full border-none pointer-events-none scale-[1.3]"
+          className="absolute border-none pointer-events-none"
+          style={{ top: '-15%', left: '-15%', width: '130%', height: '130%' }}
           allow="autoplay; fullscreen"
           title="Floating Video Content"
         />
