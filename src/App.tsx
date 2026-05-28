@@ -177,7 +177,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
         Companies I've worked with
       </h2>
       <div 
-        className="relative w-full overflow-x-clip pb-12"
+        className="relative w-full py-12 pb-12"
         style={{
           maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)'
