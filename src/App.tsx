@@ -136,6 +136,7 @@ const ServiceRow: React.FC<{
 };
 
 const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: string }[] }> = ({ clients }) => {
+  const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const trackRef = React.useRef<HTMLDivElement>(null);
   const rafRef = React.useRef<number>(0);
   const xRef = React.useRef(0);
@@ -177,7 +178,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
         Companies I've worked with
       </h2>
       <div 
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden pb-12"
         style={{
           maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)'
@@ -187,18 +188,40 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
           ref={trackRef}
           className="flex items-center gap-16 w-max"
         >
-          {[...clients, ...clients, ...clients].map((client, index) => (
-            <div 
-              key={`${client.id}-${index}`}
-              className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5 hover:shadow-[0_0_30px_rgba(122,160,255,0.15)]"
-            >
-              <img 
-                src={client.logoUrl} 
-                alt={client.name}
-                className="h-20 w-auto object-contain transition-all duration-500 group-hover:scale-110"
-              />
-            </div>
-          ))}
+          {[...clients, ...clients, ...clients].map((client, index) => {
+            const keyId = `${client.id}-${index}`;
+            return (
+              <div 
+                key={keyId}
+                onMouseEnter={() => setHoveredId(keyId)}
+                onMouseLeave={() => setHoveredId(null)}
+                className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5"
+                style={hoveredId === keyId ? {
+                  animation: 'glowPulse 2s ease-in-out infinite',
+                  background: 'rgba(122, 160, 255, 0.05)',
+                  borderRadius: '1rem'
+                } : {}}
+              >
+                <img 
+                  src={client.logoUrl} 
+                  alt={client.name}
+                  className="h-20 w-auto object-contain transition-all duration-500 group-hover:scale-110"
+                />
+                <div
+                  className={`
+                    absolute -bottom-8 left-1/2 -translate-x-1/2
+                    px-3 py-1 rounded-full
+                    bg-ink/80 backdrop-blur-md border border-white/10
+                    text-white/80 text-[10px] font-medium tracking-wide whitespace-nowrap
+                    transition-all duration-300 pointer-events-none
+                    ${hoveredId === keyId ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}
+                  `}
+                >
+                  {client.name}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </motion.div>
