@@ -11,7 +11,7 @@ import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
 import { getProjects, getPosts, getClients, getSiteSettings } from './sanityClient';
-import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon } from 'lucide-react';
+import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 import { useForm, ValidationError } from '@formspree/react';
 
@@ -178,7 +178,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
         Companies I've worked with
       </h2>
       <div 
-        className="relative w-full overflow-hidden pb-12"
+        className="relative w-full overflow-x-clip pb-12"
         style={{
           maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)'
@@ -195,7 +195,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
                 key={keyId}
                 onMouseEnter={() => setHoveredId(keyId)}
                 onMouseLeave={() => setHoveredId(null)}
-                className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5"
+                className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5 bg-ink/10 border border-ink/5"
                 style={hoveredId === keyId ? {
                   animation: 'glowPulse 2s ease-in-out infinite',
                   background: 'rgba(122, 160, 255, 0.05)',
@@ -1463,6 +1463,96 @@ const Portfolio: React.FC<{
   );
 };
 
+const Footer: React.FC<{ settings: any }> = ({ settings }) => {
+  const showInstagram = settings?.instagramUrl;
+  const showYoutube = settings?.youtubeUrl;
+  const showLinkedin = settings?.linkedinUrl;
+
+  return (
+    <footer className="w-full px-4 md:px-8 pb-6 pt-0 bg-base">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        whileInView={{ opacity: 1, y: 0 }} 
+        viewport={{ once: true }} 
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="glass rounded-t-[2.5rem] rounded-b-[2rem] px-10 md:px-16 py-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-ink/5 shadow-xl shadow-ink/5 relative overflow-hidden"
+      >
+        {/* Subtle background detail */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[radial-gradient(ellipse,rgba(122,160,255,0.06)_0%,transparent_70%)] pointer-events-none -z-10" />
+
+        {/* Left section — brand */}
+        <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          <span className="font-montserrat font-black text-2xl tracking-tighter text-ink lowercase">
+            maas
+          </span>
+          <span className="text-spaced text-ink/30 text-xs mt-1">
+            Atlanta | Worldwide
+          </span>
+        </div>
+
+        {/* Center section — social icons */}
+        <div className="flex items-center gap-6">
+          {showInstagram && (
+            <a 
+              href={settings.instagramUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="group flex flex-col items-center gap-1.5"
+            >
+              <div className="w-11 h-11 rounded-full border border-ink/10 flex items-center justify-center transition-all duration-300 group-hover:border-periwinkle/40 group-hover:bg-periwinkle/5 group-hover:shadow-[0_0_20px_rgba(122,160,255,0.2)]">
+                <Instagram className="w-4 h-4 text-ink/40 group-hover:text-periwinkle transition-colors duration-300" />
+              </div>
+              <span className="text-[9px] tracking-widest uppercase text-ink/30 group-hover:text-periwinkle/60 transition-colors duration-300">
+                Instagram
+              </span>
+            </a>
+          )}
+          {showYoutube && (
+            <a 
+              href={settings.youtubeUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="group flex flex-col items-center gap-1.5"
+            >
+              <div className="w-11 h-11 rounded-full border border-ink/10 flex items-center justify-center transition-all duration-300 group-hover:border-periwinkle/40 group-hover:bg-periwinkle/5 group-hover:shadow-[0_0_20px_rgba(122,160,255,0.2)]">
+                <Youtube className="w-4 h-4 text-ink/40 group-hover:text-periwinkle transition-colors duration-300" />
+              </div>
+              <span className="text-[9px] tracking-widest uppercase text-ink/30 group-hover:text-periwinkle/60 transition-colors duration-300">
+                YouTube
+              </span>
+            </a>
+          )}
+          {showLinkedin && (
+            <a 
+              href={settings.linkedinUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="group flex flex-col items-center gap-1.5"
+            >
+              <div className="w-11 h-11 rounded-full border border-ink/10 flex items-center justify-center transition-all duration-300 group-hover:border-periwinkle/40 group-hover:bg-periwinkle/5 group-hover:shadow-[0_0_20px_rgba(122,160,255,0.2)]">
+                <Linkedin className="w-4 h-4 text-ink/40 group-hover:text-periwinkle transition-colors duration-300" />
+              </div>
+              <span className="text-[9px] tracking-widest uppercase text-ink/30 group-hover:text-periwinkle/60 transition-colors duration-300">
+                LinkedIn
+              </span>
+            </a>
+          )}
+        </div>
+
+        {/* Right section — copyright */}
+        <div className="text-center md:text-right">
+          <div className="text-xs text-ink/30">
+            © {new Date().getFullYear()} Maas Media LLC
+          </div>
+          <div className="text-[10px] text-ink/20 mt-1 tracking-wide">
+            Visuals built for you.
+          </div>
+        </div>
+      </motion.div>
+    </footer>
+  );
+};
+
 const Contact: React.FC = () => {
   const [state, handleSubmit] = useForm('mgodvopq');
 
@@ -2033,34 +2123,7 @@ export default function App() {
 
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} hidden={!!selectedProject} />
       
-      <footer className="relative z-10 py-20 border-t border-ink/5 bg-white/30 backdrop-blur-md">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex flex-col gap-1">
-            <span className="text-xl font-light tracking-widest text-ink uppercase">Maas Media</span>
-            <span className="text-xs text-ink/40 tracking-[0.3em] uppercase">Atlanta | Worldwide</span>
-          </div>
-          <div className="flex gap-8">
-  {[
-    { label: 'Instagram', href: siteSettings?.instagramUrl || 'https://instagram.com' },
-    { label: 'YouTube', href: siteSettings?.youtubeUrl || 'https://youtube.com' },
-    { label: 'LinkedIn', href: siteSettings?.linkedinUrl || 'https://linkedin.com' },
-  ].map(link => (
-    <a
-      key={link.label}
-      href={link.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-spaced hover:text-periwinkle transition-colors"
-    >
-      {link.label}
-    </a>
-  ))}
-</div>
-          <div className="text-xs text-ink/30 tracking-widest">
-            © 2026 Maas Media. Visuals built for you.
-          </div>
-        </div>
-      </footer>
+      <Footer settings={siteSettings} />
     </div>
   );
 }
