@@ -173,9 +173,6 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       <div className="text-spaced text-ink/30 text-center mb-4">
         trusted by
       </div>
-      <h2 className="text-3xl md:text-4xl font-medium text-ink text-center mb-16">
-        Companies I've worked with
-      </h2>
       <div 
         className="relative w-full py-12 pb-12"
         style={{
@@ -1474,8 +1471,9 @@ const Footer: React.FC<{ settings: any }> = ({ settings }) => {
           <span className="font-montserrat font-black text-2xl tracking-tighter text-ink lowercase">
             maas
           </span>
-          <span className="text-spaced text-ink/30 text-xs mt-1">
-            Atlanta | Worldwide
+          <span className="text-spaced text-ink/30 text-xs mt-1 flex items-center gap-1.5">
+            <MapPin className="w-3 h-3" />
+            Atlanta, GA
           </span>
         </div>
 
