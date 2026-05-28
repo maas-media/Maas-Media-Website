@@ -136,8 +136,6 @@ const ServiceRow: React.FC<{
 };
 
 const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: string }[] }> = ({ clients }) => {
-  const [isPaused, setIsPaused] = useState(false);
-
   if (!clients || clients.length === 0) return null;
 
   return (
@@ -163,10 +161,8 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       >
         <div 
           className="flex items-center gap-16 w-max"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
           style={{ 
-            animation: `crawlLeft ${isPaused ? '150s' : '50s'} linear infinite`
+            animation: 'crawlLeft 50s linear infinite'
           }}
         >
           {[...clients, ...clients, ...clients].map((client, index) => (
@@ -177,7 +173,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
               <img 
                 src={client.logoUrl} 
                 alt={client.name}
-                className="h-10 w-auto object-contain opacity-40 grayscale group-hover:opacity-70 group-hover:scale-110 group-hover:grayscale-0 transition-all duration-500 drop-shadow-[0_0_8px_rgba(0,0,0,0.15)]"
+                className="h-20 w-auto object-contain transition-all duration-500 group-hover:scale-110"
               />
             </div>
           ))}
