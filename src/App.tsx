@@ -166,8 +166,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           style={{ 
-            animation: 'crawlLeft 30s linear infinite',
-            animationPlayState: isPaused ? 'paused' : 'running'
+            animation: `crawlLeft ${isPaused ? '150s' : '50s'} linear infinite`
           }}
         >
           {[...clients, ...clients, ...clients].map((client, index) => (
@@ -178,7 +177,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
               <img 
                 src={client.logoUrl} 
                 alt={client.name}
-                className="h-10 w-auto object-contain opacity-40 grayscale group-hover:opacity-70 group-hover:grayscale-0 transition-all duration-500"
+                className="h-10 w-auto object-contain opacity-40 grayscale group-hover:opacity-70 group-hover:scale-110 group-hover:grayscale-0 transition-all duration-500 drop-shadow-[0_0_8px_rgba(0,0,0,0.15)]"
               />
             </div>
           ))}
