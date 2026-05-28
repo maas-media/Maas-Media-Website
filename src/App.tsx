@@ -136,7 +136,6 @@ const ServiceRow: React.FC<{
 };
 
 const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: string }[] }> = ({ clients }) => {
-  const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const trackRef = React.useRef<HTMLDivElement>(null);
   const rafRef = React.useRef<number>(0);
   const xRef = React.useRef(0);
@@ -193,29 +192,19 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
             return (
               <div 
                 key={keyId}
-                onMouseEnter={() => setHoveredId(keyId)}
-                onMouseLeave={() => setHoveredId(null)}
-                className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5 bg-ink/10 border border-ink/5"
-                style={hoveredId === keyId ? {
-                  animation: 'glowPulse 2s ease-in-out infinite',
-                  background: 'rgba(122, 160, 255, 0.05)',
-                  borderRadius: '1rem'
-                } : {}}
+                className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5"
               >
+                <div 
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"
+                  style={{ boxShadow: '0 0 30px 8px rgba(122,160,255,0.2), 0 0 60px 16px rgba(180,140,255,0.1)' }}
+                />
                 <img 
                   src={client.logoUrl} 
                   alt={client.name}
                   className="h-20 w-auto object-contain transition-all duration-500 group-hover:scale-110"
                 />
                 <div
-                  className={`
-                    absolute -bottom-8 left-1/2 -translate-x-1/2
-                    px-3 py-1 rounded-full
-                    bg-ink/80 backdrop-blur-md border border-white/10
-                    text-white/80 text-[10px] font-medium tracking-wide whitespace-nowrap
-                    transition-all duration-300 pointer-events-none
-                    ${hoveredId === keyId ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}
-                  `}
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-ink/80 backdrop-blur-md border border-white/10 text-white/80 text-[10px] font-medium tracking-wide whitespace-nowrap transition-all duration-300 pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
                 >
                   {client.name}
                 </div>
