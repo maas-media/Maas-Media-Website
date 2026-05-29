@@ -782,169 +782,271 @@ const ProcessTimeline: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="container mx-auto px-4 py-24"
+      className="container mx-auto px-4 py-0"
     >
       <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
         The Process
       </h2>
 
-      {/* Timeline Panel */}
-      <div className="glass border border-ink/5 rounded-[2rem] overflow-hidden mb-6">
-        {/* Video Track (V1) */}
-        <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
-          <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
-            <Video className="w-3 h-3 text-ink/20" />
-            <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">V1</span>
-          </div>
-          <div className="flex-1 relative flex gap-1.5 p-2 h-[180px]">
+      {/* Mobile-only layout */}
+      <div className="md:hidden flex flex-col gap-3">
+        {/* Mini Scrubber */}
+        <div className="flex items-center gap-3 mb-4">
+          <span className="font-mono text-[10px] text-ink/30">
+            {steps[activeStep].timecode}
+          </span>
+          <div 
+            onClick={handleScrubberClick}
+            className="flex-1 relative h-1 bg-ink/5 rounded-full cursor-pointer"
+          >
+            {/* Fill Bar */}
+            <div 
+              className="absolute left-0 top-0 h-full rounded-full transition-all duration-500"
+              style={{ 
+                backgroundColor: steps[activeStep].activeBorder,
+                width: `${(activeStep / (steps.length - 1)) * 100}%` 
+              }}
+            />
+            {/* Playhead */}
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border-2 border-white transition-all duration-500"
+              style={{ 
+                backgroundColor: steps[activeStep].activeBorder,
+                left: `${(activeStep / (steps.length - 1)) * 100}%` 
+              }}
+            />
+            {/* Ticks */}
             {steps.map((step, index) => {
-              const isActive = activeStep === index;
+              const leftVal = index === 0 ? '0%' : index === 1 ? '50%' : '100%';
               return (
                 <div
                   key={index}
-                  onClick={() => setActiveStep(index)}
-                  style={{
-                    backgroundColor: isActive ? step.activeColor : step.idleColor,
-                    borderColor: isActive ? step.activeBorder : step.idleBorder,
-                  } as React.CSSProperties}
-                  className={`relative rounded-xl cursor-pointer overflow-visible border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between p-3 ${
-                    isActive ? 'flex-[3]' : 'flex-[1]'
-                  }`}
+                  className="absolute top-3 -translate-x-1/2 font-mono text-[8px] text-ink/20"
+                  style={{ left: leftVal }}
                 >
-                  <div>
-                    <div className="font-mono text-[9px] text-ink/30 mb-1">
-                      {step.timecode}
-                    </div>
-                    <h4 className={`text-sm font-medium text-ink leading-tight ${!isActive ? 'truncate' : ''}`}>
-                      {step.title}
-                    </h4>
-                    {isActive && (
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3, delay: 0.15 }}
-                        className="text-xs text-ink/50 font-light leading-relaxed mt-2"
-                      >
-                        {step.desc}
-                      </motion.p>
-                    )}
-                  </div>
-                  <div className="font-mono text-[9px] text-ink/20">
-                    {step.num}
-                  </div>
+                  {step.timecode}
                 </div>
               );
             })}
           </div>
+          <span className="font-mono text-[10px] text-ink/20">
+            00:06
+          </span>
         </div>
 
-        {/* Audio Track (A1) */}
-        <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
-          <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
-            <AudioLines className="w-3 h-3 text-ink/20" />
-            <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">A1</span>
-          </div>
-          <div className="flex-1 relative p-2 h-[36px] flex items-center">
-            <svg
-              width="100%"
-              height="24"
-              viewBox="0 0 600 24"
-              preserveAspectRatio="none"
-              className="w-full opacity-30"
-            >
-              {Array.from({ length: 120 }).map((_, i) => {
-                const seed = Math.sin(i * 0.8) * 0.5 + Math.sin(i * 0.3) * 0.3 + Math.sin(i * 1.7) * 0.2;
-                const h = Math.max(2, Math.abs(seed) * 20 + Math.random() * 4);
-                const x = (i / 120) * 600;
-                const y = (24 - h) / 2;
+        {/* Active Card with AnimatePresence */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4"
+            style={{ borderLeft: `3px solid ${steps[activeStep].activeBorder}` }}
+          >
+            <div className="flex flex-col gap-2 flex-1">
+              <span className="font-mono text-[10px] text-ink/30">{steps[activeStep].timecode}</span>
+              <h3 className="text-base font-medium text-ink leading-tight">{steps[activeStep].title}</h3>
+              <p className="text-sm font-light text-ink/50 leading-relaxed">{steps[activeStep].desc}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Mobile Transport Controls */}
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <button
+            onClick={() => setActiveStep(prev => Math.max(0, prev - 1))}
+            className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => {
+              if (activeStep >= steps.length - 1) setActiveStep(0);
+              setIsPlaying(p => !p);
+            }}
+            className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${
+              isPlaying 
+                ? 'border-periwinkle/40 bg-periwinkle/10 text-periwinkle' 
+                : 'border-ink/10 text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle'
+            }`}
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5 fill-current" />
+            ) : (
+              <Play className="w-5 h-5 fill-current ml-0.5" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveStep(prev => Math.min(steps.length - 1, prev + 1))}
+            className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Timeline Layout */}
+      <div className="hidden md:block">
+        {/* Timeline Panel */}
+        <div className="glass border border-ink/5 rounded-[2rem] overflow-hidden mb-6">
+          {/* Video Track (V1) */}
+          <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
+            <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
+              <Video className="w-3 h-3 text-ink/20" />
+              <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">V1</span>
+            </div>
+            <div className="flex-1 relative flex gap-1.5 p-2 h-[180px]">
+              {steps.map((step, index) => {
+                const isActive = activeStep === index;
                 return (
-                  <rect
-                    key={i}
-                    x={x}
-                    y={y}
-                    width={3}
-                    height={h}
-                    rx={1}
-                    fill="rgba(26,26,46,0.6)"
-                  />
+                  <div
+                    key={index}
+                    onClick={() => setActiveStep(index)}
+                    style={{
+                      backgroundColor: isActive ? step.activeColor : step.idleColor,
+                      borderColor: isActive ? step.activeBorder : step.idleBorder,
+                    } as React.CSSProperties}
+                    className={`relative rounded-xl cursor-pointer overflow-visible border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between p-3 ${
+                      isActive ? 'flex-[3]' : 'flex-[1]'
+                    }`}
+                  >
+                    <div>
+                      <div className="font-mono text-[9px] text-ink/30 mb-1">
+                        {step.timecode}
+                      </div>
+                      <h4 className={`text-sm font-medium text-ink leading-tight ${!isActive ? 'truncate' : ''}`}>
+                        {step.title}
+                      </h4>
+                      {isActive && (
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3, delay: 0.15 }}
+                          className="text-xs text-ink/50 font-light leading-relaxed mt-2"
+                        >
+                          {step.desc}
+                        </motion.p>
+                      )}
+                    </div>
+                    <div className="font-mono text-[9px] text-ink/20">
+                      {step.num}
+                    </div>
+                  </div>
                 );
               })}
-            </svg>
+            </div>
+          </div>
+
+          {/* Audio Track (A1) */}
+          <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
+            <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
+              <AudioLines className="w-3 h-3 text-ink/20" />
+              <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">A1</span>
+            </div>
+            <div className="flex-1 relative p-2 h-[36px] flex items-center">
+              <svg
+                width="100%"
+                height="24"
+                viewBox="0 0 600 24"
+                preserveAspectRatio="none"
+                className="w-full opacity-30"
+              >
+                {Array.from({ length: 120 }).map((_, i) => {
+                  const seed = Math.sin(i * 0.8) * 0.5 + Math.sin(i * 0.3) * 0.3 + Math.sin(i * 1.7) * 0.2;
+                  const h = Math.max(2, Math.abs(seed) * 20 + Math.random() * 4);
+                  const x = (i / 120) * 600;
+                  const y = (24 - h) / 2;
+                  return (
+                    <rect
+                      key={i}
+                      x={x}
+                      y={y}
+                      width={3}
+                      height={h}
+                      rx={1}
+                      fill="rgba(26,26,46,0.6)"
+                    />
+                  );
+                })}
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Scrubber Bar */}
-      <div className="glass border border-ink/5 rounded-2xl px-6 py-4 flex items-center gap-4 mb-6">
-        <span className="font-mono text-xs text-ink/40">
-          {steps[activeStep].timecode}
-        </span>
-        
-        <div 
-          onClick={handleScrubberClick}
-          className="flex-1 relative h-1.5 bg-ink/5 rounded-full cursor-pointer"
-        >
-          {/* Fill Bar */}
+        {/* Scrubber Bar */}
+        <div className="glass border border-ink/5 rounded-2xl px-6 py-4 flex items-center gap-4 mb-6">
+          <span className="font-mono text-xs text-ink/40">
+            {steps[activeStep].timecode}
+          </span>
+          
           <div 
-            className="absolute left-0 top-0 h-full bg-periwinkle/40 rounded-full transition-all duration-500"
-            style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
-          />
-          {/* Playhead */}
-          <div 
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-periwinkle border-2 border-white shadow-sm transition-all duration-500"
-            style={{ left: `${(activeStep / (steps.length - 1)) * 100}%` }}
-          />
-          {/* Ticks */}
-          {steps.map((step, index) => {
-            const leftVal = index === 0 ? '0%' : index === 1 ? '50%' : '100%';
-            return (
-              <div
-                key={index}
-                className="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-ink/20"
-                style={{ left: leftVal }}
-              >
-                {step.timecode}
-              </div>
-            );
-          })}
+            onClick={handleScrubberClick}
+            className="flex-1 relative h-1.5 bg-ink/5 rounded-full cursor-pointer"
+          >
+            {/* Fill Bar */}
+            <div 
+              className="absolute left-0 top-0 h-full bg-periwinkle/40 rounded-full transition-all duration-500"
+              style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
+            />
+            {/* Playhead */}
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-periwinkle border-2 border-white shadow-sm transition-all duration-500"
+              style={{ left: `${(activeStep / (steps.length - 1)) * 100}%` }}
+            />
+            {/* Ticks */}
+            {steps.map((step, index) => {
+              const leftVal = index === 0 ? '0%' : index === 1 ? '50%' : '100%';
+              return (
+                <div
+                  key={index}
+                  className="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-ink/20"
+                  style={{ left: leftVal }}
+                >
+                  {step.timecode}
+                </div>
+              );
+            })}
+          </div>
+
+          <span className="font-mono text-xs text-ink/20">
+            00:06
+          </span>
         </div>
 
-        <span className="font-mono text-xs text-ink/20">
-          00:06
-        </span>
-      </div>
-
-      {/* Transport Controls */}
-      <div className="flex items-center justify-center gap-4">
-        <button
-          onClick={() => setActiveStep(prev => Math.max(0, prev - 1))}
-          className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            if (activeStep >= steps.length - 1) setActiveStep(0);
-            setIsPlaying(p => !p);
-          }}
-          className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${
-            isPlaying 
-              ? 'border-periwinkle/40 bg-periwinkle/10 text-periwinkle' 
-              : 'border-ink/10 text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle'
-          }`}
-        >
-          {isPlaying ? (
-            <Pause className="w-5 h-5 fill-current" />
-          ) : (
-            <Play className="w-5 h-5 fill-current ml-0.5" />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveStep(prev => Math.min(steps.length - 1, prev + 1))}
-          className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        {/* Transport Controls */}
+        <div className="flex items-center justify-center gap-4">
+          <button
+            onClick={() => setActiveStep(prev => Math.max(0, prev - 1))}
+            className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => {
+              if (activeStep >= steps.length - 1) setActiveStep(0);
+              setIsPlaying(p => !p);
+            }}
+            className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${
+              isPlaying 
+                ? 'border-periwinkle/40 bg-periwinkle/10 text-periwinkle' 
+                : 'border-ink/10 text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle'
+            }`}
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5 fill-current" />
+            ) : (
+              <Play className="w-5 h-5 fill-current ml-0.5" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveStep(prev => Math.min(steps.length - 1, prev + 1))}
+            className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -1151,7 +1253,7 @@ const Home: React.FC<{
       </section>
 
       {/* Services Section: Hover-Reveal Layout */}
-      <section className="container mx-auto px-4 border-t border-ink/5 pt-24 pb-32">
+      <section className="container mx-auto px-4 border-t border-ink/5 pt-24 pb-8">
         <motion.h2
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -1178,7 +1280,9 @@ const Home: React.FC<{
         </div>
       </section>
 
-      <ProcessTimeline />
+      <div className="py-12">
+        <ProcessTimeline />
+      </div>
 
 
       {/* Selected Works */}
