@@ -7,7 +7,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useAnimationFrame, animate, useInView } from 'motion/react';
 import { ParticleBackground } from './components/ParticleBackground';
 import { Navigation } from './components/Navigation';
-import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
 import { getProjects, getPosts, getClients, getSiteSettings } from './sanityClient';
@@ -1065,7 +1064,13 @@ const Home: React.FC<{
 
   const ctaRef = React.useRef(null);
   const ctaInView = useInView(ctaRef, { once: false, margin: '-10% 0px' });
-  const isMobile = window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const [demoReelPlaying, setDemoReelPlaying] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -1199,7 +1204,7 @@ const Home: React.FC<{
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              Visuals built <span className="text-periwinkle italic">for you.</span>
+              Stories worth <span className="text-periwinkle italic">seeing.</span>
             </motion.h1>
 
             <motion.p
@@ -1739,7 +1744,7 @@ const Portfolio: React.FC<{
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 pt-40 pb-40"
+      className="container mx-auto px-4 pt-40 pb-16 md:pb-40"
     >
       {/* Page Header */}
       <header className="mb-20 space-y-4 max-w-4xl">
@@ -1993,7 +1998,7 @@ const Contact: React.FC = () => {
           <>
             <SectionTitle title="Let's build." subtitle="Contact" />
             
-            {state.errors && !state.succeeded && (
+            {state.errors && (state.errors as any).length > 0 && !state.succeeded && (
               <div className="glass p-6 rounded-xl border border-red-500/30 text-center mb-6">
                 <p className="text-sm text-red-500/80">
                   Something went wrong. Please try again or email me directly at isaac@maasmedia.org.
