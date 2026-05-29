@@ -752,7 +752,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
 ];
 
   return (
-    <div className="space-y-32 pb-40">
+    <div className="space-y-32 pb-4 md:pb-16">
       {/* Hero */}
       <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden bg-white">
     
@@ -919,7 +919,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
 
       {/* Selected Works */}
       <ClientLogos clients={clients} />
-      <section className="container mx-auto px-4 py-32">
+      <section className="container mx-auto px-4 pt-32 pb-4 md:pb-32">
         <div className="flex flex-col lg:flex-row gap-6 items-stretch">
           
           {/* Left Column (35-40%) */}
@@ -1369,8 +1369,8 @@ const Portfolio: React.FC<{
       </header>
 
       {/* Filter Strip */}
-      <div className="relative mb-24">
-        <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
+      <div className="relative mb-24 -mx-4 md:mx-0">
+        <div className="overflow-x-auto scrollbar-hide px-4">
           <div className="flex flex-nowrap md:flex-wrap items-center md:justify-center gap-3 p-4 overflow-visible">
             {categories.map((cat, idx) => (
               <motion.button
