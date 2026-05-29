@@ -11,7 +11,7 @@ import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
 import { getProjects, getPosts, getClients, getSiteSettings } from './sanityClient';
-import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin, PenLine } from 'lucide-react';
+import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin, PenLine, Video, AudioLines, Pause } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 import { useForm, ValidationError } from '@formspree/react';
 
@@ -22,8 +22,9 @@ const ServiceRow: React.FC<{
   index: number; 
   active: boolean;
   setActive: (active: boolean) => void;
-  onNavigate: (tab: string) => void 
-}> = ({ service, index, active, setActive, onNavigate }) => {
+  onNavigate: (tab: string) => void;
+  onNavigateWithFilter: (tab: string, filter: string) => void;
+}> = ({ service, index, active, setActive, onNavigate, onNavigateWithFilter }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isTouchRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,7 +99,7 @@ const ServiceRow: React.FC<{
               transition={{ delay: 0.3 }}
               onClick={(e) => {
                 e.stopPropagation();
-                onNavigate('Work');
+                onNavigateWithFilter('Work', service.filterCategory);
               }}
               className="inline-flex items-center gap-2 text-periwinkle font-medium hover:gap-4 transition-all"
             >
@@ -707,9 +708,255 @@ const PulsingRim: React.FC<{ borderRadius?: number }> = ({ borderRadius = 40 }) 
     </div>
   );
 };
+const ProcessTimeline: React.FC = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const playRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const steps = [
+    {
+      num: '01',
+      title: 'Discovery',
+      timecode: '00:01',
+      desc: "We start with a conversation. I want to understand your brand, your audience, and what you're actually trying to accomplish so that every creative decision has a reason behind it.",
+      activeColor: 'rgba(122,160,255,0.25)',
+      activeBorder: 'rgba(122,160,255,0.8)',
+      idleColor: 'rgba(122,160,255,0.08)',
+      idleBorder: 'rgba(122,160,255,0.25)',
+    },
+    {
+      num: '02',
+      title: 'Production',
+      timecode: '00:03',
+      desc: "This is where it gets fun. From shot lists and location scouting to the shoot day itself, I run the full production process so you can stay focused on running your business.",
+      activeColor: 'rgba(180,140,255,0.22)',
+      activeBorder: 'rgba(180,140,255,0.8)',
+      idleColor: 'rgba(180,140,255,0.07)',
+      idleBorder: 'rgba(180,140,255,0.25)',
+    },
+    {
+      num: '03',
+      title: 'Delivery',
+      timecode: '00:06',
+      desc: "Color graded, edited, and built for your platform. You get a final product that's ready to publish and actually moves the needle for your brand.",
+      activeColor: 'rgba(100,210,200,0.2)',
+      activeBorder: 'rgba(100,210,200,0.8)',
+      idleColor: 'rgba(100,210,200,0.07)',
+      idleBorder: 'rgba(100,210,200,0.25)',
+    }
+  ];
+
+  useEffect(() => {
+    if (isPlaying) {
+      playRef.current = setInterval(() => {
+        setActiveStep(prev => {
+          if (prev >= steps.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 2500);
+    } else {
+      if (playRef.current) clearInterval(playRef.current);
+    }
+    return () => { if (playRef.current) clearInterval(playRef.current); };
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (activeStep >= steps.length - 1) setIsPlaying(false);
+  }, [activeStep]);
+
+  const handleScrubberClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const stepIndex = Math.round(percentage * (steps.length - 1));
+    const finalStep = Math.max(0, Math.min(steps.length - 1, stepIndex));
+    setActiveStep(finalStep);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="container mx-auto px-4 py-24"
+    >
+      <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
+        The Process
+      </h2>
+
+      {/* Timeline Panel */}
+      <div className="glass border border-ink/5 rounded-[2rem] overflow-hidden mb-6">
+        {/* Video Track (V1) */}
+        <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
+          <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
+            <Video className="w-3 h-3 text-ink/20" />
+            <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">V1</span>
+          </div>
+          <div className="flex-1 relative flex gap-1.5 p-2 h-[180px]">
+            {steps.map((step, index) => {
+              const isActive = activeStep === index;
+              return (
+                <div
+                  key={index}
+                  onClick={() => setActiveStep(index)}
+                  style={{
+                    backgroundColor: isActive ? step.activeColor : step.idleColor,
+                    borderColor: isActive ? step.activeBorder : step.idleBorder,
+                  } as React.CSSProperties}
+                  className={`relative rounded-xl cursor-pointer overflow-visible border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between p-3 ${
+                    isActive ? 'flex-[3]' : 'flex-[1]'
+                  }`}
+                >
+                  <div>
+                    <div className="font-mono text-[9px] text-ink/30 mb-1">
+                      {step.timecode}
+                    </div>
+                    <h4 className={`text-sm font-medium text-ink leading-tight ${!isActive ? 'truncate' : ''}`}>
+                      {step.title}
+                    </h4>
+                    {isActive && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, delay: 0.15 }}
+                        className="text-xs text-ink/50 font-light leading-relaxed mt-2"
+                      >
+                        {step.desc}
+                      </motion.p>
+                    )}
+                  </div>
+                  <div className="font-mono text-[9px] text-ink/20">
+                    {step.num}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Audio Track (A1) */}
+        <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
+          <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
+            <AudioLines className="w-3 h-3 text-ink/20" />
+            <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">A1</span>
+          </div>
+          <div className="flex-1 relative p-2 h-[36px] flex items-center">
+            <svg
+              width="100%"
+              height="24"
+              viewBox="0 0 600 24"
+              preserveAspectRatio="none"
+              className="w-full opacity-30"
+            >
+              {Array.from({ length: 120 }).map((_, i) => {
+                const seed = Math.sin(i * 0.8) * 0.5 + Math.sin(i * 0.3) * 0.3 + Math.sin(i * 1.7) * 0.2;
+                const h = Math.max(2, Math.abs(seed) * 20 + Math.random() * 4);
+                const x = (i / 120) * 600;
+                const y = (24 - h) / 2;
+                return (
+                  <rect
+                    key={i}
+                    x={x}
+                    y={y}
+                    width={3}
+                    height={h}
+                    rx={1}
+                    fill="rgba(26,26,46,0.6)"
+                  />
+                );
+              })}
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Scrubber Bar */}
+      <div className="glass border border-ink/5 rounded-2xl px-6 py-4 flex items-center gap-4 mb-6">
+        <span className="font-mono text-xs text-ink/40">
+          {steps[activeStep].timecode}
+        </span>
+        
+        <div 
+          onClick={handleScrubberClick}
+          className="flex-1 relative h-1.5 bg-ink/5 rounded-full cursor-pointer"
+        >
+          {/* Fill Bar */}
+          <div 
+            className="absolute left-0 top-0 h-full bg-periwinkle/40 rounded-full transition-all duration-500"
+            style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
+          />
+          {/* Playhead */}
+          <div 
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-periwinkle border-2 border-white shadow-sm transition-all duration-500"
+            style={{ left: `${(activeStep / (steps.length - 1)) * 100}%` }}
+          />
+          {/* Ticks */}
+          {steps.map((step, index) => {
+            const leftVal = index === 0 ? '0%' : index === 1 ? '50%' : '100%';
+            return (
+              <div
+                key={index}
+                className="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-ink/20"
+                style={{ left: leftVal }}
+              >
+                {step.timecode}
+              </div>
+            );
+          })}
+        </div>
+
+        <span className="font-mono text-xs text-ink/20">
+          00:06
+        </span>
+      </div>
+
+      {/* Transport Controls */}
+      <div className="flex items-center justify-center gap-4">
+        <button
+          onClick={() => setActiveStep(prev => Math.max(0, prev - 1))}
+          className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => {
+            if (activeStep >= steps.length - 1) setActiveStep(0);
+            setIsPlaying(p => !p);
+          }}
+          className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${
+            isPlaying 
+              ? 'border-periwinkle/40 bg-periwinkle/10 text-periwinkle' 
+              : 'border-ink/10 text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle'
+          }`}
+        >
+          {isPlaying ? (
+            <Pause className="w-5 h-5 fill-current" />
+          ) : (
+            <Play className="w-5 h-5 fill-current ml-0.5" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveStep(prev => Math.min(steps.length - 1, prev + 1))}
+          className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 
-const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSettings: any }> = ({ onNavigate, clients, siteSettings }) => {
+const Home: React.FC<{ 
+  onNavigate: (tab: string) => void; 
+  onNavigateWithFilter: (tab: string, filter: string) => void;
+  clients: any[]; 
+  siteSettings: any;
+}> = ({ onNavigate, onNavigateWithFilter, clients, siteSettings }) => {
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -718,12 +965,14 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   const ctaInView = useInView(ctaRef, { once: false, margin: '-10% 0px' });
   const isMobile = window.innerWidth < 768;
 
+  const [demoReelPlaying, setDemoReelPlaying] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
   const services = [
   { 
     id: 'brand', 
     title: 'Brand & Commercial', 
+    filterCategory: 'Brand & Commercial',
     desc: 'Premium brand narratives that drive impact and define your identity through purposeful storytelling.', 
     icon: Play,
     vimeoId: '1193350137'
@@ -731,6 +980,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   { 
     id: 'real-estate', 
     title: 'Real Estate', 
+    filterCategory: 'Real Estate',
     desc: 'Cinematic property tours highlighting architectural detail and neighborhood energy for high-end listings.', 
     icon: House,
     vimeoId: '1193350140'
@@ -738,6 +988,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   { 
     id: 'events', 
     title: 'Events', 
+    filterCategory: 'Events',
     desc: 'Energetic recaps captured with cinematic energy and emotional resonance that preserves every moment.', 
     icon: Calendar,
     vimeoId: '1193350138'
@@ -745,6 +996,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   { 
     id: 'social', 
     title: 'Social Content', 
+    filterCategory: 'Social Content',
     desc: 'Short-form visuals optimized for high-engagement, dynamic pacing, and platform-specific impact.', 
     icon: Smartphone,
     vimeoId: '1193350139'
@@ -754,7 +1006,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   return (
     <div className="space-y-32 pb-4 md:pb-16">
       {/* Hero */}
-      <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden bg-white">
+      <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden bg-base">
     
 
         {/* Desktop Floating Frames — 8 players */}
@@ -900,6 +1152,15 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
 
       {/* Services Section: Hover-Reveal Layout */}
       <section className="container mx-auto px-4 border-t border-ink/5 pt-24 pb-32">
+        <motion.h2
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12"
+        >
+          Services
+        </motion.h2>
         
 
         <div className="flex flex-col">
@@ -911,15 +1172,27 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
               active={expandedIndex === idx}
               setActive={(active) => setExpandedIndex(active ? idx : null)}
               onNavigate={onNavigate}
+              onNavigateWithFilter={onNavigateWithFilter}
             />
           ))}
         </div>
       </section>
 
+      <ProcessTimeline />
+
 
       {/* Selected Works */}
       <ClientLogos clients={clients} />
       <section className="container mx-auto px-4 pt-32 pb-4 md:pb-32">
+        <motion.h2
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12"
+        >
+          About
+        </motion.h2>
         <div className="flex flex-col lg:flex-row gap-6 items-stretch">
           
           {/* Left Column (35-40%) */}
@@ -973,24 +1246,35 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
             {/* Middle Tile: My Story Video */}
             <GlassCard className="p-12 space-y-6 border-ink/5 overflow-hidden flex-shrink-0">
               <div className="flex flex-col gap-6">
-                <span className="text-[10px] uppercase tracking-widest text-ink/40 font-medium text-center lg:text-left">My Story</span>
-                <div className="aspect-video w-full rounded-2xl overflow-hidden relative group/vplay cursor-pointer border border-periwinkle/10 bg-[#0f0f19]">
-                  <video 
-                    autoPlay 
-                    loop 
-                    muted 
-                    playsInline
-                    preload="auto"
-                    className="w-full h-full object-cover grayscale brightness-50"
-                    src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-mountain-landscape-with-a-river-in-the-valley-4415-large.mp4"
-                  >
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-mountain-landscape-with-a-river-in-the-valley-4415-large.mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 group-hover/vplay:scale-110 group-hover/vplay:bg-periwinkle/30 transition-all">
-                      <Play className="w-6 h-6 text-white fill-white ml-1" />
+                <span className="text-[10px] uppercase tracking-widest text-ink/40 font-medium text-center lg:text-left">Demo Reel</span>
+                <div className="aspect-video w-full rounded-2xl overflow-hidden relative border border-periwinkle/10 bg-[#0f0f19]">
+                  {/* Thumbnail + play button — shown when not playing */}
+                  {!demoReelPlaying && (
+                    <div 
+                      className="absolute inset-0 z-10 cursor-pointer group/demo"
+                      onClick={() => setDemoReelPlaying(true)}
+                    >
+                      <img
+                        src="https://vumbnail.com/1189150076.jpg"
+                        alt="Demo Reel"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover/demo:scale-110 group-hover/demo:bg-periwinkle/40 transition-all duration-300 shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+                          <Play className="w-6 h-6 text-white fill-white ml-1" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Vimeo iframe — always rendered but only visible when playing */}
+                  <iframe
+                    src={`https://player.vimeo.com/video/1189150076?autoplay=${demoReelPlaying ? 1 : 0}&controls=1`}
+                    className={`absolute inset-0 w-full h-full border-none transition-opacity duration-300 ${demoReelPlaying ? 'opacity-100' : 'opacity-0'}`}
+                    allow="autoplay; fullscreen"
+                    title="Demo Reel"
+                  />
                 </div>
               </div>
             </GlassCard>
@@ -1327,8 +1611,9 @@ const Portfolio: React.FC<{
   projects: Project[];
   selectedProject: Project | null;
   setSelectedProject: (p: Project | null) => void;
-}> = ({ projects, selectedProject, setSelectedProject }) => {
-  const [filter, setFilter] = useState('All');
+  initialFilter?: string;
+}> = ({ projects, selectedProject, setSelectedProject, initialFilter }) => {
+  const [filter, setFilter] = useState(initialFilter || 'All');
   
   const categories = ['All', 'Brand & Commercial', 'Real Estate', 'Events', 'Social Content', 'Photography'];
   const filtered = filter === 'All' ? projects : projects.filter(p => p.categories?.includes(filter));
@@ -1340,6 +1625,10 @@ const Portfolio: React.FC<{
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
+
+  useEffect(() => {
+    if (initialFilter) setFilter(initialFilter);
+  }, [initialFilter]);
 
   return (
     <motion.div 
@@ -1686,187 +1975,6 @@ const Contact: React.FC = () => {
   );
 };
 
-const BlogPostDetail: React.FC<{ 
-  slug: string; 
-  onBack: () => void; 
-  onNavigate: (tab: string) => void; 
-  onPostClick: (slug: string) => void;
-  posts: Post[];
-}> = ({ slug, onBack, onNavigate, onPostClick, posts }) => {
-  const post = posts.find(p => p.slug === slug);
-  const relatedPosts = posts.filter(p => p.slug !== slug).sort(() => 0.5 - Math.random()).slice(0, 3);
-
-  if (!post) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen pt-40 pb-40"
-    >
-      <div className="container mx-auto px-4">
-        {/* Breadcrumbs */}
-        <div className="mb-8 flex items-center gap-2 text-sm text-ink/40">
-          <button onClick={onBack} className="hover:text-periwinkle transition-colors">Blog</button>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-ink/60 truncate">{post.title}</span>
-        </div>
-
-        {/* Post Hero */}
-        <div className="w-full h-[320px] md:h-[520px] rounded-[2.5rem] overflow-hidden relative mb-12 shadow-2xl">
-          {post.youtubeUrl ? (
-            <div className="w-full h-full bg-black">
-              <iframe
-                src={post.youtubeUrl}
-                className="w-full h-full border-none"
-                allow="autoplay; fullscreen"
-                title={post.title}
-              />
-            </div>
-          ) : (
-            <img 
-              src={post.thumbnail} 
-              alt={post.title} 
-              className="w-full h-full object-cover"
-            />
-          )}
-          {/* Hero Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-8 md:p-12">
-            <div className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-[10px] uppercase tracking-widest text-white w-fit mb-4">
-              {post.category}
-            </div>
-            <h1 className="text-3xl md:text-5xl font-light text-white leading-tight max-w-4xl tracking-tight">
-              {post.title}
-            </h1>
-          </div>
-        </div>
-
-        {/* Metadata Strip */}
-        <div className="border-y border-ink/5 py-6 mb-16 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-6 text-sm text-ink/50">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>5 min read</span>
-            </div>
-            <div className="w-1 h-1 rounded-full bg-ink/10" />
-            <span>{post.date}</span>
-          </div>
-          <div className="flex items-center gap-4 text-ink/40">
-            <button className="hover:text-periwinkle transition-colors"><Twitter className="w-5 h-5" /></button>
-            <button className="hover:text-periwinkle transition-colors"><LinkIcon className="w-5 h-5" /></button>
-          </div>
-        </div>
-
-        {/* Post Body */}
-        <div className="max-w-[720px] mx-auto space-y-10">
-          <p className="text-lg leading-relaxed text-ink/80">
-            Mastering drone cinematography starts with understanding the hardware, but it truly excels when you master the interplay between natural light and camera movement. 
-            In this guide, we explore the essential techniques for capturing smooth, cinematic shots that elevate your property and commercial productions.
-          </p>
-
-          <h2 className="text-2xl md:text-3xl font-medium text-ink pt-4">Geometry of the Landscape</h2>
-          <p className="text-ink/70 leading-relaxed">
-            When you're hundreds of feet in the air, the world becomes a canvas of geometric shapes. Real estate cinematography relies on these lines to guide the viewer's eye toward the focal point—the property itself. Leading lines, symmetry, and the rule of thirds remain just as vital in the sky as they do on the ground.
-          </p>
-
-          <div className="relative group">
-            <div className="pl-6 border-l-2 border-periwinkle">
-              <p className="text-xl md:text-2xl font-light text-periwinkle italic leading-relaxed">
-                "The most impactful aerial shots aren't those that show everything at once, but those that reveal the story of the space through deliberate motion."
-              </p>
-            </div>
-          </div>
-
-          <p className="text-ink/70 leading-relaxed">
-            Slow, controlled movements are the hallmark of high-end drone work. Avoid erratic turns or sudden changes in speed. Instead, aim for long, sweeping orbits or steady "push-ins" that mimic dolly shots used on major film sets. This consistency builds a sense of luxury and professionalism.
-          </p>
-
-          <div className="rounded-2xl overflow-hidden shadow-lg">
-            <img 
-              src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=1200" 
-              alt="Mid-post visual" 
-              className="w-full h-auto"
-            />
-            <p className="text-sm text-ink/40 mt-3 italic text-center">Finding the perfect golden hour light for an estate shoot.</p>
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-medium text-ink pt-4">The Importance of Light</h2>
-          <p className="text-ink/70 leading-relaxed">
-             Golden hour is not just a suggestion; it's a requirement for world-class drone visuals. The long shadows and warm hues provide depth that midday sun simply cannot replicate. 
-             By flying during the last hour of daylight, you capture textures on rooflines and landscaping that help potential buyers feel the warmth of a home before they ever step inside.
-          </p>
-
-          {/* Optional Video Embed */}
-          <div className="pt-8 space-y-4">
-             <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/40">Watch the video.</span>
-             <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-xl">
-               <iframe
-                 src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                 className="w-full h-full border-none"
-                 allow="autoplay; fullscreen"
-               />
-             </div>
-          </div>
-        </div>
-
-        {/* Footer CTA */}
-        <div className="mt-24">
-          <GlassCard className="p-12 md:p-16 text-center space-y-8 bg-periwinkle/[0.03]">
-             <h2 className="text-3xl md:text-4xl font-light tracking-tight text-ink">
-               Enjoyed this? Let's create something together.
-             </h2>
-             <a 
-               href="/contact"
-               onClick={(e) => {
-                 e.preventDefault();
-                 onNavigate('Contact');
-               }}
-               className="inline-block px-10 py-4 bg-periwinkle text-white rounded-full font-medium hover:bg-periwinkle/90 transition-all shadow-xl shadow-periwinkle/20"
-             >
-               Get in Touch
-             </a>
-          </GlassCard>
-        </div>
-
-        {/* Related Posts */}
-        <div className="mt-24 space-y-12">
-          <span className="text-xs uppercase tracking-[0.2em] font-medium text-ink/40 text-center block">More from the blog.</span>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {relatedPosts.map(p => (
-              <a 
-                key={p.id}
-                href={`/blog/${p.slug}.html`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onPostClick(p.slug);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="group cursor-pointer block h-full"
-              >
-                <GlassCard className="overflow-hidden p-0 flex flex-col h-full border-ink/5 hover:shadow-[0_0_40px_rgba(122,160,255,0.15)] transition-shadow">
-                  <div className="h-48 w-full overflow-hidden rounded-[1.5rem] m-2">
-                    <img 
-                      src={p.thumbnail} 
-                      alt={p.title} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 rounded-[1.5rem]" 
-                    />
-                  </div>
-                  <div className="p-6 pt-2 space-y-3 flex-1 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-widest text-periwinkle font-medium">{p.category}</span>
-                    <h3 className="text-lg leading-snug font-medium text-ink group-hover:text-periwinkle transition-colors">{p.title}</h3>
-                    <span className="text-[10px] text-ink/30 mt-auto">{p.date}</span>
-                  </div>
-                </GlassCard>
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
 const Blog: React.FC<{ 
   onNavigate: (tab: string) => void;
   posts: Post[];
@@ -1913,6 +2021,7 @@ const Blog: React.FC<{
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
+  const [portfolioFilter, setPortfolioFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -1971,13 +2080,25 @@ export default function App() {
       
       <main className="relative z-10">
         <AnimatePresence mode="wait">
-          {activeTab === 'Home' && <Home key="home" onNavigate={setActiveTab} clients={clients} siteSettings={siteSettings} />}
+          {activeTab === 'Home' && (
+            <Home 
+              key="home" 
+              onNavigate={setActiveTab} 
+              onNavigateWithFilter={(tab, filter) => {
+                setPortfolioFilter(filter);
+                setActiveTab(tab);
+              }} 
+              clients={clients} 
+              siteSettings={siteSettings} 
+            />
+          )}
           {activeTab === 'Work' && (
             <Portfolio 
               key="portfolio" 
               projects={projects} 
               selectedProject={selectedProject}
               setSelectedProject={setSelectedProject}
+              initialFilter={portfolioFilter}
             />
           )}
           {activeTab === 'Blog' && <Blog key="blog" onNavigate={setActiveTab} posts={posts} />}
