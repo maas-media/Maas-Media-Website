@@ -497,6 +497,12 @@ const FloatingVideoFrame: React.FC<{
     floatY.set(Math.sin(t * fc.ySpeed * Math.PI * 2 + fc.yPhase) * fc.yAmp);
   });
 
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const videoId = vimeoUrl.split('/').pop()?.split('?')[0] ?? '';
+  const thumbnailUrl = `https://vumbnail.com/${videoId}.jpg`;
+
   // Width is a % of viewport width — scales with screen size
   // large = 22vw (min 200px, max 380px), medium = 16vw (min 160px, max 288px)
   const vwSize = size === 'large'
@@ -525,62 +531,97 @@ const FloatingVideoFrame: React.FC<{
       initial={{ opacity: 0, scale: 0.4 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1.4, delay, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-none hidden md:block"
+      className="rounded-2xl md:rounded-3xl overflow-hidden glass border-ink/10 shadow-2xl pointer-events-auto hidden md:block group hover:scale-105 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => { setIsHovered(false); setHasLoaded(false); }}
     >
       <div className="w-full h-full relative">
         <PulsingRim />
-        <iframe
-          src={`${vimeoUrl}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
-          className="absolute border-none pointer-events-none"
-          style={{ top: '-15%', left: '-15%', width: '130%', height: '130%' }}
-          allow="autoplay; fullscreen"
-          title="Floating Video Content"
-        />
+        
+        {/* Thumbnail — always visible as background */}
+        <div className="absolute inset-0">
+          <img
+            src={thumbnailUrl}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+          <div className={`absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
+            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+              <Play className="w-3 h-3 text-white fill-white ml-0.5" />
+            </div>
+            <span className="text-[9px] uppercase tracking-widest text-white/60 font-medium">hover to play</span>
+          </div>
+        </div>
+
+        {/* Vimeo iframe — only mounted when hovered, fades in over thumbnail */}
+        {isHovered && (
+          <iframe
+            src={`${vimeoUrl}?autoplay=1&muted=1&controls=0&loop=1&background=1`}
+            className={`absolute inset-0 w-full h-full border-none scale-[1.3] transition-opacity duration-500 ${hasLoaded ? 'opacity-100' : 'opacity-0'}`}
+            allow="autoplay"
+            onLoad={() => setHasLoaded(true)}
+          />
+        )}
         <div className="absolute inset-0 bg-periwinkle/5 pointer-events-none" />
       </div>
     </motion.div>
   );
 };
 
-const MobileVideoStrip: React.FC<{
-  images: string[];
-  direction: 'left' | 'right';
-}> = ({ images, direction }) => {
-  if (!images || images.length === 0) return null;
-  const duplicated = [...images, ...images, ...images];
+const MobileVideoCarousel: React.FC<{ vimeoUrls: string[] }> = ({ vimeoUrls }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const nextIndex = (currentIndex + 1) % vimeoUrls.length;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % vimeoUrls.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [vimeoUrls.length]);
 
   return (
-    <div className="md:hidden w-full">
-      <div
-        className="flex gap-3 w-max"
-        style={{
-          animation: `${direction === 'left' ? 'crawlLeft' : 'crawlRight'} 22s linear infinite`,
-        }}
-      >
-        {duplicated.map((url, i) => (
-          <div
-            key={i}
-            className="flex-shrink-0"
-            style={{
-              width: '40vw',
-              height: '32vw',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              position: 'relative',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(180,180,220,0.2)',
-            }}
+    <div className="md:hidden w-full px-4 pb-6">
+      <div className="relative w-full rounded-[2rem] overflow-hidden aspect-video bg-ink/5">
+
+        {/* Preload next video silently in background */}
+        <div className="absolute inset-0 opacity-0 pointer-events-none">
+          <iframe
+            src={`${vimeoUrls[nextIndex]}?autoplay=1&muted=1&controls=0&loop=0&background=1`}
+            className="absolute inset-0 w-full h-full border-none scale-[1.3]"
+            allow="autoplay"
+          />
+        </div>
+
+        {/* Current video with fade transition */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="absolute inset-0"
           >
-            <img
-              src={url}
-              alt=""
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+            <iframe
+              src={`${vimeoUrls[currentIndex]}?autoplay=1&muted=1&controls=0&loop=0&background=1`}
+              className="absolute inset-0 w-full h-full border-none scale-[1.3]"
+              allow="autoplay"
             />
-          </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Progress dots */}
+      <div className="flex items-center justify-center gap-1.5 mt-3">
+        {vimeoUrls.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentIndex(i)}
+            className={`rounded-full transition-all duration-300 ${
+              i === currentIndex ? 'w-4 h-1.5 bg-periwinkle' : 'w-1.5 h-1.5 bg-ink/20'
+            }`}
+          />
         ))}
       </div>
     </div>
@@ -1114,7 +1155,17 @@ const Home: React.FC<{
     <div className="space-y-32 pb-4 md:pb-16">
       {/* Hero */}
       <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden bg-base">
-    
+        {/* Mobile fullscreen background video */}
+        <div className="md:hidden absolute inset-0 z-0">
+          <iframe
+            src="https://player.vimeo.com/video/1196786877?autoplay=1&muted=1&controls=0&loop=1&background=1&playsinline=1"
+            className="absolute inset-0 w-full h-full border-none scale-[1.5]"
+            allow="autoplay; fullscreen"
+            title="Hero background"
+          />
+          {/* Darkening overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/30 to-ink/70" />
+        </div>
 
         {/* Desktop Floating Frames — 8 players */}
 
@@ -1189,26 +1240,26 @@ const Home: React.FC<{
         </motion.div>
 
         <ParticleBackground 
-          className="absolute inset-0 z-5 pointer-events-none"
+          className="absolute inset-0 z-5 pointer-events-none hidden md:block"
           particleColor="rgba(122, 160, 255, 0.4)"
           lineColor="rgba(122, 160, 255, 0.1)"
         />
 
-                <div className="z-10 w-full h-full flex flex-col items-center justify-between md:justify-center md:py-0"
-          style={{ paddingTop: '20vh', paddingBottom: '30vh' }}
+        <div className="z-10 w-full h-full flex flex-col items-center justify-center md:justify-center md:py-0 px-6"
+          style={{ paddingTop: '0', paddingBottom: '0' }}
         >
           <div className="flex flex-col items-center text-center px-6 py-6">
             <motion.h1
-              className="text-4xl font-light tracking-tighter leading-[1.1] text-ink md:text-7xl"
+              className="text-4xl font-light tracking-tighter leading-[1.1] text-white md:text-ink md:text-7xl"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              Stories worth <span className="text-periwinkle italic">seeing.</span>
+              Stories worth <span className="text-[#9bb8ff] md:text-periwinkle italic">seeing.</span>
             </motion.h1>
 
             <motion.p
-              className="mt-4 text-sm font-medium text-gray-500 max-w-xs md:text-lg md:max-w-xl"
+              className="mt-4 text-sm font-medium text-white/70 md:text-gray-500 max-w-xs md:text-lg md:max-w-xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5, duration: 1 }}
@@ -1226,7 +1277,7 @@ const Home: React.FC<{
                 onClick={() => onNavigate('Work')}
                 className="group relative px-10 py-4 rounded-full transition-all flex items-center justify-center overflow-hidden"
               >
-                <span className="relative z-10 text-ink/70 group-hover:text-ink font-medium tracking-tight flex items-center gap-2 transition-colors">
+                <span className="relative z-10 text-white/80 md:text-ink/70 hover:text-white md:hover:text-ink font-medium tracking-tight flex items-center gap-2 transition-colors">
                   Launch Portfolio
                   <motion.div
                     animate={{ x: [0, 4, 0] }}
@@ -1235,20 +1286,24 @@ const Home: React.FC<{
                     <ArrowRight className="w-4 h-4" />
                   </motion.div>
                 </span>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-0 group-hover:w-[124px] h-px bg-periwinkle/40 transition-all duration-300" />
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-0 group-hover:w-[124px] h-px bg-white/40 md:bg-periwinkle/40 transition-all duration-300" />
               </button>
             </motion.div>
           </div>
-
-          {/* Mobile Bottom Strip */}
-          <MobileVideoStrip
-  images={siteSettings?.heroImages || []}
-  direction="left"
-/>
         </div>
 
+        {/* Mobile scroll indicator */}
+        <motion.div
+          className="md:hidden absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        >
+          <span className="text-[10px] uppercase tracking-[0.3em] font-medium text-white/60">Explore the process</span>
+          <ChevronDown className="w-5 h-5 text-white/60" strokeWidth={1.5} />
+        </motion.div>
+
         <motion.div 
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-3"
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
         >
@@ -1976,8 +2031,27 @@ const Contact: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 pt-40 pb-40 flex justify-center"
+      className="container mx-auto px-4 pt-40 pb-40 flex flex-col items-center"
     >
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[400px] h-[300px] bg-[radial-gradient(ellipse,rgba(122,160,255,0.08)_0%,transparent_70%)] pointer-events-none z-0 md:hidden" />
+      <div className="max-w-2xl w-full mb-6">
+        <motion.h1
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-5xl md:text-6xl font-light text-ink tracking-tight mb-3"
+        >
+          Let's build.
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.8 }}
+          className="text-sm text-ink/40 font-light"
+        >
+          I typically respond within 24 hours.
+        </motion.p>
+      </div>
       <GlassCard className="max-w-2xl w-full p-12 space-y-12">
         {state.succeeded && (
           <div className="glass p-12 rounded-[2rem] text-center space-y-4 animate-in fade-in zoom-in duration-500">
@@ -1996,8 +2070,6 @@ const Contact: React.FC = () => {
 
         {!state.succeeded && (
           <>
-            <SectionTitle title="Let's build." subtitle="Contact" />
-            
             {state.errors && (state.errors as any).length > 0 && !state.succeeded && (
               <div className="glass p-6 rounded-xl border border-red-500/30 text-center mb-6">
                 <p className="text-sm text-red-500/80">
@@ -2121,6 +2193,16 @@ const Blog: React.FC<{
         <p className="text-sm text-ink/50 font-light leading-relaxed max-w-sm relative z-10">
           Thoughts on video, craft, and the creative process — arriving soon.
         </p>
+
+        <a
+          href="https://www.instagram.com/maasmediallc"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-periwinkle/30 text-periwinkle text-xs font-medium hover:bg-periwinkle/10 transition-all duration-300 relative z-10"
+        >
+          <Instagram className="w-3.5 h-3.5" />
+          Follow along on Instagram
+        </a>
       </motion.div>
     </div>
   );
