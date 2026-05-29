@@ -11,7 +11,7 @@ import { Logo } from './components/Logo';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
 import { getProjects, getPosts, getClients, getSiteSettings } from './sanityClient';
-import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin } from 'lucide-react';
+import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin, PenLine } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 import { useForm, ValidationError } from '@formspree/react';
 
@@ -921,8 +921,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
               {[
                 { label: 'Location', val: siteSettings?.location || 'Atlanta, GA', icon: MapPin },
                 { label: 'Experience', val: siteSettings?.experience || '6+ Years', icon: Clock },
-                { label: 'Education', val: 'SCAD', icon: GraduationCap },
-                { label: 'Fun Fact', val: 'Shot on a Point-and-Shoot', icon: Sparkles }
+                { label: 'Education', val: 'Taylor University', icon: GraduationCap }
               ].map((stat, i) => (
                 <motion.div 
                   key={stat.label}
@@ -944,11 +943,8 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
             {/* Top Tile: Bio */}
             <GlassCard className="p-12 space-y-8 border-ink/5 text-center lg:text-left flex-grow flex flex-col justify-center">
               <div className="space-y-6">
-                <p className="text-2xl font-light text-ink/80 leading-relaxed italic">
-                  "I believe every story has a unique frequency. My job is to find the light and shadow that lets it vibrate."
-                </p>
-                <p className="text-lg font-light text-ink/60 leading-relaxed max-w-2xl">
-                  I'm a cinematographer obsessed with the details. From high-end commercial sets to solo property tours, I treat every frame with the same level of architectural precision and emotional grit.
+                <p className="text-base font-light text-ink/80 leading-relaxed max-w-2xl">
+                  Hi, I'm Isaac! I'm a filmmaker and media specialist who believes great stories deserve to be told well. Whether it's a brand, business, team, or individual, I love using images to capture authentic moments and create content that connects with people. I've shot weddings, basketball games, real estate listings, orientation videos, and much more - always enjoying the process of piecing together visuals that supports every client's goals and leaves a real impact.
                 </p>
               </div>
             </GlassCard>
@@ -1312,7 +1308,7 @@ const Portfolio: React.FC<{
 }> = ({ projects, selectedProject, setSelectedProject }) => {
   const [filter, setFilter] = useState('All');
   
-  const categories = ['All', 'Brand & Commercial', 'Real Estate', 'Events', 'Social Content'];
+  const categories = ['All', 'Brand & Commercial', 'Real Estate', 'Events', 'Social Content', 'Photography'];
   const filtered = filter === 'All' ? projects : projects.filter(p => p.categories?.includes(filter));
 
   useEffect(() => {
@@ -1346,7 +1342,7 @@ const Portfolio: React.FC<{
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="text-ink/40 font-light text-base md:text-lg tracking-wide max-w-2xl"
         >
-          A collection of brand, real estate, event, and social content — each built around the client's vision.
+          A collection of brand, real estate, event, and social video content.
         </motion.p>
       </header>
 
@@ -1358,10 +1354,16 @@ const Portfolio: React.FC<{
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 + idx * 0.05 }}
-            onClick={() => setFilter(cat)}
+            onClick={() => {
+              if (cat === 'Photography') {
+                window.open('https://isaacmaas.pixieset.com/', '_blank');
+              } else {
+                setFilter(cat);
+              }
+            }}
             className={`
               px-8 py-3 rounded-full text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-300 glass border-ink/5 whitespace-nowrap
-              ${filter === cat 
+              ${filter === cat && cat !== 'Photography' 
                 ? 'border-periwinkle/40 bg-white/70 text-ink shadow-[0_0_20px_rgba(122,160,255,0.15)] ring-1 ring-periwinkle/10' 
                 : 'text-ink/40 hover:text-ink/60 hover:bg-white/40'}
             `}
@@ -1841,197 +1843,42 @@ const BlogPostDetail: React.FC<{
 const Blog: React.FC<{ 
   onNavigate: (tab: string) => void;
   posts: Post[];
-}> = ({ onNavigate, posts }) => {
-  const [filter, setFilter] = useState('All');
-  const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
-
-  const categories = ['All', 'Tips', 'Atlanta', 'Behind the Lens', 'Industry'];
-
-  const filtered = posts.filter(post => 
-    filter === 'All' ? true : post.category === filter
-  );
-
-  const featuredPost = filtered.find(p => p.featured) || filtered[0];
-  const standardPosts = filtered.filter(p => p.id !== featuredPost?.id);
-
-  if (selectedPostSlug) {
-    return (
-      <BlogPostDetail 
-        slug={selectedPostSlug} 
-        onBack={() => setSelectedPostSlug(null)} 
-        onNavigate={onNavigate}
-        onPostClick={setSelectedPostSlug}
-        posts={posts}
-      />
-    );
-  }
-
+}> = () => {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="pb-40"
-    >
-      {/* Hero Video Strip */}
-      <div className="w-full h-[480px] relative overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 z-0">
-          <iframe
-            src="https://player.vimeo.com/video/1188089564?autoplay=1&muted=1&loop=1&background=1&controls=0"
-            className="w-[100vw] h-[56.25vw] min-h-full min-w-[177.77vh] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-none"
-            allow="autoplay; fullscreen"
-          />
-          <div className="absolute inset-0 bg-black/45 z-10" />
-        </div>
-        
-        {/* Particle Overlay (re-using the system if possible, or just a wrapper) */}
-        <div className="absolute inset-0 z-20 pointer-events-none">
-          {/* We'll assume ParticleBackground is global or already present in layout */}
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-24">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+        animate={{ opacity: 1, scale: 1, y: 0 }} 
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="glass rounded-[2.5rem] p-12 md:p-16 flex flex-col items-center text-center gap-6 max-w-lg w-full relative overflow-hidden"
+      >
+        {/* Subtle background detail */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(122,160,255,0.07)_0%,transparent_70%)] pointer-events-none" />
+
+        {/* Icon container */}
+        <div className="w-16 h-16 rounded-full bg-periwinkle/10 border border-periwinkle/20 flex items-center justify-center relative z-10">
+          <PenLine className="w-7 h-7 text-periwinkle" />
         </div>
 
-        <div className="relative z-30 text-center space-y-4 px-4">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-light text-white tracking-tight"
-          >
-            Behind the Lens
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-white/60 text-lg md:text-xl font-light"
-          >
-            Thoughts, tips and stories from the field.
-          </motion.p>
-        </div>
-      </div>
+        {/* Label */}
+        <span className="text-spaced text-ink/30 text-xs relative z-10">
+          coming soon
+        </span>
 
-      <div className="container mx-auto px-4 mt-20 space-y-20">
-        {/* Category Filter */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {categories.map((cat, idx) => (
-            <motion.button
-              key={cat}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              onClick={() => setFilter(cat)}
-              className={`
-                px-8 py-3 rounded-full text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-300 glass border-ink/5 whitespace-nowrap
-                ${filter === cat 
-                  ? 'border-periwinkle/40 bg-white/70 text-ink shadow-[0_0_20px_rgba(122,160,255,0.15)] ring-1 ring-periwinkle/10' 
-                  : 'text-ink/40 hover:text-ink/60 hover:bg-white/40'}
-              `}
-            >
-              {cat}
-            </motion.button>
-          ))}
-        </div>
+        {/* Heading */}
+        <h1 className="text-3xl md:text-4xl font-medium text-ink relative z-10">
+          The Blog
+        </h1>
 
-        <AnimatePresence mode="popLayout">
-          {filtered.length > 0 ? (
-            <div className="space-y-16">
-              {/* Featured Post Card */}
-              {featuredPost && (
-                <motion.div
-                  key={featuredPost.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  onClick={() => setSelectedPostSlug(featuredPost.slug)}
-                  className="group relative w-full h-[400px] rounded-[2.5rem] overflow-hidden cursor-pointer shadow-2xl"
-                >
-                  <img 
-                    src={featuredPost.thumbnail} 
-                    alt={featuredPost.title} 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 group-hover:bg-black/60" />
-                  
-                  <div className="absolute top-8 left-8">
-                    <div className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-[9px] font-medium uppercase tracking-widest text-white">
-                      {featuredPost.category}
-                    </div>
-                  </div>
+        {/* Divider */}
+        <div className="w-8 h-px bg-periwinkle/40 relative z-10" />
 
-                  <div className="absolute bottom-8 left-8 right-8 space-y-4 max-w-2xl">
-                    <h2 className="text-3xl md:text-4xl font-light text-white tracking-tight">
-                      {featuredPost.title}
-                    </h2>
-                    <p className="text-white/60 text-sm line-clamp-2 max-w-xl font-light">
-                      {featuredPost.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-white/40 uppercase tracking-widest">{featuredPost.date}</span>
-                      <span className="text-periwinkle text-xs font-medium flex items-center gap-2 group-hover:gap-3 transition-all">
-                        Read more <ArrowRight className="w-4 h-4" />
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Lift Shadow */}
-                  <div className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_40px_rgba(122,160,255,0.3)] pointer-events-none" />
-                </motion.div>
-              )}
-
-              {/* Standard Posts Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {standardPosts.map((post) => (
-                  <motion.div
-                    key={post.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    onClick={() => setSelectedPostSlug(post.slug)}
-                    className="group flex flex-col md:flex-row items-stretch glass border-ink/5 rounded-[2rem] overflow-hidden cursor-pointer transition-all duration-300 min-h-[180px] hover:shadow-[0_0_40px_rgba(122,160,255,0.1)]"
-                  >
-                    <div className="w-full md:w-[180px] h-[180px] md:h-auto overflow-hidden">
-                      <img 
-                        src={post.thumbnail} 
-                        alt={post.title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="flex-1 p-8 flex flex-col justify-between space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] uppercase tracking-widest text-periwinkle font-medium">{post.category}</span>
-                        </div>
-                        <h3 className="text-lg font-medium text-ink group-hover:text-periwinkle transition-colors leading-tight">
-                          {post.title}
-                        </h3>
-                        <p className="text-ink/40 text-[13px] line-clamp-2 font-light">
-                          {post.excerpt}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between pt-2">
-                        <span className="text-[10px] text-ink/30 uppercase tracking-widest">{post.date}</span>
-                        <span className="text-periwinkle text-[11px] font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                          Read more <ArrowRight className="w-3 h-3" />
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="py-40 text-center flex flex-col items-center gap-4"
-            >
-              <Sparkles className="w-8 h-8 text-periwinkle/30" />
-              <span className="text-spaced opacity-30 text-sm">Posts coming soon.</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+        {/* Description */}
+        <p className="text-sm text-ink/50 font-light leading-relaxed max-w-sm relative z-10">
+          Thoughts on video, craft, and the creative process — arriving soon.
+        </p>
+      </motion.div>
+    </div>
   );
 };
 
@@ -2074,7 +1921,10 @@ export default function App() {
   useEffect(() => {
     setIsLoaded(true);
     setSelectedProject(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
   if (isLoading) {
