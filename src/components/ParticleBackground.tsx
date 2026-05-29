@@ -31,7 +31,7 @@ export const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
 
     let animationFrameId: number;
     let particles: Particle[] = [];
-    const particleCount = 100;
+    const particleCount = 50;
     const connectionDistance = 150;
     const mouseRadius = 200;
 
