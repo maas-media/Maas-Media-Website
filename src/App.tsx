@@ -536,8 +536,6 @@ const FloatingVideoFrame: React.FC<{
       onMouseLeave={() => { setIsHovered(false); setHasLoaded(false); }}
     >
       <div className="w-full h-full relative">
-        <PulsingRim />
-        
         {/* Thumbnail — always visible as background */}
         <div className="absolute inset-0">
           <img
