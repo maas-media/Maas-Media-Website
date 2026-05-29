@@ -1008,7 +1008,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
           whileHover="hover"
           initial="rest"
           animate={isMobile && ctaInView ? "hover" : "rest"}
-          className={`relative p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left mt-6 rounded-3xl overflow-hidden cursor-default ${isMobile && ctaInView ? 'bg-periwinkle/10 border-periwinkle/30 shadow-[0_0_40px_rgba(122,160,255,0.15)]' : ''}`}
+          className={`relative p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left mt-8 rounded-3xl overflow-hidden cursor-default ${isMobile && ctaInView ? 'bg-periwinkle/10 border-periwinkle/30 shadow-[0_0_40px_rgba(122,160,255,0.15)]' : ''}`}
         >
           {/* Glass State Background (Resting) */}
           <motion.div 
@@ -1369,32 +1369,35 @@ const Portfolio: React.FC<{
       </header>
 
       {/* Filter Strip */}
-      <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 mb-24">
-        <div className="flex flex-nowrap md:flex-wrap items-center md:justify-center gap-3 p-4 overflow-visible">
-          {categories.map((cat, idx) => (
-            <motion.button
-              key={cat}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 + idx * 0.05 }}
-              onClick={() => {
-                if (cat === 'Photography') {
-                  window.open('https://isaacmaas.pixieset.com/', '_blank');
-                } else {
-                  setFilter(cat);
-                }
-              }}
-              className={`
-                text-[10px] px-3 py-1.5 md:text-xs md:px-5 md:py-2 rounded-full uppercase tracking-[0.2em] font-medium transition-all duration-300 glass border-ink/5 whitespace-nowrap
-                ${filter === cat && cat !== 'Photography' 
-                  ? 'border-periwinkle/40 bg-white/70 text-ink shadow-[0_0_20px_rgba(122,160,255,0.15)] ring-1 ring-periwinkle/10' 
-                  : 'text-ink/40 hover:text-ink/60 hover:bg-white/40'}
-              `}
-            >
-              {cat}
-            </motion.button>
-          ))}
+      <div className="relative mb-24">
+        <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
+          <div className="flex flex-nowrap md:flex-wrap items-center md:justify-center gap-3 p-4 overflow-visible">
+            {categories.map((cat, idx) => (
+              <motion.button
+                key={cat}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 + idx * 0.05 }}
+                onClick={() => {
+                  if (cat === 'Photography') {
+                    window.open('https://isaacmaas.pixieset.com/', '_blank');
+                  } else {
+                    setFilter(cat);
+                  }
+                }}
+                className={`
+                  text-[10px] px-3 py-1.5 md:text-xs md:px-5 md:py-2 rounded-full uppercase tracking-[0.2em] font-medium transition-all duration-300 glass border-ink/5 whitespace-nowrap
+                  ${filter === cat && cat !== 'Photography' 
+                    ? 'border-periwinkle/40 bg-white/70 text-ink shadow-[0_0_20px_rgba(122,160,255,0.15)] ring-1 ring-periwinkle/10' 
+                    : 'text-ink/40 hover:text-ink/60 hover:bg-white/40'}
+                `}
+              >
+                {cat}
+              </motion.button>
+            ))}
+          </div>
         </div>
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-base to-transparent z-10 md:hidden" />
       </div>
 
       <AnimatePresence mode="popLayout" initial={false}>
@@ -1482,7 +1485,7 @@ const Footer: React.FC<{ settings: any }> = ({ settings }) => {
   const showLinkedin = settings?.linkedinUrl;
 
   return (
-    <footer className="w-full px-4 md:px-8 pb-6 pt-0 bg-base">
+    <footer className="w-full px-4 md:px-8 pb-4 pt-0 bg-base">
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         whileInView={{ opacity: 1, y: 0 }} 

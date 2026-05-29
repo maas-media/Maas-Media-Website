@@ -48,6 +48,11 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes crawlLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
 @keyframes crawlRight {
   0% { transform: translateX(-33.333%); }
   100% { transform: translateX(0); }
