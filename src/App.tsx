@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useAnimationFrame, animate } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useAnimationFrame, animate, useInView } from 'motion/react';
 import { ParticleBackground } from './components/ParticleBackground';
 import { Navigation } from './components/Navigation';
 import { Logo } from './components/Logo';
@@ -168,9 +168,9 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       whileInView={{ opacity: 1, y: 0 }} 
       viewport={{ once: true }} 
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="py-12 px-4 overflow-hidden relative"
+      className="md:py-12 py-6 px-4 overflow-hidden relative"
     >
-      <div className="text-spaced text-ink/30 text-center mb-4">
+      <div className="text-spaced text-ink/30 text-center md:mb-8 mb-4">
         trusted by
       </div>
 
@@ -714,6 +714,10 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
+  const ctaRef = React.useRef(null);
+  const ctaInView = useInView(ctaRef, { once: false, margin: '-20% 0px' });
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
   const services = [
@@ -1000,10 +1004,11 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
 
         {/* Full-width CTA Tile */}
         <motion.div 
+          ref={ctaRef}
           whileHover="hover"
           initial="rest"
           animate="rest"
-          className="relative p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left mt-6 rounded-3xl overflow-hidden cursor-default"
+          className={`relative p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left mt-6 rounded-3xl overflow-hidden cursor-default ${isMobile && ctaInView ? 'bg-periwinkle/10 border-periwinkle/30 shadow-[0_0_40px_rgba(122,160,255,0.15)]' : ''}`}
         >
           {/* Glass State Background (Resting) */}
           <motion.div 
@@ -1359,7 +1364,7 @@ const Portfolio: React.FC<{
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="text-ink/40 font-light text-base md:text-lg tracking-wide max-w-2xl"
         >
-          A collection of brand, real estate, event, and social video content.
+          A collection of brand, real estate, event, and social content.
         </motion.p>
       </header>
 
