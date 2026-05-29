@@ -715,8 +715,8 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
   const ctaRef = React.useRef(null);
-  const ctaInView = useInView(ctaRef, { once: false, margin: '-20% 0px' });
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const ctaInView = useInView(ctaRef, { once: false, margin: '-10% 0px' });
+  const isMobile = window.innerWidth < 768;
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
@@ -1007,7 +1007,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
           ref={ctaRef}
           whileHover="hover"
           initial="rest"
-          animate="rest"
+          animate={isMobile && ctaInView ? "hover" : "rest"}
           className={`relative p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left mt-6 rounded-3xl overflow-hidden cursor-default ${isMobile && ctaInView ? 'bg-periwinkle/10 border-periwinkle/30 shadow-[0_0_40px_rgba(122,160,255,0.15)]' : ''}`}
         >
           {/* Glass State Background (Resting) */}
@@ -1369,30 +1369,32 @@ const Portfolio: React.FC<{
       </header>
 
       {/* Filter Strip */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mb-24 p-4 scrollbar-hide overflow-visible">
-        {categories.map((cat, idx) => (
-          <motion.button
-            key={cat}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 + idx * 0.05 }}
-            onClick={() => {
-              if (cat === 'Photography') {
-                window.open('https://isaacmaas.pixieset.com/', '_blank');
-              } else {
-                setFilter(cat);
-              }
-            }}
-            className={`
-              px-8 py-3 rounded-full text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-300 glass border-ink/5 whitespace-nowrap
-              ${filter === cat && cat !== 'Photography' 
-                ? 'border-periwinkle/40 bg-white/70 text-ink shadow-[0_0_20px_rgba(122,160,255,0.15)] ring-1 ring-periwinkle/10' 
-                : 'text-ink/40 hover:text-ink/60 hover:bg-white/40'}
-            `}
-          >
-            {cat}
-          </motion.button>
-        ))}
+      <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 mb-24">
+        <div className="flex flex-nowrap md:flex-wrap items-center md:justify-center gap-3 p-4 overflow-visible">
+          {categories.map((cat, idx) => (
+            <motion.button
+              key={cat}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 + idx * 0.05 }}
+              onClick={() => {
+                if (cat === 'Photography') {
+                  window.open('https://isaacmaas.pixieset.com/', '_blank');
+                } else {
+                  setFilter(cat);
+                }
+              }}
+              className={`
+                text-[10px] px-3 py-1.5 md:text-xs md:px-5 md:py-2 rounded-full uppercase tracking-[0.2em] font-medium transition-all duration-300 glass border-ink/5 whitespace-nowrap
+                ${filter === cat && cat !== 'Photography' 
+                  ? 'border-periwinkle/40 bg-white/70 text-ink shadow-[0_0_20px_rgba(122,160,255,0.15)] ring-1 ring-periwinkle/10' 
+                  : 'text-ink/40 hover:text-ink/60 hover:bg-white/40'}
+              `}
+            >
+              {cat}
+            </motion.button>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence mode="popLayout" initial={false}>
