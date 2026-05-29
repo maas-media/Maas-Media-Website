@@ -247,11 +247,11 @@ const SectionTitle: React.FC<{ title: string; subtitle?: string }> = ({ title, s
 
 const SKILLS = [
   'FAA Certified Drone Pilot',
-  'DaVinci Resolve',
-  'Cinematography',
+  'DaVinci Resolve Expertise',
+  'Tasteful Cinematography',
   'Pro Grade Audio',
   'Motion Graphics',
-  'Adaptive Lighting',
+  'Adaptive Lighting Setups',
   'Google Ads Certified'
 ];
 
@@ -876,10 +876,7 @@ const Home: React.FC<{ onNavigate: (tab: string) => void; clients: any[]; siteSe
 
       {/* Services Section: Hover-Reveal Layout */}
       <section className="container mx-auto px-4 border-t border-ink/5 pt-24 pb-32">
-        <div className="mb-20">
-          <span className="text-spaced opacity-40">What I do</span>
-          <h2 className="text-2xl font-light text-ink/60 mt-2">Specialized Cinematography</h2>
-        </div>
+        
 
         <div className="flex flex-col">
           {services.map((service, idx) => (
