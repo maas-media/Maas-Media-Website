@@ -822,7 +822,7 @@ const ProcessTimeline: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="container mx-auto px-4 py-0"
+      className="container mx-auto px-4 py-0 max-w-5xl"
     >
       <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
         The Process
@@ -937,7 +937,7 @@ const ProcessTimeline: React.FC = () => {
               <Video className="w-3 h-3 text-ink/20" />
               <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">V1</span>
             </div>
-            <div className="flex-1 relative flex gap-1.5 p-2 h-[180px]">
+            <div className="flex-1 relative flex gap-1.5 p-2 h-[240px]">
               {steps.map((step, index) => {
                 const isActive = activeStep === index;
                 return (
@@ -956,7 +956,7 @@ const ProcessTimeline: React.FC = () => {
                       <div className="font-mono text-[9px] text-ink/30 mb-1">
                         {step.timecode}
                       </div>
-                      <h4 className={`text-sm font-medium text-ink leading-tight ${!isActive ? 'truncate' : ''}`}>
+                      <h4 className={`text-base font-medium text-ink leading-tight ${!isActive ? 'truncate' : ''}`}>
                         {step.title}
                       </h4>
                       {isActive && (
@@ -964,7 +964,7 @@ const ProcessTimeline: React.FC = () => {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.3, delay: 0.15 }}
-                          className="text-xs text-ink/50 font-light leading-relaxed mt-2"
+                          className="text-sm text-ink/50 font-light leading-relaxed mt-2"
                         >
                           {step.desc}
                         </motion.p>
