@@ -168,13 +168,33 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       whileInView={{ opacity: 1, y: 0 }} 
       viewport={{ once: true }} 
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="py-24 px-4 overflow-hidden relative"
+      className="py-12 px-4 overflow-hidden relative"
     >
       <div className="text-spaced text-ink/30 text-center mb-4">
         trusted by
       </div>
+
+      {/* Mobile-only static grid */}
+      <div className="grid grid-cols-3 gap-4 md:hidden">
+        {clients.map((client) => (
+          <div
+            key={client.id}
+            className="flex items-center justify-center p-4 rounded-2xl group relative"
+          >
+            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"
+              style={{ boxShadow: '0 0 30px 8px rgba(122,160,255,0.2), 0 0 60px 16px rgba(180,140,255,0.1)' }}
+            />
+            <img
+              src={client.logoUrl}
+              alt={client.name}
+              className="h-12 w-auto object-contain transition-all duration-500 group-hover:scale-110"
+            />
+          </div>
+        ))}
+      </div>
+
       <div 
-        className="relative w-full py-12 pb-12"
+        className="hidden md:block relative w-full py-12 pb-12"
         style={{
           maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)'
