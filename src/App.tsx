@@ -141,7 +141,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
   const xRef = React.useRef(0);
 
   const [flippedSlots, setFlippedSlots] = useState([false, false, false, false, false, false]);
-  const slotSequence = [0, 1, 2, 3, 4, 5];
+  const slotSequence = [0, 4, 2, 3, 1, 5];
   const sequenceRef = useRef(0);
 
   useEffect(() => {
@@ -191,7 +191,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       whileInView={{ opacity: 1, y: 0 }} 
       viewport={{ once: true }} 
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="md:py-8 py-3 px-4 overflow-hidden relative"
+      className="md:py-8 pt-1 md:pt-8 pb-3 md:pb-8 px-4 overflow-hidden relative"
     >
       <div className="text-spaced text-ink/30 text-center md:mb-8 mb-4">
         trusted by
@@ -1507,7 +1507,7 @@ const Home: React.FC<{
         </div>
       </section>
 
-      <div className="pb-4 md:pb-12 pt-0">
+      <div className="pb-0 md:pb-12 pt-0">
         <ProcessTimeline />
       </div>
 
