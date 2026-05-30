@@ -469,20 +469,20 @@ const TypewriterSkills = () => {
       timeout = setTimeout(() => {
         setIsPausing(false);
         setIsDeleting(true);
-      }, 1800);
+      }, 1200);
     } else if (isDeleting && displayText === '') {
       setIndex((prev) => (prev + 1) % SKILLS.length);
       setIsDeleting(false);
     } else if (isDeleting) {
       timeout = setTimeout(() => {
         setDisplayText(prev => prev.slice(0, -1));
-      }, 45);
+      }, 25);
     } else if (displayText === currentSkill) {
       setIsPausing(true);
     } else {
       timeout = setTimeout(() => {
         setDisplayText(currentSkill.slice(0, displayText.length + 1));
-      }, 90);
+      }, 60);
     }
     
     return () => clearTimeout(timeout);
@@ -866,7 +866,7 @@ const ProcessTimeline: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="container mx-auto px-4 py-12 max-w-7xl overflow-hidden"
+      className="container mx-auto px-4 py-12 max-w-[1180px] overflow-hidden"
     >
       <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
         The Process
@@ -1137,7 +1137,7 @@ const ProcessTimeline: React.FC = () => {
                     </AnimatePresence>
                   </div>
                   
-                  <div className="min-h-[64px] relative z-10">
+                  <div className="h-[100px] relative z-10 overflow-hidden">
                     <AnimatePresence mode="wait">
                       <motion.p
                         key={activeStep}
