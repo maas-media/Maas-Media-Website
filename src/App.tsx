@@ -244,7 +244,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       </div>
 
       <div 
-        className="hidden md:block relative w-full py-12 pb-12"
+        className="hidden md:block relative w-full py-6"
         style={{
           maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)'
@@ -1513,7 +1513,9 @@ const Home: React.FC<{
 
 
       {/* Selected Works */}
-      <ClientLogos clients={clients} />
+      <div className="mb-4 md:mb-12">
+        <ClientLogos clients={clients} />
+      </div>
       <section className="container mx-auto px-4 pt-32 pb-4 md:pb-32">
         <motion.h2
           initial={{ opacity: 0, x: -20 }}
