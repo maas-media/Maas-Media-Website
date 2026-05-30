@@ -191,7 +191,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       whileInView={{ opacity: 1, y: 0 }} 
       viewport={{ once: true }} 
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="md:py-12 py-6 px-4 overflow-hidden relative"
+      className="md:py-12 py-4 px-4 overflow-hidden relative"
     >
       <div className="text-spaced text-ink/30 text-center md:mb-8 mb-4">
         trusted by
