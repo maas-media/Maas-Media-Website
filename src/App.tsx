@@ -816,7 +816,7 @@ const ProcessTimeline: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="container mx-auto px-4 py-12 max-w-5xl"
+      className="container mx-auto px-4 py-12 max-w-7xl"
     >
       <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
         The Process
@@ -946,7 +946,7 @@ const ProcessTimeline: React.FC = () => {
               </div>
 
               {/* Video Area */}
-              <div className="aspect-video bg-[#080810] relative overflow-hidden flex-1">
+              <div className="h-[320px] bg-[#080810] relative overflow-hidden flex-1">
                 <iframe
                   src="https://player.vimeo.com/video/1189150076?autoplay=1&muted=1&controls=0&loop=1&background=1"
                   className="absolute inset-0 w-full h-full border-none scale-[1.3]"
@@ -1034,7 +1034,7 @@ const ProcessTimeline: React.FC = () => {
               </div>
 
               {/* Content */}
-              <div className="p-4 flex flex-col gap-3 flex-1 justify-between">
+              <div className="p-5 flex flex-col gap-3 flex-1 justify-between">
                 {/* Metadata Grid */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
@@ -1080,7 +1080,7 @@ const ProcessTimeline: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-xl font-medium text-white mb-2"
+                        className="text-2xl font-medium text-white mb-2"
                       >
                         {steps[activeStep].title}
                       </motion.h4>
@@ -1095,7 +1095,7 @@ const ProcessTimeline: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-sm text-white/60 font-light leading-relaxed mt-1.5"
+                        className="text-base text-white/60 font-light leading-relaxed mt-1.5"
                       >
                         {steps[activeStep].desc}
                       </motion.p>
@@ -1128,7 +1128,7 @@ const ProcessTimeline: React.FC = () => {
               </div>
 
               {/* Clip area */}
-              <div className="flex-1 relative h-[120px] p-1.5 bg-white/[0.02]">
+              <div className="flex-1 relative h-[140px] p-1.5 bg-white/[0.02]">
                 <div className="flex gap-1.5 h-full w-full">
                   {steps.map((step, index) => {
                     const isActive = activeStep === index;
@@ -1209,6 +1209,11 @@ const Home: React.FC<{
   clients: any[]; 
   siteSettings: any;
 }> = ({ onNavigate, onNavigateWithFilter, clients, siteSettings }) => {
+  const [heroVideoSrc, setHeroVideoSrc] = useState('');
+  useEffect(() => {
+    setHeroVideoSrc('https://player.vimeo.com/video/1196786877?autoplay=1&muted=1&controls=0&loop=1&background=1&playsinline=1');
+  }, []);
+
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -1266,11 +1271,13 @@ const Home: React.FC<{
       {/* Hero */}
       <section className="relative overflow-hidden min-h-[100dvh] max-h-[100dvh] md:h-screen md:max-h-none flex flex-col justify-center items-center bg-base">
         {/* Mobile fullscreen background video */}
-        <div className="md:hidden absolute inset-0 z-0">
+        <div className="md:hidden absolute inset-0 z-0 bg-ink">
           <iframe
-            src="https://player.vimeo.com/video/1196786877?autoplay=1&muted=1&controls=0&loop=1&background=1&playsinline=1"
+            src={heroVideoSrc}
             className="absolute inset-0 w-full h-full border-none scale-[1.5]"
-            allow="autoplay; fullscreen"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            playsInline
             title="Hero background"
           />
           {/* Darkening overlay */}
