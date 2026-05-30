@@ -1152,7 +1152,7 @@ const Home: React.FC<{
   return (
     <div className="space-y-32 pb-4 md:pb-16">
       {/* Hero */}
-      <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden bg-base">
+      <section className="relative overflow-hidden min-h-[100dvh] max-h-[100dvh] md:h-screen md:max-h-none flex flex-col justify-center items-center bg-base">
         {/* Mobile fullscreen background video */}
         <div className="md:hidden absolute inset-0 z-0">
           <iframe
@@ -1243,7 +1243,7 @@ const Home: React.FC<{
           lineColor="rgba(122, 160, 255, 0.1)"
         />
 
-        <div className="z-10 w-full h-full flex flex-col items-center justify-center md:justify-center md:py-0 px-6"
+        <div className="z-10 w-full h-full flex flex-col items-center justify-center md:justify-center md:py-0 px-6 max-h-[100dvh] overflow-hidden md:max-h-none md:overflow-visible"
           style={{ paddingTop: '0', paddingBottom: '0' }}
         >
           <div className="flex flex-col items-center text-center px-6 py-6">
@@ -1292,7 +1292,7 @@ const Home: React.FC<{
 
         {/* Mobile scroll indicator */}
         <motion.div
-          className="md:hidden absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20"
+          className="md:hidden absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-30"
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
         >
