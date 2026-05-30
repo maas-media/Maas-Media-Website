@@ -1319,7 +1319,7 @@ const Home: React.FC<{
 ];
 
   return (
-    <div className="space-y-32 pb-4 md:pb-16">
+    <div className="pb-4 md:pb-16">
       {/* Hero */}
       <section className="relative overflow-hidden min-h-[100dvh] max-h-[100dvh] md:h-screen md:max-h-none flex flex-col justify-center items-center bg-base">
         {/* Mobile fullscreen background video */}
@@ -1482,7 +1482,7 @@ const Home: React.FC<{
       </section>
 
       {/* Services Section: Hover-Reveal Layout */}
-      <section className="container mx-auto px-4 border-t border-ink/5 pt-24 pb-8">
+      <section className="container mx-auto px-4 border-t border-ink/5 pt-24 pb-8 mt-24">
         <motion.h2
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -1509,7 +1509,7 @@ const Home: React.FC<{
         </div>
       </section>
 
-      <div className="pb-0 md:pb-12 pt-0">
+      <div className="pb-0 md:pb-12 pt-0 mt-8">
         <ProcessTimeline />
       </div>
 
@@ -1518,7 +1518,7 @@ const Home: React.FC<{
       <div className="mb-4 md:mb-12">
         <ClientLogos clients={clients} />
       </div>
-      <section className="container mx-auto px-4 pt-6 md:pt-32 pb-4 md:pb-32">
+      <section className="container mx-auto px-4 pt-6 md:pt-32 pb-4 md:pb-32 mt-8">
         <motion.h2
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
