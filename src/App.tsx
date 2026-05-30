@@ -191,7 +191,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       whileInView={{ opacity: 1, y: 0 }} 
       viewport={{ once: true }} 
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="md:py-12 py-4 px-4 overflow-hidden relative"
+      className="md:py-8 py-3 px-4 overflow-hidden relative"
     >
       <div className="text-spaced text-ink/30 text-center md:mb-8 mb-4">
         trusted by
@@ -1507,7 +1507,7 @@ const Home: React.FC<{
         </div>
       </section>
 
-      <div className="py-12">
+      <div className="pb-4 md:pb-12 pt-0">
         <ProcessTimeline />
       </div>
 
@@ -1516,7 +1516,7 @@ const Home: React.FC<{
       <div className="mb-4 md:mb-12">
         <ClientLogos clients={clients} />
       </div>
-      <section className="container mx-auto px-4 pt-32 pb-4 md:pb-32">
+      <section className="container mx-auto px-4 pt-6 md:pt-32 pb-4 md:pb-32">
         <motion.h2
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -1530,39 +1530,41 @@ const Home: React.FC<{
           
           {/* Left Column (35-40%) */}
           <div className="w-full lg:w-[38%] flex flex-col gap-6">
-            {/* Top Tile: Headshot */}
-            <GlassCard className="p-0 overflow-hidden aspect-[3/4] border-ink/5 flex-shrink-0">
-              <motion.img 
-                initial={{ scale: 1.05, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                src={siteSettings?.headshot || headshotImg}
-                className="w-full h-full object-cover rounded-3xl"
-                alt="Isaac Maas"
-              />
-            </GlassCard>
-
-            {/* Bottom Tile: Info Strip (Vertical List) - Stretched to fill gap */}
-            <GlassCard className="p-10 space-y-10 border-ink/5 flex-grow">
-              {[
-                { label: 'Location', val: siteSettings?.location || 'Atlanta, GA', icon: MapPin },
-                { label: 'Experience', val: siteSettings?.experience || '6+ Years', icon: Clock },
-                { label: 'Education', val: 'Taylor University', icon: GraduationCap }
-              ].map((stat, i) => (
-                <motion.div 
-                  key={stat.label}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+            <div className="flex flex-row lg:flex-col gap-4 lg:gap-6">
+              {/* Top Tile: Headshot */}
+              <GlassCard className="p-0 overflow-hidden border-ink/5 flex-shrink-0 w-[40%] lg:w-full aspect-square lg:aspect-[3/4]">
+                <motion.img 
+                  initial={{ scale: 1.05, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.1 + i * 0.1, duration: 0.5 }}
-                  className="flex flex-col gap-2"
-                >
-                  <span className="text-[9px] uppercase tracking-[0.25em] text-ink/40 font-medium">{stat.label}</span>
-                  <span className="text-base font-medium text-ink/80">{stat.val}</span>
-                </motion.div>
-              ))}
-            </GlassCard>
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  src={siteSettings?.headshot || headshotImg}
+                  className="w-full h-full object-cover rounded-3xl"
+                  alt="Isaac Maas"
+                />
+              </GlassCard>
+
+              {/* Bottom Tile: Info Strip (Vertical List) - Stretched to fill gap */}
+              <GlassCard className="p-6 lg:p-10 space-y-5 lg:space-y-10 border-ink/5 flex-grow">
+                {[
+                  { label: 'Location', val: siteSettings?.location || 'Atlanta, GA', icon: MapPin },
+                  { label: 'Experience', val: siteSettings?.experience || '6+ Years', icon: Clock },
+                  { label: 'Education', val: 'Taylor University', icon: GraduationCap }
+                ].map((stat, i) => (
+                  <motion.div 
+                    key={stat.label}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 + i * 0.1, duration: 0.5 }}
+                    className="flex flex-col gap-2"
+                  >
+                    <span className="text-[9px] uppercase tracking-[0.25em] text-ink/40 font-medium">{stat.label}</span>
+                    <span className="text-base font-medium text-ink/80">{stat.val}</span>
+                  </motion.div>
+                ))}
+              </GlassCard>
+            </div>
           </div>
 
           {/* Right Column (60-65%) */}
