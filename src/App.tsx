@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useAnimationFrame, animate, useInView } from 'motion/react';
 import { ParticleBackground } from './components/ParticleBackground';
 import { Navigation } from './components/Navigation';
 import { GlassCard } from './components/GlassCard';
 import { Project, Post } from './mockData';
 import { getProjects, getPosts, getClients, getSiteSettings } from './sanityClient';
-import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin, PenLine, Video, AudioLines, Pause } from 'lucide-react';
+import { Camera, Mail, ArrowRight, Play, ExternalLink, Hexagon, Home as House, Star, Calendar, Smartphone, MapPin, Clock, GraduationCap, Sparkles, MousePointer2, ChevronLeft, ChevronRight, Quote, ChevronDown, X, Twitter, Maximize2, Link as LinkIcon, Instagram, Youtube, Linkedin, PenLine, Video, AudioLines, Pause, Layers, Info } from 'lucide-react';
 import headshotImg from './assets/maas-headshot.jpg';
 import { useForm, ValidationError } from '@formspree/react';
 
@@ -268,7 +268,7 @@ const SectionTitle: React.FC<{ title: string; subtitle?: string }> = ({ title, s
 const SKILLS = [
   'FAA Certified Drone Pilot',
   'DaVinci Resolve Expertise',
-  'Tasteful Cinematography',
+  'Eye-Catching Cinematography',
   'Pro Grade Audio',
   'Motion Graphics',
   'Adaptive Lighting Setups',
@@ -748,7 +748,7 @@ const PulsingRim: React.FC<{ borderRadius?: number }> = ({ borderRadius = 40 }) 
 };
 const ProcessTimeline: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const playRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const steps = [
@@ -757,7 +757,7 @@ const ProcessTimeline: React.FC = () => {
       title: 'Discovery',
       timecode: '00:01',
       desc: "We start with a conversation. I want to understand your brand, your audience, and what you're actually trying to accomplish so that every creative decision has a reason behind it.",
-      activeColor: 'rgba(122,160,255,0.25)',
+      activeColor: 'rgba(122,160,255,0.35)',
       activeBorder: 'rgba(122,160,255,0.8)',
       idleColor: 'rgba(122,160,255,0.08)',
       idleBorder: 'rgba(122,160,255,0.25)',
@@ -767,7 +767,7 @@ const ProcessTimeline: React.FC = () => {
       title: 'Production',
       timecode: '00:03',
       desc: "This is where it gets fun. From shot lists and location scouting to the shoot day itself, I run the full production process so you can stay focused on running your business.",
-      activeColor: 'rgba(180,140,255,0.22)',
+      activeColor: 'rgba(180,140,255,0.32)',
       activeBorder: 'rgba(180,140,255,0.8)',
       idleColor: 'rgba(180,140,255,0.07)',
       idleBorder: 'rgba(180,140,255,0.25)',
@@ -777,7 +777,7 @@ const ProcessTimeline: React.FC = () => {
       title: 'Delivery',
       timecode: '00:06',
       desc: "Color graded, edited, and built for your platform. You get a final product that's ready to publish and actually moves the needle for your brand.",
-      activeColor: 'rgba(100,210,200,0.2)',
+      activeColor: 'rgba(100,210,200,0.30)',
       activeBorder: 'rgba(100,210,200,0.8)',
       idleColor: 'rgba(100,210,200,0.07)',
       idleBorder: 'rgba(100,210,200,0.25)',
@@ -787,23 +787,19 @@ const ProcessTimeline: React.FC = () => {
   useEffect(() => {
     if (isPlaying) {
       playRef.current = setInterval(() => {
-        setActiveStep(prev => {
-          if (prev >= steps.length - 1) {
-            setIsPlaying(false);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, 2500);
+        setActiveStep(prev => (prev + 1) % steps.length);
+      }, 6000);
     } else {
       if (playRef.current) clearInterval(playRef.current);
     }
     return () => { if (playRef.current) clearInterval(playRef.current); };
   }, [isPlaying]);
 
-  useEffect(() => {
-    if (activeStep >= steps.length - 1) setIsPlaying(false);
-  }, [activeStep]);
+  const waveformBars = useMemo(() => Array.from({ length: 120 }).map((_, i) => {
+    const seed = Math.sin(i * 0.8) * 0.5 + Math.sin(i * 0.3) * 0.3 + Math.sin(i * 1.7) * 0.2;
+    const h = Math.max(2, Math.abs(seed) * 20 + 2);
+    return { x: (i / 120) * 600, y: (24 - h) / 2, h };
+  }), []);
 
   const handleScrubberClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -820,7 +816,7 @@ const ProcessTimeline: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="container mx-auto px-4 py-0 max-w-5xl"
+      className="container mx-auto px-4 py-12 max-w-5xl"
     >
       <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
         The Process
@@ -926,164 +922,280 @@ const ProcessTimeline: React.FC = () => {
       </div>
 
       {/* Desktop Timeline Layout */}
-      <div className="hidden md:block">
-        {/* Timeline Panel */}
-        <div className="glass border border-ink/5 rounded-[2rem] overflow-hidden mb-6">
-          {/* Video Track (V1) */}
-          <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
-            <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
-              <Video className="w-3 h-3 text-ink/20" />
-              <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">V1</span>
-            </div>
-            <div className="flex-1 relative flex gap-1.5 p-2 h-[240px]">
-              {steps.map((step, index) => {
-                const isActive = activeStep === index;
-                return (
-                  <div
-                    key={index}
-                    onClick={() => setActiveStep(index)}
-                    style={{
-                      backgroundColor: isActive ? step.activeColor : step.idleColor,
-                      borderColor: isActive ? step.activeBorder : step.idleBorder,
-                    } as React.CSSProperties}
-                    className={`relative rounded-xl cursor-pointer overflow-visible border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between p-3 ${
-                      isActive ? 'flex-[3]' : 'flex-[1]'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-mono text-[9px] text-ink/30 mb-1">
-                        {step.timecode}
-                      </div>
-                      <h4 className={`text-base font-medium text-ink leading-tight ${!isActive ? 'truncate' : ''}`}>
-                        {step.title}
-                      </h4>
-                      {isActive && (
-                        <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.3, delay: 0.15 }}
-                          className="text-sm text-ink/50 font-light leading-relaxed mt-2"
-                        >
-                          {step.desc}
-                        </motion.p>
-                      )}
-                    </div>
-                    <div className="font-mono text-[9px] text-ink/20">
-                      {step.num}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Audio Track (A1) */}
-          <div className="flex items-stretch border-b border-ink/5 last:border-b-0">
-            <div className="w-16 shrink-0 flex flex-col items-center justify-center gap-1 border-r border-ink/5 py-3">
-              <AudioLines className="w-3 h-3 text-ink/20" />
-              <span className="text-[9px] uppercase tracking-widest text-ink/20 font-medium">A1</span>
-            </div>
-            <div className="flex-1 relative p-2 h-[36px] flex items-center">
-              <svg
-                width="100%"
-                height="24"
-                viewBox="0 0 600 24"
-                preserveAspectRatio="none"
-                className="w-full opacity-30"
-              >
-                {Array.from({ length: 120 }).map((_, i) => {
-                  const seed = Math.sin(i * 0.8) * 0.5 + Math.sin(i * 0.3) * 0.3 + Math.sin(i * 1.7) * 0.2;
-                  const h = Math.max(2, Math.abs(seed) * 20 + Math.random() * 4);
-                  const x = (i / 120) * 600;
-                  const y = (24 - h) / 2;
-                  return (
-                    <rect
-                      key={i}
-                      x={x}
-                      y={y}
-                      width={3}
-                      height={h}
-                      rx={1}
-                      fill="rgba(26,26,46,0.6)"
-                    />
-                  );
-                })}
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Scrubber Bar */}
-        <div className="glass border border-ink/5 rounded-2xl px-6 py-4 flex items-center gap-4 mb-6">
-          <span className="font-mono text-xs text-ink/40">
-            {steps[activeStep].timecode}
-          </span>
-          
-          <div 
-            onClick={handleScrubberClick}
-            className="flex-1 relative h-1.5 bg-ink/5 rounded-full cursor-pointer"
-          >
-            {/* Fill Bar */}
-            <div 
-              className="absolute left-0 top-0 h-full bg-periwinkle/40 rounded-full transition-all duration-500"
-              style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
-            />
-            {/* Playhead */}
-            <div 
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-periwinkle border-2 border-white shadow-sm transition-all duration-500"
-              style={{ left: `${(activeStep / (steps.length - 1)) * 100}%` }}
-            />
-            {/* Ticks */}
-            {steps.map((step, index) => {
-              const leftVal = index === 0 ? '0%' : index === 1 ? '50%' : '100%';
-              return (
-                <div
-                  key={index}
-                  className="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-ink/20"
-                  style={{ left: leftVal }}
-                >
-                  {step.timecode}
+      <div className="hidden md:flex flex-col">
+        {/* Main Panel */}
+        <div 
+          className="rounded-2xl overflow-hidden flex flex-col w-full border border-white/5"
+          style={{ background: '#0f0f1a' }}
+        >
+          {/* Top Section */}
+          <div className="grid grid-cols-2 border-b border-white/5 bg-white/10 items-stretch">
+            {/* Left Cell: Source Monitor */}
+            <div className="border-r border-white/5 flex flex-col h-full">
+              {/* Header bar */}
+              <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-white/[0.03]">
+                <div className="flex items-center gap-1.5">
+                  <Video className="w-3 h-3 text-white/30" />
+                  <span className="text-[9px] uppercase tracking-widest text-white/30 font-medium ml-1.5 animate-pulse">
+                    Source Monitor
+                  </span>
                 </div>
-              );
-            })}
+                <span className="font-mono text-[9px] text-white/20">
+                  BTS_reel_v3.mp4
+                </span>
+              </div>
+
+              {/* Video Area */}
+              <div className="aspect-video bg-[#080810] relative overflow-hidden flex-1">
+                <iframe
+                  src="https://player.vimeo.com/video/1189150076?autoplay=1&muted=1&controls=0&loop=1&background=1"
+                  className="absolute inset-0 w-full h-full border-none scale-[1.3]"
+                  allow="autoplay"
+                />
+                
+                {/* Timecode overlay bottom-left */}
+                <span className="absolute bottom-2 left-2 font-mono text-[9px] text-white/40 bg-black/50 px-1.5 py-0.5 rounded z-10">
+                  {steps[activeStep].timecode}
+                </span>
+
+                {/* Safe area guide */}
+                <div className="absolute inset-[8%] border border-white/5 pointer-events-none" />
+              </div>
+
+              {/* Transport bar */}
+              <div className="flex items-center gap-2 px-4 py-2 border-t border-white/5 bg-white/[0.03]">
+                {/* Skip Back */}
+                <button
+                  onClick={() => setActiveStep(prev => Math.max(0, prev - 1))}
+                  className="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+                >
+                  <ChevronLeft className="w-3 h-3" />
+                </button>
+
+                {/* Play/Pause */}
+                <button
+                  onClick={() => {
+                    if (activeStep >= steps.length - 1) setActiveStep(0);
+                    setIsPlaying(p => !p);
+                  }}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+                    isPlaying 
+                      ? 'bg-periwinkle/15 border border-periwinkle/30 text-periwinkle' 
+                      : 'border border-white/10 text-white/30 hover:border-periwinkle/40 hover:text-periwinkle'
+                  }`}
+                >
+                  {isPlaying ? (
+                    <Pause className="w-3 h-3 fill-current" />
+                  ) : (
+                    <Play className="w-3 h-3 fill-current ml-0.5" />
+                  )}
+                </button>
+
+                {/* Skip Forward */}
+                <button
+                  onClick={() => setActiveStep(prev => Math.min(steps.length - 1, prev + 1))}
+                  className="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
+                >
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+
+                {/* Scrubber track */}
+                <div 
+                  onClick={handleScrubberClick}
+                  className="flex-1 relative h-1 bg-white/10 rounded-full cursor-pointer border border-white/10"
+                >
+                  {/* Fill Bar */}
+                  <div 
+                    className="absolute left-0 top-0 h-full rounded-full bg-periwinkle/40 transition-all duration-500"
+                    style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
+                  />
+                  {/* Playhead */}
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-periwinkle border-2 border-white transition-all duration-500"
+                    style={{ left: `${(activeStep / (steps.length - 1)) * 100}%` }}
+                  />
+                </div>
+
+                {/* Duration */}
+                <span className="font-mono text-[9px] text-white/20">
+                  00:06
+                </span>
+              </div>
+            </div>
+
+            {/* Right Cell: Inspector */}
+            <div className="flex flex-col bg-white/[0.04]">
+              {/* Header bar */}
+              <div className="flex items-center gap-1.5 px-4 py-2 border-b border-white/5 bg-white/[0.03]">
+                <Info className="w-3 h-3 text-white/30" />
+                <span className="text-[9px] uppercase tracking-widest text-white/30 font-medium">
+                  Inspector
+                </span>
+              </div>
+
+              {/* Content */}
+              <div className="p-4 flex flex-col gap-3 flex-1 justify-between">
+                {/* Metadata Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
+                    <div className="text-[9px] text-white/30 mb-1">Codec</div>
+                    <div className="font-mono text-xs text-white/70">H.264</div>
+                  </div>
+                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
+                    <div className="text-[9px] text-white/30 mb-1">Resolution</div>
+                    <div className="font-mono text-xs text-white/70">4K UHD</div>
+                  </div>
+                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
+                    <div className="text-[9px] text-white/30 mb-1">Frame Rate</div>
+                    <div className="font-mono text-xs text-white/70">23.976</div>
+                  </div>
+                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
+                    <div className="text-[9px] text-white/30 mb-1">Duration</div>
+                    <div className="font-mono text-xs text-white/70">00:06</div>
+                  </div>
+                </div>
+
+                {/* Active Clip Card */}
+                <div 
+                  className="rounded-xl p-4 flex-1 relative overflow-hidden"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${steps[activeStep].activeBorder}` }}
+                >
+                  <div
+                    className="absolute inset-0 pointer-events-none rounded-xl"
+                    style={{ boxShadow: `inset 0 0 30px 0px ${steps[activeStep].activeColor}` }}
+                  />
+                  <span className="text-[9px] uppercase tracking-widest text-white/20 block font-medium relative z-10">
+                    Active Clip
+                  </span>
+                  <div
+                    className="w-8 h-px my-2 relative z-10"
+                    style={{ background: steps[activeStep].activeBorder }}
+                  />
+                  
+                  <div className="min-h-[24px] relative z-10">
+                    <AnimatePresence mode="wait">
+                      <motion.h4
+                        key={activeStep}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-xl font-medium text-white mb-2"
+                      >
+                        {steps[activeStep].title}
+                      </motion.h4>
+                    </AnimatePresence>
+                  </div>
+                  
+                  <div className="min-h-[64px] relative z-10">
+                    <AnimatePresence mode="wait">
+                      <motion.p
+                        key={activeStep}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-sm text-white/60 font-light leading-relaxed mt-1.5"
+                      >
+                        {steps[activeStep].desc}
+                      </motion.p>
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <span className="font-mono text-xs text-ink/20">
-            00:06
-          </span>
-        </div>
+          {/* Bottom Section: Timeline */}
+          <div className="border-t border-white/5 flex flex-col bg-white/[0.02]">
+            {/* Timeline Header */}
+            <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 bg-white/[0.03]">
+              <Layers className="w-3 h-3 text-white/30" />
+              <span className="text-[9px] uppercase tracking-widest text-white/30 font-medium">
+                Timeline
+              </span>
+              <div className="flex-1" />
+              <span className="font-mono text-xs text-white/50">
+                {steps[activeStep].timecode}
+              </span>
+            </div>
 
-        {/* Transport Controls */}
-        <div className="flex items-center justify-center gap-4">
-          <button
-            onClick={() => setActiveStep(prev => Math.max(0, prev - 1))}
-            className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => {
-              if (activeStep >= steps.length - 1) setActiveStep(0);
-              setIsPlaying(p => !p);
-            }}
-            className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${
-              isPlaying 
-                ? 'border-periwinkle/40 bg-periwinkle/10 text-periwinkle' 
-                : 'border-ink/10 text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle'
-            }`}
-          >
-            {isPlaying ? (
-              <Pause className="w-5 h-5 fill-current" />
-            ) : (
-              <Play className="w-5 h-5 fill-current ml-0.5" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveStep(prev => Math.min(steps.length - 1, prev + 1))}
-            className="w-10 h-10 rounded-full border border-ink/10 flex items-center justify-center text-ink/30 hover:border-periwinkle/40 hover:text-periwinkle transition-all"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+            {/* V1 Track Row */}
+            <div className="flex items-stretch border-b border-white/5">
+              {/* Label cell */}
+              <div className="w-10 shrink-0 flex items-center justify-center border-r border-white/5 bg-white/5">
+                <span className="font-mono text-[9px] text-white/20 font-bold">V1</span>
+              </div>
+
+              {/* Clip area */}
+              <div className="flex-1 relative h-[120px] p-1.5 bg-white/[0.02]">
+                <div className="flex gap-1.5 h-full w-full">
+                  {steps.map((step, index) => {
+                    const isActive = activeStep === index;
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => setActiveStep(index)}
+                        style={isActive ? {
+                          background: step.activeColor,
+                          borderColor: step.activeBorder,
+                          boxShadow: `0 0 0 1px ${step.activeBorder}, 0 0 20px 2px ${step.activeColor}`
+                        } : {
+                          backgroundColor: step.idleColor,
+                          borderColor: step.idleBorder,
+                        }}
+                        className={`relative rounded-lg cursor-pointer overflow-hidden border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between p-2.5 ${
+                          isActive ? 'flex-[3]' : 'flex-[1]'
+                        }`}
+                      >
+                        {index === activeStep && (
+                          <motion.div
+                            className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-periwinkle"
+                            animate={{ opacity: [1, 0.3, 1] }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                          />
+                        )}
+                        <div>
+                          <div className="font-mono text-[9px] text-white/30 leading-none">
+                            {step.timecode}
+                          </div>
+                          <h4 
+                            className={`text-xs font-medium text-white mt-0.5 leading-tight ${
+                              !isActive ? 'truncate' : ''
+                            }`}
+                          >
+                            {step.title}
+                          </h4>
+                        </div>
+                        <div className="font-mono text-[9px] text-white/20 leading-none">
+                          {step.num}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* A1 Track Row */}
+            <div className="flex items-stretch border-b border-white/5 min-h-[40px]">
+              {/* Label cell */}
+              <div className="w-10 shrink-0 flex items-center justify-center border-r border-white/5 bg-white/5">
+                <span className="font-mono text-[9px] text-white/20 font-bold">A1</span>
+              </div>
+
+              {/* Waveform area */}
+              <div className="flex-1 p-1.5 bg-white/[0.02]">
+                <div className="w-full h-full rounded-lg overflow-hidden relative" style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)' }}>
+                  <svg width="100%" height="20" viewBox="0 0 600 24" preserveAspectRatio="none" className="opacity-25 w-full h-full">
+                    {waveformBars.map((bar, i) => (
+                      <rect key={i} x={bar.x} y={bar.y} width={3} height={bar.h} rx={1} fill="rgba(255,255,255,0.8)" />
+                    ))}
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
