@@ -926,7 +926,7 @@ const ProcessTimeline: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4 min-h-[180px] overflow-hidden"
+            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4 h-[180px] overflow-hidden"
             style={{ borderLeft: `3px solid ${steps[activeStep].activeBorder}` }}
           >
             <div className="flex flex-col gap-2 flex-1">
@@ -1086,28 +1086,28 @@ const ProcessTimeline: React.FC = () => {
               {/* Content */}
               <div className="p-5 flex flex-col gap-3 flex-1 justify-between">
                 {/* Metadata Grid */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
-                    <div className="text-[9px] text-white/30 mb-1">Codec</div>
-                    <div className="font-mono text-xs text-white/70">H.264</div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  <div className="bg-white/5 border border-white/8 rounded-xl px-3 py-2">
+                    <div className="text-[8px] text-white/30 mb-1">Codec</div>
+                    <div className="font-mono text-[11px] text-white/70">H.264</div>
                   </div>
-                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
-                    <div className="text-[9px] text-white/30 mb-1">Resolution</div>
-                    <div className="font-mono text-xs text-white/70">4K UHD</div>
+                  <div className="bg-white/5 border border-white/8 rounded-xl px-3 py-2">
+                    <div className="text-[8px] text-white/30 mb-1">Resolution</div>
+                    <div className="font-mono text-[11px] text-white/70">4K UHD</div>
                   </div>
-                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
-                    <div className="text-[9px] text-white/30 mb-1">Frame Rate</div>
-                    <div className="font-mono text-xs text-white/70">23.976</div>
+                  <div className="bg-white/5 border border-white/8 rounded-xl px-3 py-2">
+                    <div className="text-[8px] text-white/30 mb-1">Frame Rate</div>
+                    <div className="font-mono text-[11px] text-white/70">23.976</div>
                   </div>
-                  <div className="bg-white/5 border border-white/8 rounded-xl p-2.5">
-                    <div className="text-[9px] text-white/30 mb-1">Duration</div>
-                    <div className="font-mono text-xs text-white/70">00:06</div>
+                  <div className="bg-white/5 border border-white/8 rounded-xl px-3 py-2">
+                    <div className="text-[8px] text-white/30 mb-1">Duration</div>
+                    <div className="font-mono text-[11px] text-white/70">00:06</div>
                   </div>
                 </div>
 
                 {/* Active Clip Card */}
                 <div 
-                  className="rounded-xl p-4 flex-1 relative overflow-hidden min-h-[180px] max-h-[180px]"
+                  className="rounded-xl p-4 flex-1 relative overflow-hidden min-h-0"
                   style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${steps[activeStep].activeBorder}` }}
                 >
                   <div
@@ -1145,7 +1145,7 @@ const ProcessTimeline: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-base text-white/60 font-light leading-relaxed mt-1.5 overflow-y-auto max-h-[80px]"
+                        className="text-sm text-white/60 font-light leading-relaxed mt-1.5"
                       >
                         {steps[activeStep].desc}
                       </motion.p>
