@@ -140,6 +140,29 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
   const rafRef = React.useRef<number>(0);
   const xRef = React.useRef(0);
 
+  const [flippedSlots, setFlippedSlots] = useState([false, false, false, false, false, false]);
+  const slotSequence = [0, 1, 2, 3, 4, 5];
+  const sequenceRef = useRef(0);
+
+  useEffect(() => {
+    if (clients.length < 2) return;
+    const interval = setInterval(() => {
+      const slotToFlip = slotSequence[sequenceRef.current % slotSequence.length];
+      setFlippedSlots(prev => {
+        const next = [...prev];
+        next[slotToFlip] = !next[slotToFlip];
+        return next;
+      });
+      sequenceRef.current += 1;
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [clients.length]);
+
+  const slots = Array.from({ length: 6 }).map((_, i) => ({
+    front: clients[i % clients.length],
+    back: clients[(i + 6) % clients.length]
+  }));
+
   React.useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -175,20 +198,47 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       </div>
 
       {/* Mobile-only static grid */}
-      <div className="grid grid-cols-3 gap-4 md:hidden">
-        {clients.map((client) => (
+      <div className="md:hidden grid grid-cols-3 gap-3 px-2">
+        {slots.map((slot, i) => (
           <div
-            key={client.id}
-            className="flex items-center justify-center p-4 rounded-2xl group relative"
+            key={i}
+            className="relative h-20"
+            style={{ perspective: '600px' }}
           >
-            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"
-              style={{ boxShadow: '0 0 30px 8px rgba(122,160,255,0.2), 0 0 60px 16px rgba(180,140,255,0.1)' }}
-            />
-            <img
-              src={client.logoUrl}
-              alt={client.name}
-              className="h-12 w-auto object-contain transition-all duration-500 group-hover:scale-110"
-            />
+            <div
+              className="relative w-full h-full transition-transform duration-700 ease-in-out"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: flippedSlots[i] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+              }}
+            >
+              {/* Front face */}
+              <div
+                className="absolute inset-0 rounded-2xl flex items-center justify-center p-3"
+                style={{ backfaceVisibility: 'hidden', background: 'rgba(255,255,255,0.6)', border: '0.5px solid rgba(180,180,220,0.25)' }}
+              >
+                {slot.front?.logoUrl && (
+                  <img
+                    src={slot.front.logoUrl}
+                    alt={slot.front.name}
+                    className="h-8 w-auto object-contain max-w-full"
+                  />
+                )}
+              </div>
+              {/* Back face */}
+              <div
+                className="absolute inset-0 rounded-2xl flex items-center justify-center p-3"
+                style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', background: 'rgba(255,255,255,0.6)', border: '0.5px solid rgba(180,180,220,0.25)' }}
+              >
+                {slot.back?.logoUrl && (
+                  <img
+                    src={slot.back.logoUrl}
+                    alt={slot.back.name}
+                    className="h-8 w-auto object-contain max-w-full"
+                  />
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -816,7 +866,7 @@ const ProcessTimeline: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="container mx-auto px-4 py-12 max-w-7xl"
+      className="container mx-auto px-4 py-12 max-w-7xl overflow-hidden"
     >
       <h2 className="text-base uppercase tracking-[0.3em] font-medium text-ink/30 mb-12">
         The Process
@@ -876,7 +926,7 @@ const ProcessTimeline: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4"
+            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4 min-h-[180px] overflow-hidden"
             style={{ borderLeft: `3px solid ${steps[activeStep].activeBorder}` }}
           >
             <div className="flex flex-col gap-2 flex-1">
@@ -925,7 +975,7 @@ const ProcessTimeline: React.FC = () => {
       <div className="hidden md:flex flex-col">
         {/* Main Panel */}
         <div 
-          className="rounded-2xl overflow-hidden flex flex-col w-full border border-white/5"
+          className="rounded-2xl overflow-hidden flex flex-col w-full border border-white/5 min-h-0"
           style={{ background: '#0f0f1a' }}
         >
           {/* Top Section */}
@@ -1057,7 +1107,7 @@ const ProcessTimeline: React.FC = () => {
 
                 {/* Active Clip Card */}
                 <div 
-                  className="rounded-xl p-4 flex-1 relative overflow-hidden"
+                  className="rounded-xl p-4 flex-1 relative overflow-hidden min-h-[180px] max-h-[180px]"
                   style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${steps[activeStep].activeBorder}` }}
                 >
                   <div
@@ -1095,7 +1145,7 @@ const ProcessTimeline: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-base text-white/60 font-light leading-relaxed mt-1.5"
+                        className="text-base text-white/60 font-light leading-relaxed mt-1.5 overflow-y-auto max-h-[80px]"
                       >
                         {steps[activeStep].desc}
                       </motion.p>
