@@ -191,7 +191,7 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
       whileInView={{ opacity: 1, y: 0 }} 
       viewport={{ once: true }} 
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="md:py-8 pt-1 md:pt-8 pb-3 md:pb-8 px-4 relative"
+      className="md:py-4 pt-1 pb-2 px-4 relative"
     >
       <div className="text-spaced text-ink/30 text-center md:mb-8 mb-4">
         trusted by
@@ -243,9 +243,9 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
         ))}
       </div>
 
-      <div className="hidden md:block relative w-full py-4">
+      <div className="hidden md:block relative w-full py-2">
         <div
-          className="overflow-hidden"
+          className="overflow-x-hidden overflow-y-visible"
           style={{
             maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)'
@@ -260,20 +260,13 @@ const ClientLogos: React.FC<{ clients: { id: string; name: string; logoUrl: stri
               return (
                 <div
                   key={keyId}
-                  className="relative flex items-center justify-center px-8 rounded-2xl transition-all duration-300 cursor-default group hover:bg-periwinkle/5"
+                  className="relative flex items-center justify-center px-8 py-4 rounded-2xl transition-all duration-300 cursor-default"
                 >
-                  <div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"
-                    style={{ boxShadow: '0 0 30px 8px rgba(122,160,255,0.2), 0 0 60px 16px rgba(180,140,255,0.1)' }}
-                  />
                   <img
                     src={client.logoUrl}
                     alt={client.name}
-                    className="h-20 w-auto object-contain transition-all duration-500 group-hover:scale-110"
+                    className="h-20 w-auto object-contain transition-all duration-500 hover:scale-110"
                   />
-                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-ink/80 backdrop-blur-md border border-white/10 text-white/80 text-[10px] font-medium tracking-wide whitespace-nowrap transition-all duration-300 pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0">
-                    {client.name}
-                  </div>
                 </div>
               );
             })}
