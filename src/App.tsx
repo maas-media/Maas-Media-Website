@@ -919,7 +919,7 @@ const ProcessTimeline: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4 h-[180px] overflow-hidden"
+            className="glass border-ink/5 rounded-2xl p-6 flex gap-5 items-start mb-4 min-h-[220px]"
             style={{ borderLeft: `3px solid ${steps[activeStep].activeBorder}` }}
           >
             <div className="flex flex-col gap-2 flex-1">
