@@ -113,18 +113,18 @@ const ServiceRow: React.FC<{
           >
             {active && (
               <>
-                <motion.div 
-                  initial={{ opacity: 1 }}
-                  animate={{ opacity: isLoaded ? 0 : 1 }}
-                  transition={{ duration: 0.4 }}
-                  className="absolute inset-0 z-0 animate-shimmer"
-                />
                 <iframe 
                   src={`https://player.vimeo.com/video/${service.vimeoId}?autoplay=1&muted=1&loop=1&background=1&controls=0`}
                   className={`absolute inset-0 w-full h-full pointer-events-none border-none transition-opacity duration-400 ease-in-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                   allow="autoplay; fullscreen"
                   title={service.title}
-                  onLoad={() => setIsLoaded(true)}
+                  onLoad={() => setTimeout(() => setIsLoaded(true), 800)}
+                />
+                <img 
+                  src={`https://vumbnail.com/${service.vimeoId}.jpg`}
+                  alt={service.title}
+                  referrerPolicy="no-referrer"
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-400 ease-in-out ${isLoaded ? 'opacity-0' : 'opacity-100'}`}
                 />
               </>
             )}
@@ -1251,7 +1251,8 @@ const Home: React.FC<{
   onNavigateWithFilter: (tab: string, filter: string) => void;
   clients: any[]; 
   siteSettings: any;
-}> = ({ onNavigate, onNavigateWithFilter, clients, siteSettings }) => {
+  projects: Project[];
+}> = ({ onNavigate, onNavigateWithFilter, clients, siteSettings, projects }) => {
   const [heroVideoSrc, setHeroVideoSrc] = useState('');
   useEffect(() => {
     setHeroVideoSrc('https://player.vimeo.com/video/1196786877?autoplay=1&muted=1&controls=0&loop=1&background=1&playsinline=1');
@@ -1583,7 +1584,7 @@ const Home: React.FC<{
                       onClick={() => setDemoReelPlaying(true)}
                     >
                       <img
-                        src="https://vumbnail.com/1189150076.jpg"
+                        src={projects.find(p => p.vimeoUrl?.includes('1189150076'))?.thumbnail || 'https://i.vimeocdn.com/video/1189150076_1280x720.jpg'}
                         alt="Demo Reel"
                         className="w-full h-full object-cover"
                       />
@@ -2412,7 +2413,24 @@ export default function App() {
   useEffect(() => {
     setIsLoaded(true);
     setSelectedProject(null);
+    const titleMap: Record<string, string> = {
+      Home: 'Maas Media | Atlanta Video Production & Digital Marketing',
+      Work: 'Portfolio | Maas Media',
+      Blog: 'Blog | Maas Media',
+      Contact: 'Contact | Maas Media',
+    };
+    if (titleMap[activeTab]) {
+      document.title = titleMap[activeTab];
+    }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      document.title = `${selectedProject.title} | Maas Media`;
+    } else if (activeTab === 'Work') {
+      document.title = 'Portfolio | Maas Media';
+    }
+  }, [selectedProject, activeTab]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -2445,6 +2463,7 @@ export default function App() {
               }} 
               clients={clients} 
               siteSettings={siteSettings} 
+              projects={projects}
             />
           )}
           {activeTab === 'Work' && (
