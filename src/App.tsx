@@ -1416,7 +1416,7 @@ const Home: React.FC<{
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              Stories worth <span className="text-[#9bb8ff] md:text-periwinkle italic">seeing.</span>
+              Stories worth <span className="text-[#9bb8ff] md:text-periwinkle italic">watching.</span>
             </motion.h1>
 
             <motion.p
@@ -1652,7 +1652,7 @@ const Home: React.FC<{
               transition={{ duration: 0.5 }}
               className="text-2xl font-medium"
             >
-              Ready to tell your story?
+              Ready to tell a story?
             </motion.h4>
             <motion.p 
               variants={{
@@ -1662,7 +1662,7 @@ const Home: React.FC<{
               transition={{ duration: 0.5 }}
               className="font-light"
             >
-              Let's build a cinematic experience together.
+              Let's build a plan for you.
             </motion.p>
           </div>
           <button 
@@ -2180,7 +2180,7 @@ const Footer: React.FC<{ settings: any }> = ({ settings }) => {
             © {new Date().getFullYear()} Maas Media LLC
           </div>
           <div className="text-[10px] text-ink/20 mt-1 tracking-wide">
-            Visuals built for you.
+            Stories worth watching.
           </div>
         </div>
       </motion.div>
@@ -2206,7 +2206,7 @@ const Contact: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-5xl md:text-6xl font-light text-ink tracking-tight mb-3"
         >
-          Let's build.
+          Share your vision!
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
